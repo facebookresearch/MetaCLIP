@@ -1,0 +1,150 @@
+{
+    "Food101": {
+        "path": "data/food101",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "test"
+    },
+    "CIFAR10": {
+        "path": "./data/cifar10",
+        "type": "special"
+    },
+    "CIFAR100": {
+        "path": "./data/cifar100",
+        "type": "special"
+    },
+    "CUB200": {
+        "path": "data/cub200",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "val"
+    },
+    "SUN397": {
+        "path": "data/sun397",
+        "type": "filelist",
+        "train": "train",
+        "test": "test"
+    },
+    "StanfordCars": {
+        "path": "data/cars",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "test"
+    },
+    "FGVCAircraft": {
+        "path": "data/aircraft",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "test"
+    },
+    "DescribableTextures": {
+        "path": "data/dtd",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "test"
+    },
+    "OxfordPets": {
+        "path": "data/pets",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "test"
+    },
+    "Caltech101": {
+        "path": "data/caltech101",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "test"
+    },
+    "Flowers102": {
+        "path": "data/flowers",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "test"
+    },
+    "MNIST": {
+        "path": "./data/mnist",
+        "type": "special"
+    },
+    "FacialEmotionRecognition2013": {
+        "path": "data/fer2013",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "test"
+    },
+    "STL10": {
+        "path": "./data/stl10",
+        "type": "special"
+    },
+    "EuroSAT": {
+        "path": "data/eurosat",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "val"
+    },
+    "RESISC45": {
+        "path": "data/resisc45",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "test"
+    },
+    "GTSRB": {
+        "path": "data/gtsrb",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "test"
+    },
+    "KITTI": {
+        "path": "data/kitti_distance",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "val"
+    },
+    "Country211": {
+        "path": "data/country211",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "test"
+    },
+    "PatchCamelyon": {
+        "path": "data/patch_camelyon",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "val"
+    },
+    "UCF101": {
+        "path": "data/ucf101_frames",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "val"
+    },
+    "Kinetics700": {
+        "path": "data/k700",
+        "type": "imagefolder",
+        "train": "train_images",
+        "test": "val_images"
+    },
+    "CLEVRCounts": {
+        "path": "data/clevr_counts",
+        "type": "filelist",
+        "train": "train",
+        "test": "val"
+    },
+    "HatefulMemes": {
+        "path": "data/hateful_memes",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "dev"
+    },
+    "SST2": {
+        "path": "data/rendered_sst2",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "test"
+    },
+    "imagenet": {
+        "path": "/datasets01/imagenet_full_size/061417/",
+        "type": "imagefolder",
+        "train": "train",
+        "test": "val"
+    }
+}
