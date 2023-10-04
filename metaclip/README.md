@@ -1,7 +1,7 @@
 # MetaCLIP
 
-This is a minimal demo/skeleton code of CLIP curation, please check Algorithm 1 in MetaCLIP paper.
-**This is not the production pipeline used to collect data for paper**.
+This is a minimal demo/skeleton code of CLIP curation, please check Algorithm 1 in [MetaCLIP paper](https://arxiv.org/pdf/2309.16671.pdf).
+**This is not the pipeline used to collect data in paper**.
 
 ## Part 1 Sub-string matching
 
@@ -36,6 +36,7 @@ python metaclip/cc_matching.py data/CC/warc/CC-MAIN-20180420081400-2018042010140
 Want a distributed system to parse the full CC and download a dataset? consider to integrate `substr_matching.py` and `balancing.py` into a open source system: [cc2dataset](https://github.com/rom1504/cc2dataset/tree/main) and [img2dataset](https://github.com/rom1504/img2dataset).
 
 ## Part 2 Balancing (expected after image downloading/NSFW/dedup)
+
 
 ```bash
 mkdir -p data/CC/balanced
