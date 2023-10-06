@@ -1,9 +1,9 @@
 # Demystifying CLIP Data
 
 This repository contains the code for the MetaCLIP, described in the paper [Demystifying CLIP Data](https://arxiv.org/abs/2309.16671) that formalizes CLIP data curation as a simple algorithm. The main contributions are:
-  - Curating data from scratch without filtering via prior models (e.g., different from existing open source [efforts](https://arxiv.org/abs/2111.02114) that uses the original CLIP model as teacher for filtering **student** data.
+  - Curating data from scratch without filtering via prior models (e.g., different from existing open source [efforts](https://arxiv.org/abs/2111.02114) that uses the original CLIP model as a teacher for filtering **student** data.
   - Making training data more transparent, we released our **training data distribution** over [metadata](metadata.json);
-  - A scalable algorithm running in the data pipeline, allowing to scale the **data pool** to the whole CommonCrawl (CC) w/ 300+B image-text pairs. We observe that data quality is **much more** important than quantity (different from existing [open source efforts](https://arxiv.org/abs/2210.08402) or [ALGIN](https://arxiv.org/abs/2102.05918) that mostly scale quantity);
+  - A scalable algorithm running in the data pipeline, allowing to scale the **data pool** to the whole CommonCrawl (CC) w/ 300+B image-text pairs. We observe that data quality is **much more** important than quantity (different from existing [open source efforts](https://arxiv.org/abs/2210.08402) or [ALIGN](https://arxiv.org/abs/2102.05918) that mostly scale quantity);
   - [standard CLIP training setup](run_configs_400m.py) for controlled experiments and fair comparisons under fixed training and model configuration.
 
 We conclude that:
@@ -95,7 +95,7 @@ We have a [demo notebook](demo.ipynb) to show how the proposed algorithm works.
 
 
 ### I already have a (head distributed) dataset:
-CLIP curation can still help as online balancing (Table 6 in the paper). We wrap CLIP curation in two key functions: [substring matching](metaclip/substr_matching.py) (recommened to run offline) and [balancing](metaclip/balancing.py) (either offline or online, please check `metaclip.balancing:main`).
+CLIP curation can still help as online balancing (Table 6 in the paper). We wrap CLIP curation in two key functions: [substring matching](metaclip/substr_matching.py) (recommended to run offline) and [balancing](metaclip/balancing.py) (either offline or online, please check `metaclip.balancing:main`).
 
 ```python
 import json
