@@ -8,7 +8,7 @@ This repository contains the code for the MetaCLIP, described in the paper [Demy
 
 We conclude that:
   - Effective pretraining data should **maximally preserve signal and mitigate noise**, instead of hard removal of noise with blackbox filters that lead to unknown distribution
-  - Our algorithm is simpler and scalable to curate the whole Internet
+  - Our algorithm is simpler and scalable enough to curate the whole Internet
   - Open-sourcing does not just entail a trained model checkpoint but more importantly the **pre-training data distribution**.
 
 
@@ -51,7 +51,7 @@ conda create -n python=3.10 pytorch torchvision pytorch-cuda=11.7 tqdm ftfy brac
 
 ## Metadata
 
-MetaCLIP uses 500,000 queries as [metadata](metadata.json) to align the training data to distribution over quality writing of Wikipedia/WordNet terms. This metadata also allows us to release training data distribution of a released model as **data card**.
+MetaCLIP uses 500,000 queries as [metadata](metadata.json) to align the training data to distribution over quality writing of Wikipedia/WordNet terms. This metadata also allows us to the release training data distribution of a released model as **data card**.
 
 ### Pre-trained Models
 
@@ -128,7 +128,7 @@ We release a skeleton code for [sub-string matching](metaclip/cc_matching.py) fr
 ```python
 python submitit_openclip.py b32_400m
 ```
-Please config the corresponding `training_data` in `run_configs_400m.py`.
+Please configure the corresponding `training_data` in `run_configs_400m.py`.
 
 
 ## Bugs or questions?
