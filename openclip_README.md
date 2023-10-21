@@ -15,7 +15,7 @@ We further this with a replication study on a dataset of comparable size to Open
 
 As we describe in more detail [below](#why-are-low-accuracy-clip-models-interesting), CLIP models in a medium accuracy regime already allow us to draw conclusions about the robustness of larger CLIP models since the models follow [reliable scaling laws](https://arxiv.org/abs/2107.04649).
 
-This codebase is work in progress, and we invite all to contribute in making it more acessible and useful. In the future, we plan to add support for TPU training and release larger models. We hope this codebase facilitates and promotes further research in contrastive image-text learning. Please submit an issue or send an email if you have any other requests or suggestions.
+This codebase is work in progress, and we invite all to contribute in making it more accessible and useful. In the future, we plan to add support for TPU training and release larger models. We hope this codebase facilitates and promotes further research in contrastive image-text learning. Please submit an issue or send an email if you have any other requests or suggestions.
 
 Note that portions of `src/open_clip/` modelling and tokenizer code are adaptations of OpenAI's official [repository](https://github.com/openai/CLIP).
 
@@ -113,7 +113,7 @@ Test can be run with `make install-dev` then `make test`
 
 #### Other dependencies
 
-Install open_clip pacakge and remaining dependencies:
+Install open_clip package and remaining dependencies:
 
 ```bash
 cd open_clip
@@ -145,7 +145,7 @@ python -m training.main \
 ```
 
 Note: `imagenet-val` is the path to the *validation* set of ImageNet for zero-shot evaluation, not the training set!
-You can remove this argument if you do not want to perform zero-shot evaluation on ImageNet throughout training. Note that the `val` folder should contain subfolders. If it doest not, please use [this script](https://raw.githubusercontent.com/soumith/imagenetloader.torch/master/valprep.sh).
+You can remove this argument if you do not want to perform zero-shot evaluation on ImageNet throughout training. Note that the `val` folder should contain subfolders. If it does not, please use [this script](https://raw.githubusercontent.com/soumith/imagenetloader.torch/master/valprep.sh).
 
 ### Multi-GPU and Beyond
 
@@ -153,7 +153,7 @@ This code has been battle tested up to 1024 A100s and offers a variety of soluti
 for distributed training. We include native support for SLURM clusters.
 
 As the number of devices used to train increases, so does the space complexity of
-the the logit matrix. Using a naïve all-gather scheme, space complexity will be
+the logit matrix. Using a naïve all-gather scheme, space complexity will be
 `O(n^2)`. Instead, complexity may become effectively linear if the flags
 `--gather-with-grad` and `--local-loss` are used. This alteration results in one-to-one
 numerical results as the naïve method.
@@ -288,7 +288,7 @@ python -m training.main \
 We are working on reproducing OpenAI's ViT results with the comparably sized (and open) LAION-400M dataset. Trained
 weights may be found in release [v0.2](https://github.com/mlfoundations/open_clip/releases/tag/v0.2-weights).
 
-The LAION400M weights have been trained on the JUWELS supercomputer (see acknowledgements section below).
+The LAION400M weights have been trained on the JUWELS supercomputer (see acknowledgments section below).
 
 #### ViT-B/32 224x224
 
@@ -418,7 +418,7 @@ are shown as stars.
 
 As observed by [Taori et al., 2020](https://arxiv.org/abs/2007.00644) and [Miller et al., 2021](https://arxiv.org/abs/2107.04649), the in-distribution
 and out-of-distribution accuracies of models trained on ImageNet follow a predictable linear trend (the red line in the above plot). *Effective robustness*
-quantifies robustness as accuracy beyond this baseline, i.e., how far a model lies above the red line. Ideally a model would not suffer from distribution shift and fall on the y = x line ([trained human labelers are within a percentage point of the y = x line](http://proceedings.mlr.press/v119/shankar20c.html)).
+quantifies robustness as accuracy beyond this baseline, i.e., how far a model lies above the red line. Ideally, a model would not suffer from distribution shift and fall on the y = x line ([trained human labelers are within a percentage point of the y = x line](http://proceedings.mlr.press/v119/shankar20c.html)).
 
 Even though the CLIP models trained with
 this codebase achieve much lower accuracy than those trained by OpenAI, our models still lie on the same
