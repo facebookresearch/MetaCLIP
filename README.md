@@ -1,7 +1,7 @@
 # Demystifying CLIP Data
 
 This repository contains the code for the MetaCLIP, described in the paper [Demystifying CLIP Data](https://arxiv.org/abs/2309.16671) that formalizes CLIP data curation as a simple algorithm. The main contributions are:
-  - Curating data from scratch without filtering via prior models (e.g., different from existing open source [efforts](https://arxiv.org/abs/2111.02114) that uses the original CLIP model as a teacher for filtering **student** data.
+  - Curating data from scratch without filtering via prior models (e.g., different from existing open source [efforts](https://arxiv.org/abs/2111.02114) ) that uses the original CLIP model as a teacher for filtering **student** data.
   - Making training data more transparent, we released our **training data distribution** over [metadata](metadata.json);
   - A scalable algorithm running in the data pipeline, allowing to scale the **data pool** to the whole CommonCrawl (CC) w/ 300+B image-text pairs. We observe that data quality is **much more** important than quantity (different from existing [open source efforts](https://arxiv.org/abs/2210.08402) or [ALIGN](https://arxiv.org/abs/2102.05918) that mostly scale quantity);
   - [standard CLIP training setup](run_configs_400m.py) for controlled experiments and fair comparisons under fixed training and model configuration.
@@ -11,6 +11,7 @@ We conclude that:
   - Our algorithm is simpler and scalable to curate the whole Internet
   - Open-sourcing does not just entail a trained model checkpoint but more importantly the **pre-training data distribution**.
 
+MetaCLIP is trained w/ face blurred images.
 
 ```bibtex
 @inproceedings{xu2023metaclip,
@@ -78,16 +79,16 @@ with torch.no_grad():
 print("Label probs:", text_probs)
 ```
 
-|              Model              | Data Card | IN ZS Acc. |
-|:--------------------------------|:---------:|:--------------:|
-| [MetaCLIP B32 400M](https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_400m.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 65.5 |
-| [MetaCLIP B16 400M](https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_400m.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 70.8 |
-| [MetaCLIP L14 400M](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_400m.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 76.2 |
-| [MetaCLIP B32 FullCC2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 67.6 |
-| [MetaCLIP B16 FullCC2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 72.1 |
-| [MetaCLIP L14 FullCC2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 79.2 |
-| [MetaCLIP H14 FullCC2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 80.5 |
-| MetaCLIP G14 FullCC2.5B | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | ongoing |
+|              Model              | # of Seen Pairs | Res. | Data Card | IN ZS Acc. |
+|:--------------------------------|:---------:|:---------:|:---------:|:--------------:|
+| [MetaCLIP B32 400M](https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_400m.pt) | 12.8B | 224 | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 65.5 |
+| [MetaCLIP B16 400M](https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_400m.pt) | 12.8B | 224 | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 70.8 |
+| [MetaCLIP L14 400M](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_400m.pt) | 12.8B | 224 | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 76.2 |
+| [MetaCLIP B32 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt) | 12.8B | 224 | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 67.6 |
+| [MetaCLIP B16 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt) | 12.8B | 224 | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 72.1 |
+| [MetaCLIP L14 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_fullcc2.5b.pt) | 12.8B | 224 | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 79.2 |
+| [MetaCLIP H14 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_fullcc2.5b.pt) | 12.8B | 224 | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 80.5 |
+| MetaCLIP G14 2.5B | 12.8B | 224 | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | ongoing |
 
 ## How to Curate ?
 
@@ -158,7 +159,6 @@ The training code is developed based on [OpenCLIP](https://github.com/mlfoundati
 - numpy implementation for matching and balancing;
 - support online downloading;
 - support vanilla CLIP API;
-- Huggingface integration;
 - (welcome your use cases or suggestions to update this codebase regularly)
 
 
