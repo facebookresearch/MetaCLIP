@@ -46,18 +46,24 @@ _VITB32 = dict(
     laion2b_e16="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_32-laion2b_e16-af8dbd0c.pth",
     laion400m_e31="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_32-quickgelu-laion400m_e31-d867053b.pt",
     laion400m_e32="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_32-quickgelu-laion400m_e32-46683a32.pt",
+    metaclip400m="https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_400m.pt",
+    metaclip2_5b="https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt"
 )
 
 _VITB32_quickgelu = dict(
     openai="https://openaipublic.azureedge.net/clip/models/40d365715913c9da98579312b702a82c18be219cc2a73407c4526f58eba950af/ViT-B-32.pt",
     laion400m_e31="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_32-quickgelu-laion400m_e31-d867053b.pt",
     laion400m_e32="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_32-quickgelu-laion400m_e32-46683a32.pt",
+    metaclip400m="https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_400m.pt",
+    metaclip2_5b="https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt"
 )
 
 _VITB16 = dict(
     openai="https://openaipublic.azureedge.net/clip/models/5806e77cd80f8b59890b7e101eabd078d9fb84e6937f9e85e4ecb61988df416f/ViT-B-16.pt",
     laion400m_e31="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_16-laion400m_e31-00efa78f.pt",
     laion400m_e32="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_16-laion400m_e32-55e67d44.pt",
+    metaclip400m="https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_400m.pt",
+    metaclip2_5b="https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt"
 )
 
 _VITB16_PLUS_240 = dict(
@@ -69,6 +75,8 @@ _VITL14 = dict(
     openai="https://openaipublic.azureedge.net/clip/models/b8cca3fd41ae0c99ba7e8951adf17d267cdb84cd88be6f7c2e0eca1737a03836/ViT-L-14.pt",
     laion400m_e31='https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_l_14-laion400m_e31-69988bb6.pt',
     laion400m_e32='https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_l_14-laion400m_e32-3d133497.pt',
+    metaclip400m='https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_400m.pt',
+    metaclip2_5b='https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_fullcc2.5b.pt'
 )
 
 _VITL14_336 = dict(
