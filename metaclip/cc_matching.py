@@ -54,7 +54,7 @@ class CCCurator(object):
         """open your browser, right-click and inspect"""
         raise NotImplementedError("derive this class a for specific type of parser.")
 
-    def parse_html(self, html, target_uri, data):
+    def parse_htmls(self, html, target_uri, data):
         """open your browser, right-click and inspect"""
         raise NotImplementedError("derive this class a for specific type of parser.")
 
@@ -126,7 +126,7 @@ class WARCCurator(CCCurator):
                         p.join(60*5)
                         if p.is_alive():
                             p.terminate()
-                            print(f"timeout on {warc_file}")
+                            print(f"timeout on {cc_file}")
                         htmls = []
                         data.extend(ret_data)
 
@@ -270,7 +270,7 @@ class WATCurator(CCCurator):
             else:
                 rec["texts"] = texts
             if len(rec["texts"]) > 0:
-                data.append(rec)
+                results.append(rec)
 
         return results
 
