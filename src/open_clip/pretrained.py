@@ -46,24 +46,27 @@ _VITB32 = dict(
     laion2b_e16="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_32-laion2b_e16-af8dbd0c.pth",
     laion400m_e31="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_32-quickgelu-laion400m_e31-d867053b.pt",
     laion400m_e32="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_32-quickgelu-laion400m_e32-46683a32.pt",
-    metaclip400m="https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_400m.pt",
-    metaclip2_5b="https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt"
 )
 
 _VITB32_quickgelu = dict(
     openai="https://openaipublic.azureedge.net/clip/models/40d365715913c9da98579312b702a82c18be219cc2a73407c4526f58eba950af/ViT-B-32.pt",
     laion400m_e31="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_32-quickgelu-laion400m_e31-d867053b.pt",
     laion400m_e32="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_32-quickgelu-laion400m_e32-46683a32.pt",
-    metaclip400m="https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_400m.pt",
-    metaclip2_5b="https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt"
+    metaclip_400m=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_400m.pt", "3c68642594a329afc1ec0fe489ee2b58ab19c9d0556ccf7c404a59baa0762d71"),
+    metaclip2_5b=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt", "885b7ec11fe07a9826e2e6812d70e5011918e32fe9b12136b49d5dded92b4386"),
+    metaclip_fullcc=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt", "885b7ec11fe07a9826e2e6812d70e5011918e32fe9b12136b49d5dded92b4386"),
 )
 
 _VITB16 = dict(
     openai="https://openaipublic.azureedge.net/clip/models/5806e77cd80f8b59890b7e101eabd078d9fb84e6937f9e85e4ecb61988df416f/ViT-B-16.pt",
     laion400m_e31="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_16-laion400m_e31-00efa78f.pt",
     laion400m_e32="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_16-laion400m_e32-55e67d44.pt",
-    metaclip400m="https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_400m.pt",
-    metaclip2_5b="https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt"
+)
+
+_VITB16_quickgelu = dict(
+    metaclip_400m=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_400m.pt", "68dfb5996c52a8f4fecb9bd16601e97e1895236645082778bd9cede8429a8d49"),
+    metaclip2_5b=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt", "512ea0fb9f2cf88d027e96e4674247a1a91a96af18abc2e2fcdb8008c551e04b"),
+    metaclip_fullcc=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt", "512ea0fb9f2cf88d027e96e4674247a1a91a96af18abc2e2fcdb8008c551e04b"),
 )
 
 _VITB16_PLUS_240 = dict(
@@ -75,13 +78,23 @@ _VITL14 = dict(
     openai="https://openaipublic.azureedge.net/clip/models/b8cca3fd41ae0c99ba7e8951adf17d267cdb84cd88be6f7c2e0eca1737a03836/ViT-L-14.pt",
     laion400m_e31='https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_l_14-laion400m_e31-69988bb6.pt',
     laion400m_e32='https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_l_14-laion400m_e32-3d133497.pt',
-    metaclip400m='https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_400m.pt',
-    metaclip2_5b='https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_fullcc2.5b.pt'
+)
+
+_VITL14_quickgelu = dict(
+    metaclip_400m=("https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_400m.pt", "51c782959f920b030779e494517b8d545f56794df6b0a2796a4c310455a361be"),
+    metaclip2_5b=("https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_fullcc2.5b.pt", "ce24750710544ee288ef0abdead2016730da1893a1d07447bda3a75e1c148f97"),
+    metaclip_fullcc=("https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_fullcc2.5b.pt", "ce24750710544ee288ef0abdead2016730da1893a1d07447bda3a75e1c148f97"),
 )
 
 _VITL14_336 = dict(
     openai="https://openaipublic.azureedge.net/clip/models/3035c92b350959924f9f00213499208652fc7ea050643e8b385c2dac08641f02/ViT-L-14-336px.pt"
 )
+
+_VITH14_quickgelu = dict(
+    metaclip2_5b=("https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_fullcc2.5b.pt", "1286807d5cc8d9a0b12563b47474efb53b9522eb3d7eac5a9a5d39c3a776ad5c"),
+    metaclip_fullcc=("https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_fullcc2.5b.pt", "1286807d5cc8d9a0b12563b47474efb53b9522eb3d7eac5a9a5d39c3a776ad5c"),
+)
+
 
 _PRETRAINED = {
     "RN50": _RN50,
@@ -94,9 +107,12 @@ _PRETRAINED = {
     "ViT-B-32": _VITB32,
     "ViT-B-32-quickgelu": _VITB32_quickgelu,
     "ViT-B-16": _VITB16,
+    "ViT-B-16-quickgelu": _VITB16_quickgelu,
     "ViT-B-16-plus-240": _VITB16_PLUS_240,
     "ViT-L-14": _VITL14,
+    "ViT-L-14-quickgelu": _VITL14_quickgelu,
     "ViT-L-14-336": _VITL14_336,
+    "ViT-H-14-quickgelu": _VITH14_quickgelu,
 }
 
 
@@ -136,13 +152,17 @@ def get_pretrained_url(model: str, tag: str):
 
 def download_pretrained(url: str, root: str = os.path.expanduser("~/.cache/clip")):
     os.makedirs(root, exist_ok=True)
-    filename = os.path.basename(url)
 
     if 'openaipublic' in url:
         expected_sha256 = url.split("/")[-2]
+    elif isinstance(url, tuple):
+        assert len(url) == 2, "url w/ sha256 hash must be in form (url, sha256) tuple."
+        expected_sha256 = url[1]
+        url = url[0]
     else:
         expected_sha256 = ''
 
+    filename = os.path.basename(url)
     download_target = os.path.join(root, filename)
 
     if os.path.exists(download_target) and not os.path.isfile(download_target):

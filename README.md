@@ -63,7 +63,7 @@ import torch
 from PIL import Image
 import open_clip
 
-model, _, preprocess = open_clip.create_model_and_transforms('ViT-B-32-quickgelu', pretrained='metaclip/b32_400m.pt')
+model, _, preprocess = open_clip.create_model_and_transforms('ViT-B-32-quickgelu', pretrained='metaclip_400m')  # or 'metaclip_fullcc'
 
 image = preprocess(Image.open("CLIP.png")).unsqueeze(0)
 text = open_clip.tokenize(["a diagram", "a dog", "a cat"])
@@ -79,16 +79,16 @@ with torch.no_grad():
 print("Label probs:", text_probs)
 ```
 
-|              Model              | # of Seen Pairs | Res. | Data Card | IN ZS Acc. |
-|:--------------------------------|:---------:|:---------:|:---------:|:--------------:|
-| [MetaCLIP B32 400M](https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_400m.pt) | 12.8B | 224 | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 65.5 |
-| [MetaCLIP B16 400M](https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_400m.pt) | 12.8B | 224 | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 70.8 |
-| [MetaCLIP L14 400M](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_400m.pt) | 12.8B | 224 | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 76.2 |
-| [MetaCLIP B32 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt) | 12.8B | 224 | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 67.6 |
-| [MetaCLIP B16 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt) | 12.8B | 224 | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 72.1 |
-| [MetaCLIP L14 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_fullcc2.5b.pt) | 12.8B | 224 | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 79.2 |
-| [MetaCLIP H14 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_fullcc2.5b.pt) | 12.8B | 224 | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 80.5 |
-| MetaCLIP G14 2.5B | 12.8B | 224 | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | ongoing |
+|              Model              | Data Card | # of Seen Pairs | Res. | GPUs | IN ZS Acc. |
+|:--------------------------------|:---------:|:---------:|:---------:|:---------:|:--------------:|
+| [MetaCLIP B32 400M](https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_400m.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 12.8B | 224 | 64 x V100 | 65.5 |
+| [MetaCLIP B16 400M](https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_400m.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 12.8B | 224 | 64 x V100 | 70.8 |
+| [MetaCLIP L14 400M](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_400m.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 12.8B | 224 | 128 x V100 | 76.2 |
+| [MetaCLIP B32 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 64 x V100 | 67.6 |
+| [MetaCLIP B16 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 64 x V100 | 72.1 |
+| [MetaCLIP L14 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 128 x V100 | 79.2 |
+| [MetaCLIP H14 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | 80.5 |
+| MetaCLIP G14 2.5B | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | ongoing |
 
 ## How to Curate ?
 
