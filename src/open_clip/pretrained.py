@@ -53,8 +53,9 @@ _VITB32_quickgelu = dict(
     laion400m_e31="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_32-quickgelu-laion400m_e31-d867053b.pt",
     laion400m_e32="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_32-quickgelu-laion400m_e32-46683a32.pt",
     metaclip_400m=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_400m.pt", "3c68642594a329afc1ec0fe489ee2b58ab19c9d0556ccf7c404a59baa0762d71"),
-    metaclip2_5b=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt", "885b7ec11fe07a9826e2e6812d70e5011918e32fe9b12136b49d5dded92b4386"),
     metaclip_fullcc=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt", "885b7ec11fe07a9826e2e6812d70e5011918e32fe9b12136b49d5dded92b4386"),
+    metaclip400m=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_400m.pt", "3c68642594a329afc1ec0fe489ee2b58ab19c9d0556ccf7c404a59baa0762d71"),
+    metaclip2_5b=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt", "885b7ec11fe07a9826e2e6812d70e5011918e32fe9b12136b49d5dded92b4386"),
 )
 
 _VITB16 = dict(
@@ -65,8 +66,9 @@ _VITB16 = dict(
 
 _VITB16_quickgelu = dict(
     metaclip_400m=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_400m.pt", "68dfb5996c52a8f4fecb9bd16601e97e1895236645082778bd9cede8429a8d49"),
-    metaclip2_5b=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt", "512ea0fb9f2cf88d027e96e4674247a1a91a96af18abc2e2fcdb8008c551e04b"),
     metaclip_fullcc=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt", "512ea0fb9f2cf88d027e96e4674247a1a91a96af18abc2e2fcdb8008c551e04b"),
+    metaclip400m=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_400m.pt", "68dfb5996c52a8f4fecb9bd16601e97e1895236645082778bd9cede8429a8d49"),
+    metaclip2_5b=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt", "512ea0fb9f2cf88d027e96e4674247a1a91a96af18abc2e2fcdb8008c551e04b"),
 )
 
 _VITB16_PLUS_240 = dict(
@@ -82,8 +84,9 @@ _VITL14 = dict(
 
 _VITL14_quickgelu = dict(
     metaclip_400m=("https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_400m.pt", "51c782959f920b030779e494517b8d545f56794df6b0a2796a4c310455a361be"),
-    metaclip2_5b=("https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_fullcc2.5b.pt", "ce24750710544ee288ef0abdead2016730da1893a1d07447bda3a75e1c148f97"),
     metaclip_fullcc=("https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_fullcc2.5b.pt", "ce24750710544ee288ef0abdead2016730da1893a1d07447bda3a75e1c148f97"),
+    metaclip400m=("https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_400m.pt", "51c782959f920b030779e494517b8d545f56794df6b0a2796a4c310455a361be"),
+    metaclip2_5b=("https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_fullcc2.5b.pt", "ce24750710544ee288ef0abdead2016730da1893a1d07447bda3a75e1c148f97"),
 )
 
 _VITL14_336 = dict(
