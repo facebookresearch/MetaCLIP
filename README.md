@@ -63,7 +63,7 @@ import torch
 from PIL import Image
 import open_clip
 
-model, _, preprocess = open_clip.create_model_and_transforms('ViT-B-32-quickgelu', pretrained='metaclip_400m')  # or 'metaclip_fullcc'
+model, _, preprocess = open_clip.create_model_and_transforms('ViT-B-32-quickgelu', pretrained='metaclip400m')  # or 'metaclip2_5b'
 
 image = preprocess(Image.open("CLIP.png")).unsqueeze(0)
 text = open_clip.tokenize(["a diagram", "a dog", "a cat"])
