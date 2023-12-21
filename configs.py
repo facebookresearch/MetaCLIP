@@ -1,10 +1,8 @@
-# Copyright (c) Meta Platforms, Inc. and affiliates.
-# All rights reserved.
-
 import os
 import inspect
 
 from collections import OrderedDict
+from dataclasses import dataclass
 
 import sys
 sys.path.append("src")
@@ -12,6 +10,7 @@ sys.path.append("src")
 from training.params import get_default_params
 
 
+@dataclass
 class Config:
     train_data = None
     val_data = None
@@ -59,7 +58,7 @@ class Config:
     trace = False
     dist_url = "env://"
     dist_backend = "nccl"
-    report_to = "tensorboard"
+    report_to = ""
     wandb_notes = ''
     debug = False
     copy_codebase = False
@@ -69,37 +68,14 @@ class Config:
     seed = 0
     norm_gradient_clip = None
 
-    def __init__(self, overwrite=None, **kwargs):
-        for key in kwargs:
-            setattr(self, key, kwargs[key])
-        if overwrite is not None or len(overwrite) > 0:
-            for key in overwrite:
-                setattr(self, key, overwrite[key])
-
-        if not hasattr(self, "output_dir"):
-            import sys
-            self.name = sys.argv[1]
-            print("config.name (sys.argv[1]) =", self.name)
-
-        self.output_dir = os.path.join(self.logs, self.name)
-        self.extra_from_params()
-
-    def extra_from_params(self):
+    def __post_init__(self):
         args = self
-        # If some params are not passed, we use the default values based on model name.
-        default_params = get_default_params(args.model)
-        for name, val in default_params.items():
+        args.name = self.__class__.__name__
+        args.output_dir = os.path.join(args.logs, args.name)
+
+        for name, val in get_default_params(args.model).items():
             if getattr(args, name) is None:
                 setattr(args, name, val)
-
-    def add_cmd_args(self, cmd_args):
-        for key, value in vars(cmd_args).items():
-            if not key.startswith("__"):
-                setattr(self, key, value)
-        return self
-
-    def __str__(self):
-        return "\n".join([f"{k}={v}" for k, v in vars(self).items()])
 
 
 def parse_start_end(shards):
@@ -113,7 +89,6 @@ def search_config(config_name):
     all_configs = {}
     for code in os.listdir(project_dir):
         if code.endswith(".py") and code.startswith("run_configs"):
-            print(f"searching config in {code}")
             module = importlib.import_module(code[:-3])
             for _config_name in dir(module):
                 if _config_name in ["Config"] or _config_name.startswith("__") or _config_name.startswith("run_config"):
