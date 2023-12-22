@@ -23,6 +23,7 @@ MetaCLIP is trained w/ face blurred images.
 ```
 
 ## Updates
+* 12/21/2023: ViT-G/14 released.
 * 09/28/2023: initial release.
 
 
@@ -88,7 +89,7 @@ print("Label probs:", text_probs)
 | [MetaCLIP B16 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 64 x V100 | 72.1 |
 | [MetaCLIP L14 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 128 x V100 | 79.2 |
 | [MetaCLIP H14 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | 80.5 |
-| MetaCLIP G14 2.5B | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | ongoing |
+| [MetaCLIP G14 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/G14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | 82.0 |
 
 ## How to Curate ?
 
@@ -155,10 +156,7 @@ Please cite our paper if MetaCLIP helps your work:
 The training code is developed based on [OpenCLIP](https://github.com/mlfoundations/open_clip), modified to the vanilla CLIP training setup.
 
 ## TODO
-- cross-json URL dedup in skeleton code;
 - numpy implementation for matching and balancing;
-- support online downloading;
-- support vanilla CLIP API;
 - (welcome your use cases or suggestions to update this codebase regularly)
 
 

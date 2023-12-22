@@ -61,6 +61,18 @@ class h14_fullcc(b32_fullcc):
     ngpus=8
 
 
+@dataclass
+class G14_fullcc(b32_fullcc):
+    model="ViT-bigG-14-quickgelu"
+    name="ViT-bigG-14"
+    lr=0.0004
+    batch_size=128
+    force_quick_gelu=True
+    grad_checkpointing=True
+    nodes=32
+    ngpus=8
+
+
 if __name__ == "__main__":
     import inspect
     import sys
