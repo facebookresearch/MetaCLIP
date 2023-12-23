@@ -28,10 +28,11 @@ MetaCLIP is trained w/ face blurred images.
 
 
 ## Quick Links
-
-  - [Getting Started](#getting-started)
-  - [Metadata](#metadata)
+  - [Quick Start](#quick-start)
   - [Pre-trained Models](#pre-trained-models)
+  - [Development](#development)
+  - [Metadata](#metadata)
+  
   - [Curation](#curation)
   - [Training](#training)
   - [Bugs or Questions?](#bugs-or-questions)
@@ -39,34 +40,36 @@ MetaCLIP is trained w/ face blurred images.
   - [Reference](#reference)
 
 
-## Getting Started
+## Quick Start
 
-This code is developed with minimal changes on top of [OpenCLIP](https://github.com/mlfoundations/open_clip). The following command should install requirements for OpenCLIP and `submitit=1.2.1` used by this repo:
+The pre-trained MetaCLIP models are available in [Huggingface](https://huggingface.co/models?other=metaclip) or [OpenCLIP](https://github.com/mlfoundations/open_clip) (or this customized OpenCLIP repo) as following:
 
-```bash
-conda create -n python=3.10 pytorch torchvision pytorch-cuda=11.7 tqdm ftfy braceexpand regex pandas submitit=1.2.1 \
-    -c pytorch-nightly \
-    -c nvidia \
-    -c conda-forge \
-    -c anaconda
+```python
+from PIL import Image
+from transformers import AutoProcessor, AutoModel
+
+processor = AutoProcessor.from_pretrained("facebook/metaclip-b32-400m")
+model = AutoModel.from_pretrained("facebook/metaclip-b32-400m")
+
+image = Image.open("docs/CLIP.png")
+inputs = processor(text=["a diagram", "a dog", "a cat"], images=image, return_tensors="pt", padding=True)
+
+with torch.no_grad():
+  outputs = model(**inputs)
+  logits_per_image = outputs.logits_per_image  # this is the image-text similarity score
+  text_probs = logits_per_image.softmax(dim=-1)
+print("Label probs:", text_probs)
 ```
 
-## Metadata
-
-MetaCLIP uses 500,000 queries as [metadata](metadata.json) to align the training data to distribution over quality writing of Wikipedia/WordNet terms. This metadata also allows us to release training data distribution of a released model as **data card**.
-
-### Pre-trained Models
-
-We change OpenCLIP to match training in the default CLIP model setup (w/ [ViT-B-16-quickgelu](src/open_clip/model_configs/ViT-B-16-quickgelu.json), [ViT-L-14-quickgelu](src/open_clip/model_configs/ViT-L-14-quickgelu.json) and [ViT-H-14-quickgelu](src/open_clip/model_configs/ViT-H-14-quickgelu.json)). Most OpenCLIP models use `nn.GELU` not `quickgelu` used by vanilla CLIP. We hope this helps research w/ controlled experiments in the "CLIP era of ImageNet".
 
 ```python
 import torch
 from PIL import Image
 import open_clip
 
-model, _, preprocess = open_clip.create_model_and_transforms('ViT-B-32-quickgelu', pretrained='metaclip400m')  # or 'metaclip2_5b'
+model, _, preprocess = open_clip.create_model_and_transforms('ViT-B-32-quickgelu', pretrained='metaclip_400m')  # for 2.5B use 'metaclip_fullcc' for OpenCLIP or 'metaclip2_5b' / 'metaclip_fullcc' for this repo
 
-image = preprocess(Image.open("CLIP.png")).unsqueeze(0)
+image = preprocess(Image.open("docs/CLIP.png")).unsqueeze(0)
 text = open_clip.tokenize(["a diagram", "a dog", "a cat"])
 
 with torch.no_grad():
@@ -80,16 +83,41 @@ with torch.no_grad():
 print("Label probs:", text_probs)
 ```
 
-|              Model              | Data Card | # of Seen Pairs | Res. | GPUs | IN ZS Acc. |
-|:--------------------------------|:---------:|:---------:|:---------:|:---------:|:--------------:|
-| [MetaCLIP B32 400M](https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_400m.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 12.8B | 224 | 64 x V100 | 65.5 |
-| [MetaCLIP B16 400M](https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_400m.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 12.8B | 224 | 64 x V100 | 70.8 |
-| [MetaCLIP L14 400M](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_400m.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 12.8B | 224 | 128 x V100 | 76.2 |
-| [MetaCLIP B32 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 64 x V100 | 67.6 |
-| [MetaCLIP B16 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 64 x V100 | 72.1 |
-| [MetaCLIP L14 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 128 x V100 | 79.2 |
-| [MetaCLIP H14 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | 80.5 |
-| [MetaCLIP G14 2.5B](https://dl.fbaipublicfiles.com/MMPT/metaclip/G14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | 82.1 |
+
+## Pre-trained Models
+
+All MetaCLIP adhere to OpenAI CLIP training setup: we hope to bring back controlled experiments in the "CLIP era of ImageNet". Specifically, we use OpenAI CLIP's `quickgelu` activation for all model configs (which was missing in older versions of OpenCLIP that mainly uses `nn.GELU` instead). We add [ViT-B-16-quickgelu](src/open_clip/model_configs/ViT-B-16-quickgelu.json), [ViT-L-14-quickgelu](src/open_clip/model_configs/ViT-L-14-quickgelu.json), [ViT-H-14-quickgelu](src/open_clip/model_configs/ViT-H-14-quickgelu.json) and [ViT-bigG-14-quickgelu](src/open_clip/model_configs/ViT-bigG-14-quickgelu.json) in this repo.
+
+|    `model_name`     | `pretrained` | Data Card | # of Seen Pairs | Res. | GPUs | IN ZS Acc. |
+|:--------------------|:------------:|:---------:|:---------:|:---------:|:---------:|:--------------:|
+| ViT-B-32-quickgelu | [`metaclip400m`](https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_400m.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 12.8B | 224 | 64 x V100 | 65.5 |
+| `ViT-B-16-quickgelu` | [`metaclip400m`](https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_400m.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 12.8B | 224 | 64 x V100 | 70.8 |
+| ViT-L-14-quickgelu | [`metaclip400m`](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_400m.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 12.8B | 224 | 128 x V100 | 76.2 |
+| ViT-B-32-quickgelu | [`metaclip2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 64 x V100 | 67.6 |
+| ViT-B-16-quickgelu | [`metaclip2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 64 x V100 | 72.1 |
+| ViT-L-14-quickgelu | [`metaclip2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 128 x V100 | 79.2 |
+| ViT-H-14-quickgelu | [`metaclip2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | 80.5 |
+| ViT-bigG-14-quickgelu | [`metaclip2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/G14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | 82.1 |
+
+
+
+
+## Development 
+
+This code is customized from [OpenCLIP](https://github.com/mlfoundations/open_clip) and will be maintained separately for research on MetaCLIP. The following command should install requirements for OpenCLIP and `submitit=1.2.1` used by this repo:
+
+```bash
+conda create -n python=3.10 pytorch torchvision pytorch-cuda=11.7 tqdm ftfy braceexpand regex pandas submitit=1.2.1 \
+    -c pytorch-nightly \
+    -c nvidia \
+    -c conda-forge \
+    -c anaconda
+```
+
+## Metadata
+
+MetaCLIP uses 500,000 queries as [metadata](metadata.json) to align the training data to distribution over quality writing of Wikipedia/WordNet terms. This metadata also allows us to release training data distribution of a released model as **data card**.
+
 
 ## How to Curate ?
 
@@ -156,6 +184,7 @@ Please cite our paper if MetaCLIP helps your work:
 The training code is developed based on [OpenCLIP](https://github.com/mlfoundations/open_clip), modified to the vanilla CLIP training setup.
 
 ## TODO
+- code for building metadata;
 - numpy implementation for matching and balancing;
 - (welcome your use cases or suggestions to update this codebase regularly)
 
@@ -164,3 +193,5 @@ The training code is developed based on [OpenCLIP](https://github.com/mlfoundati
 
 The majority of MetaCLIP is licensed under CC-BY-NC, however portions of the project are available under separate license terms: open_clip is licensed under the https://github.com/mlfoundations/open_clip license.
 
+## Acknowledgement
+We gratefully acknowledge the [OpenCLIP](https://github.com/mlfoundations/open_clip) team for initial CLIP codebase and integration and [NielsRogge](https://github.com/NielsRogge)'s integration into [Huggingface](https://huggingface.co/models?other=metaclip).
