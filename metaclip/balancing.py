@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 def balance_sampling(matched_entry_ids, entry_prob):
     # this can be placed in a pipeline or on-the-fly in a data loader.
-    # TODO: add numpy impl.
+    # see a numpy impl. at metaclip.indexing.balance_sampling.balance_sampling
     for entry_id in matched_entry_ids:
         if random.random() < entry_prob[entry_id]:
             return True
@@ -18,6 +18,7 @@ def balance_sampling(matched_entry_ids, entry_prob):
 
 
 def main(input_dir, balanced_dir, t):
+    # this func is for demo purpose of how the algorithm works, see metaclip.pipeline for an efficient impl.
     with open("metadata.json") as f:
         metadata = json.load(f)
 
