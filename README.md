@@ -1,5 +1,7 @@
 # Demystifying CLIP Data
 
+[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/activebus/MetaCLIP) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1V0Rv1QQJkcolTjiwJuRsqWycROvYjOwg?usp=sharing)
+
 This repository contains the code for the MetaCLIP, described in the paper [Demystifying CLIP Data](https://arxiv.org/abs/2309.16671) that formalizes CLIP data curation as a simple algorithm. The main contributions are:
   - Curating data from scratch without filtering via prior models (e.g., different from existing open source [efforts](https://arxiv.org/abs/2111.02114) ) that uses the original CLIP model as a teacher for filtering **student** data.
   - Making training data more transparent, we released our **training data distribution** over [metadata](metadata.json);
@@ -23,6 +25,7 @@ MetaCLIP is trained w/ face blurred images.
 ```
 
 ## Updates
+* 12/25/2023: [Huggingface Space](https://huggingface.co/spaces/activebus/MetaCLIP) demo and [Colab](https://colab.research.google.com/drive/1V0Rv1QQJkcolTjiwJuRsqWycROvYjOwg?usp=sharing) released.
 * 12/21/2023: ViT-G/14 released.
 * 09/28/2023: initial release.
 
@@ -31,10 +34,9 @@ MetaCLIP is trained w/ face blurred images.
   - [Quick Start](#quick-start)
   - [Pre-trained Models](#pre-trained-models)
   - [Development](#development)
-  - [Metadata](#metadata)
-  
-  - [Curation](#curation)
-  - [Training](#training)
+    - [Metadata](#metadata)
+    - [Curation](#curation)
+    - [Training](#training)
   - [Bugs or Questions?](#bugs-or-questions)
   - [Citation](#citation)
   - [Reference](#reference)
@@ -146,8 +148,9 @@ entry_prob = t / entry_count
 
 for text in ["jacksons chameleon", "battery plate"]:
   matched_entry_ids = substr_matching(text, metadata)  # this is for demo purpose that redo substr_matching; see metaclip/README.md.
-  if balance_sampling(matched_entry_ids, entry_prob):
-    print(f"'{text}' curated")
+  curation_prob = min(entry_prob[matched_entry_ids].sum(), 1.0)
+  curated = balance_sampling(matched_entry_ids, entry_prob)
+  print(f"[curation_prob={curation_prob:.3f}, curated={curated}] {text}")
 ```
 
 ### I want to curate data from scratch:
