@@ -1,4 +1,4 @@
-# MetaCLIP
+# MetaCLIP Data Pipeline
 
 This is a minimal demo/skeleton code of CLIP curation, please check Algorithm 1 in [MetaCLIP paper](https://arxiv.org/pdf/2309.16671.pdf).
 **This is not the pipeline used to collect data in paper**.
@@ -44,3 +44,17 @@ python metaclip/balancing.py data/CC/matched data/CC/balanced 20000  # the magic
 ```
 
 We expect balancing is the last step to ensure training data distribution. If you want such a run before image downloading/NSFW/dedup etc., please increase 20000 to a larger number and rerun balancing after getting images to accomendate loss of URL-text pairs. 
+
+
+## Numpy Impl. 
+
+We also provide a numpy impl. of the algorithm, which is close to the impl. in the paper.
+
+```bash
+python metaclip/pipeline.py metaclip_400m substr_indexing
+python metaclip/pipeline.py metaclip_400m entry_count
+python metaclip/pipeline.py metaclip_400m balance_sampling
+```
+
+## TODO: 
+- integrate numpy impl. w/ WARC/WAT parser

@@ -1,9 +1,13 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+# All rights reserved.
+
+
 import unittest
 
 from configs import search_config
 
 
-class TestBTMJSONL(unittest.TestCase):
+class TestMetaCLIPConfig(unittest.TestCase):
     def test_400m(self):
         for config_name in ["b32_400m", "b16_400m", "l14_400m"]:
             config = search_config(config_name)
