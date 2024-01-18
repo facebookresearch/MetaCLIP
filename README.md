@@ -25,6 +25,7 @@ MetaCLIP is trained w/ face blurred images.
 ```
 
 ## Updates
+* 01/18/2024: add [code](metaclip/README_metadata.md) for building metadata.
 * 12/25/2023: [Huggingface Space](https://huggingface.co/spaces/activebus/MetaCLIP) demo and [Colab](https://colab.research.google.com/drive/1V0Rv1QQJkcolTjiwJuRsqWycROvYjOwg?usp=sharing) released.
 * 12/21/2023: ViT-G/14 released.
 * 09/28/2023: initial release.
@@ -167,6 +168,10 @@ python submitit_openclip.py b32_400m
 Please config the corresponding `training_data` in `run_configs_400m.py`.
 
 
+### Build Your Own Metadata
+Consider start from our [code](metaclip/README_metadata.md) for building CLIP's 500k metadata. 
+
+
 ## Bugs or questions?
 
 If you have any questions related to the code or the paper, feel free to email Hu Xu (`huxu@meta.com`).
@@ -190,8 +195,8 @@ Please cite our paper if MetaCLIP helps your work:
 The training code is developed based on [OpenCLIP](https://github.com/mlfoundations/open_clip), modified to the vanilla CLIP training setup.
 
 ## TODO
-- code for building metadata;
-- numpy implementation for matching and balancing;
+- v0.1 code release;
+- refactor openclip as v0.2;
 - (welcome your use cases or suggestions to update this codebase regularly)
 
 
