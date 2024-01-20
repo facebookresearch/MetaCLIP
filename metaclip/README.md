@@ -3,6 +3,10 @@
 This is a minimal demo/skeleton code of CLIP curation, please check Algorithm 1 in [MetaCLIP paper](https://arxiv.org/pdf/2309.16671.pdf).
 **This is not the pipeline used to collect data in paper**.
 
+## Part 0 Build Metadata (optional)
+
+see [README](README_metadata.md).
+
 ## Part 1 Sub-string matching
 
 The key function of sub-string matching is in [substr_matching](substr_matching.py).

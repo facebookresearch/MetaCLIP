@@ -18,14 +18,15 @@ MetaCLIP is trained w/ face blurred images.
 ```bibtex
 @inproceedings{xu2023metaclip,
    title={Demystifying CLIP Data},
-   author={Hu Xu, Saining Xie, Xiaoqing Ellen Tan, Po-Yao Huang, Russell Howes, Vasu, Sharma, Shang-Wen Li, Gargi Ghosh, Luke Zettlemoyer and Christoph Feichtenhofer},
+   author={Hu Xu, Saining Xie, Xiaoqing Ellen Tan, Po-Yao Huang, Russell Howes, Vasu Sharma, Shang-Wen Li, Gargi Ghosh, Luke Zettlemoyer and Christoph Feichtenhofer},
    journal={arXiv preprint arXiv:2309.16671},
    year={2023}
 }
 ```
 
 ## Updates
-* 01/18/2024: add [code](metaclip/README_metadata.md) for building metadata.
+* 01/18/2024: 🔥 add [code](metaclip/README_metadata.md) for building metadata.
+* 01/16/2024: 🔥 paper accepted by ICLR as [spotlight presentation](https://openreview.net/group?id=ICLR.cc/2024/Conference#tab-accept-spotlight).
 * 12/25/2023: [Huggingface Space](https://huggingface.co/spaces/activebus/MetaCLIP) demo and [Colab](https://colab.research.google.com/drive/1V0Rv1QQJkcolTjiwJuRsqWycROvYjOwg?usp=sharing) released.
 * 12/21/2023: ViT-G/14 released.
 * 09/28/2023: initial release.
@@ -179,12 +180,12 @@ If you have any questions related to the code or the paper, feel free to email H
 
 ## Citation
 
-Please cite our paper if MetaCLIP helps your work:
+Please cite our paper (accepted by ICLR2024 as spotlight presentation) if MetaCLIP helps your work:
 
 ```bibtex
 @inproceedings{xu2023metaclip,
    title={Demystifying CLIP Data},
-   author={Hu Xu, Saining Xie, Xiaoqing Ellen Tan, Po-Yao Huang, Russell Howes, Vasu, Sharma, Shang-Wen Li, Gargi Ghosh, Luke Zettlemoyer and Christoph Feichtenhofer},
+   author={Hu Xu, Saining Xie, Xiaoqing Ellen Tan, Po-Yao Huang, Russell Howes, Vasu Sharma, Shang-Wen Li, Gargi Ghosh, Luke Zettlemoyer and Christoph Feichtenhofer},
    journal={arXiv preprint arXiv:2309.16671},
    year={2023}
 }
