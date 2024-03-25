@@ -1,7 +1,16 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates
+import ahocorasick
 
 
+automaton = None
 spaced_metadata = None
+
+def initialize_automaton(metadata):
+    automaton = ahocorasick.Automaton()
+    for idx, key in enumerate(spaced_metadata):
+        automaton.add_word(key, (idx, key))
+    automaton.make_automaton()
+    return automaton
 
 def spacing(text):
     puncts_to_wrap = [",", ".", ";", ":", "?", "!", "`"]
@@ -18,14 +27,14 @@ def spacing(text):
 
 
 def substr_matching(text, metadata):
-    global spaced_metadata
+    global spaced_metadata, automaton
     if spaced_metadata is None:
-        spaced_metadata = []
-        for entry in metadata:
-            spaced_metadata.append(f" {entry} ")
+        spaced_metadata = [f" {entry} " for entry in metadata]
     text = spacing(text)
-    matched_entry_ids = []
-    for entry_id, entry in enumerate(spaced_metadata):
-        if entry in text:
-            matched_entry_ids.append(entry_id)
-    return matched_entry_ids
+    if automaton is None:
+        automaton = initialize_automaton(metadata)
+    matched_entry_ids = set()
+    for end_index, (entry_id, original_value) in automaton.iter(text):
+        matched_entry_ids.add(entry_id)
+    return list(matched_entry_ids)
+
