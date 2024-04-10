@@ -111,7 +111,7 @@ All MetaCLIP adhere to OpenAI CLIP training setup: we hope to bring back control
 This code is customized from [OpenCLIP](https://github.com/mlfoundations/open_clip) and will be maintained separately for research on MetaCLIP. The following command should install requirements for OpenCLIP and `submitit=1.2.1` used by this repo:
 
 ```bash
-conda create -n python=3.10 pytorch torchvision pytorch-cuda=11.7 tqdm ftfy braceexpand regex pandas submitit=1.2.1 \
+conda create -n metaclip python=3.10 pytorch torchvision pytorch-cuda=11.7 tqdm ftfy braceexpand regex pandas submitit=1.2.1 \
     -c pytorch-nightly \
     -c nvidia \
     -c conda-forge \
