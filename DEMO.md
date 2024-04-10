@@ -34,5 +34,12 @@ pip install gradio
 ## Run Gradio
 
 ```bash
+git clone https://github.com/facebookresearch/MetaCLIP.git
+git checkout gradio
+git pull
+```
+
+
+```bash
 python app.py
 ```
