@@ -1,5 +1,3 @@
-# Copyright (c) Meta Platforms, Inc. and affiliates
-
 import os
 import json
 import numpy as np
@@ -73,7 +71,7 @@ def curation(texts):
             curated = balance_sampling(matched_entry_ids, entry_prob)
             results.append((text, curated, curation_prob))
     
-    return "\n".join([f"{curated}, curation_prob.={curation_prob:.2f}" for text, curated, curation_prob in results])
+    return "\n".join([f"\u2705 curation_prob.={curation_prob:.2f}" if curated else f"\u274c curation_prob.={curation_prob:.2f}" for text, curated, curation_prob in results])
 
 
 def zeroshot_classification():
@@ -113,14 +111,18 @@ def get_select_index(evt: gr.SelectData):
 
 
 with gr.Blocks(theme='nuttea/Softblue') as demo:
-    gr.Image("/file=metaclip_logo.jpg", width=498, height=102, show_download_button=False, show_label=False)
+    gr.Image("/file=docs/metaclip_logo.png", width=1024, height=240, show_download_button=False, show_label=False)
     with gr.Tab("Curation Algorithm"):
         with gr.Row(equal_height=True):
-            alt_box = gr.Textbox(label="alt text", lines=5, max_lines=5)
+            alt_box = gr.Textbox("chameleon\njacksons chameleon\nAdult T-shirt", label="alt text", lines=5, max_lines=5)
             prob_box = gr.Textbox(label="Curation Probability", lines=5, max_lines=5)
         btn = gr.Button("Curate!")
         btn.click(fn=curation, inputs=alt_box, outputs=prob_box)
     
+    with gr.Tab("Figure"):
+        gr.Image("/file=docs/teaser.png", width=768, height=768, show_download_button=False, show_label=False)
+        gr.Image("/file=docs/cumsum.png", width=768, height=768, show_download_button=False, show_label=False)
+        gr.Image("/file=docs/cumsum2.png", width=768, height=768, show_download_button=False, show_label=False)
 
     with gr.Tab("MetaCLIP Model"):
         gr.Markdown("Find an Image from ImageNet")
@@ -153,4 +155,4 @@ with gr.Blocks(theme='nuttea/Softblue') as demo:
 
 
 if __name__ == "__main__":
-    demo.launch(show_api=False, allowed_paths=["metaclip_logo.jpg"] + imagenet_list)  
+    demo.launch(show_api=False, allowed_paths=["docs/metaclip_logo.png", "docs/teaser.png", "docs/cumsum.png", "docs/cumsum2.png"] + imagenet_list)  
