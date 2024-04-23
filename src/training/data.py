@@ -428,11 +428,19 @@ def get_metaclip_dataset(args, preprocess_fn, is_train, epoch=0):
     return get_metaclip_iter_wds_dataset(args, preprocess_fn, is_train, epoch)
 
 
+def get_mode_dataset(args, preprocess_fn, is_train, epoch=0):
+    # a switcher func for different versions of dataloader.
+    from .mode_wds import get_mode_iter_wds_dataset
+    return get_mode_iter_wds_dataset(args, preprocess_fn, is_train, epoch)
+
+
 def get_dataset_fn(data_path, dataset_type):
     if dataset_type == "webdataset":
         return get_wds_dataset
     elif dataset_type == "csv":
         return get_csv_dataset
+    elif dataset_type == "cluster":
+        return get_mode_dataset
     elif dataset_type == "auto":
         ext = data_path.split('.')[-1]
         if ext in ['csv', 'tsv']:
