@@ -25,6 +25,7 @@ MetaCLIP is trained w/ face blurred images.
 ```
 
 ## Updates
+* 04/25/2024: 🔥 paper [MoDE: CLIP Data Experts via Clustering](https://arxiv.org/abs/2404.16030) is accepted by CVPR 2024 with [code](mode/README.md) released.
 * 01/18/2024: 🔥 add [code](metaclip/README_metadata.md) for building metadata.
 * 01/16/2024: 🔥 paper accepted by ICLR as [spotlight presentation](https://openreview.net/group?id=ICLR.cc/2024/Conference#tab-accept-spotlight).
 * 12/25/2023: [Huggingface Space](https://huggingface.co/spaces/activebus/MetaCLIP) demo and [Colab](https://colab.research.google.com/drive/1V0Rv1QQJkcolTjiwJuRsqWycROvYjOwg?usp=sharing) released.
@@ -111,7 +112,7 @@ All MetaCLIP adhere to OpenAI CLIP training setup: we hope to bring back control
 This code is customized from [OpenCLIP](https://github.com/mlfoundations/open_clip) and will be maintained separately for research on MetaCLIP. The following command should install requirements for OpenCLIP and `submitit=1.2.1` used by this repo:
 
 ```bash
-conda create -n python=3.10 pytorch torchvision pytorch-cuda=11.7 tqdm ftfy braceexpand regex pandas submitit=1.2.1 \
+conda create -n metaclip python=3.10 pytorch torchvision pytorch-cuda=11.7 tqdm ftfy braceexpand regex pandas submitit=1.2.1 \
     -c pytorch-nightly \
     -c nvidia \
     -c conda-forge \
