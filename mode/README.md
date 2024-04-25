@@ -1,6 +1,6 @@
 # MoDE: CLIP Data Experts via Clustering
 
-This repository contains the code for the Mixture of Data Experts, described in the paper [MoDE: CLIP Data Experts via Clustering](https://arxiv.org/abs/2309.16671) that provides the first multi-modal understanding system based on independent CLIP models. The main contributions are:
+This repository contains the code for the Mixture of Data Experts, described in the paper [MoDE: CLIP Data Experts via Clustering](https://arxiv.org/abs/2404.16030) that provides the first multi-modal understanding system based on independent CLIP models. The main contributions are:
   - Introducing the concept of **data expert** and making the MoDE framework where several small models are separately learned but adaptively ensembled for each task. 
   - Studying how to build a **wider** system, rather than a deeper network. The system is scalable and capable of integrating new data experts, without compromising the extablished ability, which can thus be applied to online data and be continuously updated.  
   - Investigating the quality negative samples in contrastive language-image pretraining, and in particular, the false negatives in web-crawled image-caption pairs.
@@ -46,7 +46,7 @@ MoDE is trained w/ face blurred images.
 This code is developed with minimal changes on top of [MetaCLIP](https://github.com/facebookresearch/MetaCLIP). The following command should install requirements for MetaCLIP and `submitit=1.2.1` used by this repo:
 
 ```bash
-conda create -n python=3.10 pytorch torchvision pytorch-cuda=11.7 tqdm ftfy braceexpand webdataset regex pandas submitit=1.2.1 \
+conda create -n metaclip python=3.10 pytorch torchvision pytorch-cuda=11.7 tqdm ftfy braceexpand webdataset regex pandas submitit=1.2.1 \
     -c pytorch-nightly \
     -c nvidia \
     -c conda-forge \
