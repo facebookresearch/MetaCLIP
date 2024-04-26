@@ -1,6 +1,10 @@
 # Demo Setup
 
-## Install miniconda
+## Install miniconda on Mac
+
+[Miniconda Installation Guide](https://docs.anaconda.com/free/miniconda/#quick-command-line-install)
+
+For example on a M1 chip:
 
 ```bash
 mkdir -p ~/miniconda3
@@ -19,10 +23,11 @@ initialize bash
 
 ```bash
 conda create -n metaclip python=3.10 pytorch torchvision tqdm ftfy braceexpand regex pandas submitit=1.2.1 \
-    -c pytorch-nightly \
+    -c pytorch \
     -c nvidia \
     -c conda-forge \
     -c anaconda
+conda activate metaclip
 ```
 
 install gradio
@@ -35,6 +40,7 @@ pip install gradio
 
 ```bash
 git clone https://github.com/facebookresearch/MetaCLIP.git
+cd MetaCLIP
 git checkout gradio
 git pull
 ```
@@ -43,3 +49,5 @@ git pull
 ```bash
 python app.py
 ```
+
+follow the instruction on the terminal and open a browser.
