@@ -3,4 +3,3 @@ torchvision
 regex
 ftfy
 tqdm
-pyahocorasick
