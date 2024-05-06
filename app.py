@@ -114,7 +114,7 @@ with gr.Blocks(theme='nuttea/Softblue') as demo:
     gr.Image("/file=docs/metaclip_logo.png", width=1024, height=240, show_download_button=False, show_label=False)
     with gr.Tab("Curation Algorithm"):
         with gr.Row(equal_height=True):
-            alt_box = gr.Textbox("chameleon\njacksons chameleon\nAdult T-shirt", label="alt text", lines=5, max_lines=5)
+            alt_box = gr.Textbox("chameleon\njacksons chameleon\nAdult T-shirt\nuntitled photo", label="alt text", lines=5, max_lines=5)
             prob_box = gr.Textbox(label="Curation Probability", lines=5, max_lines=5)
         btn = gr.Button("Curate!")
         btn.click(fn=curation, inputs=alt_box, outputs=prob_box)
@@ -141,7 +141,7 @@ with gr.Blocks(theme='nuttea/Softblue') as demo:
 
         btn = gr.Button("Classify!")
         barplot = gr.BarPlot(
-            label="Top-5 Prob.",
+            # label="Top-5 Prob.",
             height=256,
             width=1024,
             y_lim=[0.0, 1.0],
