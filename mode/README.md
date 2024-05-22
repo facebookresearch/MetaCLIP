@@ -53,9 +53,10 @@ conda create -n metaclip python=3.10 pytorch torchvision pytorch-cuda=11.7 tqdm 
     -c anaconda
 ```
 
-Then, please refer to the following repo to install the code for kmeans clustering
+Then, please refer to the following repos to install the code for kmeans clustering
 ```bash
 https://github.com/kernelmachine/cbtm.git
+https://github.com/kernelmachine/balanced-kmeans.git
 ```
 Specifically, please refer the following command
 ```bash
