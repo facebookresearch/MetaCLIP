@@ -67,6 +67,10 @@ class IterativeWebDataset(torch.utils.data.IterableDataset):
                 shard_id = self._get_next_shard_id(shard_id)
                 continue
 
+            if hasattr(self.args, "online_curation"):
+                with open(f"{self.args.online_curation}/{shard_id % 100}/{shard_id}.json") as f:
+                    online_txts = json.load(f)
+
             with tarfile.open(tarball_path) as tar:
                 members = tar.getmembers()
 
@@ -75,11 +79,15 @@ class IterativeWebDataset(torch.utils.data.IterableDataset):
                 for member in members:
                     if member.name.endswith(".json"):
                         json_uuid = member.name[:-len(".json")]
+                        if json_uuid.startswith("./"):
+                            json_uuid = json_uuid[len('./'):]
                         with tar.extractfile(member) as f:
                             text_json = json.load(f)
 
                     if member.name.endswith(".jpeg"):
                         img_uuid = member.name[:-len(".jpeg")]
+                        if img_uuid.startswith("./"):
+                            img_uuid = img_uuid[len('./'):]
                         with tar.extractfile(member) as f:
                             img = f.read()
 
@@ -87,7 +95,12 @@ class IterativeWebDataset(torch.utils.data.IterableDataset):
                         # assume uuid is json even and img ord;
                         continue
 
-                    txt = random.choice(text_json["texts"])[1]
+                    if hasattr(self.args, "online_curation"):
+                        txt, prob = random.choice(online_txts[json_uuid])
+                        if prob < random.random():
+                            continue
+                    else:
+                        txt = random.choice(text_json["texts"])[1]
                     txt = self.tokenizer([txt])[0]
 
                     with Image.open(BytesIO(img)) as img:
