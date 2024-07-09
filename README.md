@@ -46,8 +46,8 @@ MetaCLIP is trained w/ face blurred images.
 
 
 ## Quick Start
-
-The pre-trained MetaCLIP models are available in [Huggingface](https://huggingface.co/models?other=metaclip) or [OpenCLIP](https://github.com/mlfoundations/open_clip) (or this customized OpenCLIP repo) as following:
+<details>
+<summary> The pre-trained MetaCLIP models are available in [Huggingface](https://huggingface.co/models?other=metaclip) </summary>
 
 ```python
 from PIL import Image
@@ -65,7 +65,10 @@ with torch.no_grad():
   text_probs = logits_per_image.softmax(dim=-1)
 print("Label probs:", text_probs)
 ```
+</details>
 
+<details>
+<summary>or [OpenCLIP](https://github.com/mlfoundations/open_clip) (or this repo)</summary>
 
 ```python
 import torch
@@ -87,7 +90,7 @@ with torch.no_grad():
 
 print("Label probs:", text_probs)
 ```
-
+</details>
 
 ## Pre-trained Models
 
@@ -95,14 +98,14 @@ All MetaCLIP adhere to OpenAI CLIP training setup: we hope to bring back control
 
 |    `model_name`     | `pretrained` | Data Card | # of Seen Pairs | Res. | GPUs | IN ZS Acc. |
 |:--------------------|:------------:|:---------:|:---------:|:---------:|:---------:|:--------------:|
-| ViT-B-32-quickgelu | [`metaclip_400m`](https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_400m.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 12.8B | 224 | 64 x V100 | 65.5 |
+| `ViT-B-32-quickgelu` | [`metaclip_400m`](https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_400m.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 12.8B | 224 | 64 x V100 | 65.5 |
 | `ViT-B-16-quickgelu` | [`metaclip_400m`](https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_400m.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 12.8B | 224 | 64 x V100 | 70.8 |
-| ViT-L-14-quickgelu | [`metaclip_400m`](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_400m.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 12.8B | 224 | 128 x V100 | 76.2 |
-| ViT-B-32-quickgelu | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 64 x V100 | 67.6 |
-| ViT-B-16-quickgelu | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 64 x V100 | 72.1 |
-| ViT-L-14-quickgelu | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 128 x V100 | 79.2 |
-| ViT-H-14-quickgelu | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | 80.5 |
-| ViT-bigG-14-quickgelu | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/G14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | 82.1 |
+| `ViT-L-14-quickgelu` | [`metaclip_400m`](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_400m.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_400m.json) | 12.8B | 224 | 128 x V100 | 76.2 |
+| `ViT-B-32-quickgelu` | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 64 x V100 | 67.6 |
+| `ViT-B-16-quickgelu` | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 64 x V100 | 72.1 |
+| `ViT-L-14-quickgelu` | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 128 x V100 | 79.2 |
+| `ViT-H-14-quickgelu` | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | 80.5 |
+| `ViT-bigG-14-quickgelu` | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/G14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | 82.1 |
 
 
 
