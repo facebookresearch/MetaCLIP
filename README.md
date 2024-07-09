@@ -132,8 +132,8 @@ MetaCLIP uses 500,000 queries as [metadata](metadata.json) to align the training
 
 We have a [demo notebook](demo.ipynb) to show how the proposed algorithm works.
 
-
-#### I already have a (head distributed) dataset:
+<details>
+<summary>I already have a (head distributed) dataset</summary>
 CLIP curation can still help as online balancing (Table 6 in the paper). We wrap CLIP curation in two key functions: [substring matching](metaclip/substr_matching.py) (recommended to run offline) and [balancing](metaclip/balancing.py) (either offline or online, please check `metaclip.balancing:main`).
 
 ```python
@@ -159,12 +159,16 @@ for text in ["jacksons chameleon", "battery plate"]:
   curated = balance_sampling(matched_entry_ids, entry_prob)
   print(f"[curation_prob={curation_prob:.3f}, curated={curated}] {text}")
 ```
+</details>
 
-#### I want to curate data from scratch:
+<details>
+<summary>I want to curate data from scratch</summary>
 We release a skeleton code for [sub-string matching](metaclip/cc_matching.py) from CommonCrawl WAT or WARC and [balancing](metaclip/balancing.py). Check [here](metaclip/README.md) for details.
+</details>
 
 #### Numpy Impl.
 A numpy impl. of the algorithm can be found at [`metaclip.pipeline`](metaclip/pipeline.py), close to the impl. used by the paper.
+
 
 ### Training
 
@@ -203,6 +207,7 @@ The training code is developed based on [OpenCLIP](https://github.com/mlfoundati
 ## TODO
 - v0.1 code release;
 - refactor openclip as v0.2;
+- pip installation;
 - (welcome your use cases or suggestions to update this codebase regularly)
 
 
