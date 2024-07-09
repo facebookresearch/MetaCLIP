@@ -46,8 +46,9 @@ MetaCLIP is trained w/ face blurred images.
 
 
 ## Quick Start
+The pre-trained MetaCLIP models are available in
 <details>
-<summary> The pre-trained MetaCLIP models are available in [Huggingface](https://huggingface.co/models?other=metaclip) </summary>
+<summary>[Huggingface](https://huggingface.co/models?other=metaclip)</summary>
 
 ```python
 from PIL import Image
@@ -68,7 +69,7 @@ print("Label probs:", text_probs)
 </details>
 
 <details>
-<summary>or [OpenCLIP](https://github.com/mlfoundations/open_clip) (or this repo)</summary>
+<summary>[OpenCLIP](https://github.com/mlfoundations/open_clip) (or this repo)</summary>
 
 ```python
 import torch
