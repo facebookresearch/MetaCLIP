@@ -57,7 +57,7 @@ def save_checkpoint(args, model, optimizer, scaler, step, checkpoint_fn="epoch_l
     if scaler is not None:
         checkpoint_dict["scaler"] = scaler.state_dict()
 
-    if positions is not None:
+    if positions_dict is not None:
         checkpoint_dict["positions"] = positions_dict
 
     # Saving checkpoints. use eval_steps to save a checkpoint.
