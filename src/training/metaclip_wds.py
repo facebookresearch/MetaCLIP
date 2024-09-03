@@ -128,7 +128,7 @@ class IterativeWebDataset(torch.utils.data.IterableDataset):
                         image = img.convert("RGB")
                         image = self.transform(image)
 
-                    yield image, txt  #, worker_id, shard_id
+                    yield image, txt, worker_id, shard_id
                     json_uuid, img_uuid = None, None
 
             shard_id = self._get_next_shard_id(shard_id)

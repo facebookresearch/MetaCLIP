@@ -22,7 +22,32 @@ from src.training.zero_shot import zero_shot_eval
 from src.training.detect import detect_unused_parameters
 
 
-def save_checkpoint(args, model, optimizer, scaler, step, checkpoint_fn="epoch_latest.pt", positions=None):
+def agg_positions(positions, worker_ids, shard_ids):
+    if positions is None or worker_ids is None or shard_ids is None:
+        return None
+    assert sum(worker_ids) == worker_ids[0] * worker_ids.shape[0]  # pt dataloader should iter over worker for each batch;
+    positions[worker_ids[0]] = shard_ids.max()
+    return positions
+
+
+def collect_positions(args, positions):
+    if positions is None:
+        return None
+    if args.distributed:
+        import torch.distributed as dist
+    
+        _, _, world_size = world_info_from_env()
+
+        gathered_tensors = [torch.zeros_like(positions, device=args.device) for _ in range(world_size)]
+        dist.all_gather(gathered_tensors, positions.to(args.device))
+    else:
+        gathered_tensors = [positions]
+    gathered_tensors = [gathered_tensor.cpu() for gathered_tensor in gathered_tensors]
+    positions = {f"{rank}_{worker_id}": shard_id for rank, gathered_tensor in enumerate(gathered_tensors) for worker_id, shard_id in enumerate(gathered_tensor)}
+    return positions
+
+
+def save_checkpoint(args, model, optimizer, scaler, step, checkpoint_fn="epoch_latest.pt", positions_dict=None):
     checkpoint_dict = {
         "step": step,
         "name": args.name,
@@ -34,7 +59,7 @@ def save_checkpoint(args, model, optimizer, scaler, step, checkpoint_fn="epoch_l
         checkpoint_dict["scaler"] = scaler.state_dict()
 
     if positions is not None:
-        checkpoint_dict["positions"] = positions
+        checkpoint_dict["positions"] = positions_dict
 
     # Saving checkpoints. use eval_steps to save a checkpoint.
     if args.save_logs:  # master_only.
@@ -118,13 +143,22 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
     data_time_m = AverageMeter()
     end = time.time()
 
+    positions = torch.full((args.workers,), fill_value=-1, dtype=torch.long)
+
     batch_iter = iter(dataloader)
 
     for step in range(start_step, total_steps):
         batch = next(batch_iter)
         scheduler(step)
 
-        images, texts = to_device(batch, device)
+        if len(batch) == 2:
+            (images, texts), worker_ids, shard_ids = batch, None, None
+        else:
+            images, texts, worker_ids, shard_ids = batch
+
+        images, texts = to_device((images, texts), device)
+        
+        positions = agg_positions(positions, worker_ids, shard_ids)
 
         data_time_m.update(time.time() - end)
         optimizer.zero_grad()
@@ -196,14 +230,16 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
             data_time_m.reset()
 
         if hasattr(args, "save_steps") and (step + 1) % args.save_steps == 0:
-            save_checkpoint(args, model, optimizer, scaler, step)
+            positions_dict = collect_positions(args, positions)
+            save_checkpoint(args, model, optimizer, scaler, step, positions_dict=positions_dict)
     
         # TODO: copied from main.py, wrap as a function call.
         if hasattr(args, "eval_steps") and (step + 1) % args.eval_steps == 0: # TODO (huxu): put eval on master only?
             if any(v in data for v in ('val', 'imagenet-val', 'imagenet-v2')):
                 evaluate_ex(args, model, data, step, tb_writer)  # completed_epoch -> epoch, writer -> tb_writer
             model.train()  # evaluate won't turn model back to train.
-            save_checkpoint(args, model, optimizer, scaler, step)
+            positions_dict = collect_positions(args, positions)
+            save_checkpoint(args, model, optimizer, scaler, step, positions_dict=positions_dict)
     # end for
 
 
