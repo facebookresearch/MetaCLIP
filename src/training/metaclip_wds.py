@@ -17,13 +17,25 @@ from torch.utils.data.distributed import DistributedSampler
 
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFilter
-from training.distributed import world_info_from_env
 
-from open_clip import tokenize
-from .data import DataInfo
+from src.open_clip.tokenizer import tokenize
+from src.training.data import DataInfo
+from src.training.distributed import world_info_from_env
 
 
 class IterativeWebDataset(torch.utils.data.IterableDataset):
+    """
+    The dataset are organized in the following structure:
+        `<dataset_dir>/{shard_id % 100}/{shard_id}.tar`.
+    Each tar contains files in the following order (WebDatadet compatible):
+    ```
+        uuid1.json
+        uuid1.jpeg
+        uuid2.json
+        uuid2.jpeg
+    ```
+    """
+
     def __init__(self, args, transform, tokenize):
         self.args = args
         start, end = os.path.basename(args.train_data).split("{")[1].split("}")[0].split("..")
@@ -31,23 +43,20 @@ class IterativeWebDataset(torch.utils.data.IterableDataset):
         self.root_dir = os.path.dirname(args.train_data)
         self.transform = transform
         self.tokenizer = tokenize
-        self.start_shard_id = 0
-        self.shard_ids = list(range(self.num_shards))
+        self.positions = None
 
-    def set_epoch(self, epoch, num_batches, step=0):
-        random.seed(epoch+step)
-        self.shard_ids = list(range(self.num_shards))
-        random.shuffle(self.shard_ids)
-        self.start_shard_id = (num_batches * epoch) % self.num_shards
+    def set_positions(self, positions):
+        self.positions = positions
 
     def _get_tarball_path(self, shard_id):
         return os.path.join(self.root_dir, f"{shard_id % 100}", f"{shard_id}.tar")
 
     def _get_next_shard_id(self, shard_id):
-        shard_id += self.group_size
-        return shard_id % self.num_shards
+        self.global_shard_id += self.worker_size
+        self.global_shard_id = shard_id % self.num_shards
+        return self.global_shard_id
 
-    def __iter__(self):
+    def _get_worker_info(self):
         worker_info = torch.utils.data.get_worker_info()
         if worker_info is None:
             num_workers = 1
@@ -56,10 +65,19 @@ class IterativeWebDataset(torch.utils.data.IterableDataset):
             num_workers = worker_info.num_workers
             worker_id = worker_info.id
         _, global_rank, world_size = world_info_from_env()
-        self.group_size = int(num_workers * world_size)
-        shard_id = num_workers * global_rank + worker_id
-        shard_id = (shard_id + self.start_shard_id) % self.num_shards
-        shard_id = self.shard_ids[shard_id]
+        self.worker_size = int(num_workers * world_size)
+        return (global_rank, worker_id), num_workers, self.worker_size
+
+    def __iter__(self):
+        (global_rank, worker_id), num_workers, worker_size = self._get_worker_info()
+        
+        if self.positions is not None and self.positions[f"{global_rank}_{worker_id}"] != -1:
+            self.global_shard_id = self.positions[f"{global_rank}_{worker_id}"]
+            print(f"{global_rank}_{worker_id} restore {self.global_shard_id}")
+            shard_id = self._get_next_shard_id()
+        else:
+            self.global_shard_id = global_rank * num_workers + worker_id
+            shard_id = self.global_shard_id
 
         while True:
             tarball_path = self._get_tarball_path(shard_id)
@@ -75,7 +93,7 @@ class IterativeWebDataset(torch.utils.data.IterableDataset):
                 members = tar.getmembers()
 
                 # metaclip_v1 can be iterative but the paper uses mmap for random access.
-                json_uuid, img_uuid = -1, -2
+                json_uuid, img_uuid = None, None
                 for member in members:
                     if member.name.endswith(".json"):
                         json_uuid = member.name[:-len(".json")]
@@ -91,13 +109,16 @@ class IterativeWebDataset(torch.utils.data.IterableDataset):
                         with tar.extractfile(member) as f:
                             img = f.read()
 
-                    if img_uuid != json_uuid:
-                        # assume uuid is json even and img ord;
+                    if img_uuid != json_uuid or img_uuid is None or json_uuid is None:
                         continue
 
                     if hasattr(self.args, "online_curation"):
+                        if json_uuid not in online_txts:
+                            json_uuid, img_uuid = None, None
+                            continue
                         txt, prob = random.choice(online_txts[json_uuid])
                         if prob < random.random():
+                            json_uuid, img_uuid = None, None
                             continue
                     else:
                         txt = random.choice(text_json["texts"])[1]
@@ -107,12 +128,13 @@ class IterativeWebDataset(torch.utils.data.IterableDataset):
                         image = img.convert("RGB")
                         image = self.transform(image)
 
-                    yield image, txt
+                    yield image, txt  #, worker_id, shard_id
+                    json_uuid, img_uuid = None, None
 
             shard_id = self._get_next_shard_id(shard_id)
 
 
-def get_metaclip_iter_wds_dataset(args, preprocess_fn, is_train, epoch=0):
+def get_metaclip_iter_wds_dataset(args, preprocess_fn, is_train, positions=None):
     # borrowed from get_csv_dataset
     input_filename = args.train_data if is_train else args.val_data
     assert input_filename
@@ -125,6 +147,8 @@ def get_metaclip_iter_wds_dataset(args, preprocess_fn, is_train, epoch=0):
     assert is_train
     num_samples = args.train_num_samples
     sampler = None
+
+    dataset.set_positions(positions)
 
     dataloader = torch.utils.data.DataLoader(
         dataset, sampler=sampler,
