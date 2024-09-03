@@ -11,7 +11,7 @@ from configs import Config
 
 @dataclass
 class b32_400m(Config):
-    inmem=True
+    gputransform=True
     engine="train_one_epoch_ex"
     eval_steps=5000
     save_frequency=1

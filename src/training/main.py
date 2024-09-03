@@ -137,7 +137,7 @@ def main(args):
         force_quick_gelu=args.force_quick_gelu,
         pretrained_image=args.pretrained_image,
         mean=mean, std=std,
-        inmem=hasattr(args, "inmem"),
+        gputransform=args.gputransform if hasattr(args, "gputransform") else False,
         clip_model=args.clip_model,
     )
     random_seed(args.seed, args.rank)

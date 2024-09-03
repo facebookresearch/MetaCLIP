@@ -158,17 +158,17 @@ def create_model(
 
 
 def create_model_and_transforms(
-        model_name: str,
-        pretrained: str = '',
-        precision: str = 'fp32',
-        device: torch.device = torch.device('cpu'),
-        jit: bool = False,
-        force_quick_gelu: bool = False,
-        pretrained_image: bool = False,
-        mean: Optional[Tuple[float, ...]] = None,
-        std: Optional[Tuple[float, ...]] = None,
-        inmem = False,
-        clip_model: str = "CLIP",
+    model_name: str,
+    pretrained: str = '',
+    precision: str = 'fp32',
+    device: torch.device = torch.device('cpu'),
+    jit: bool = False,
+    force_quick_gelu: bool = False,
+    pretrained_image: bool = False,
+    mean: Optional[Tuple[float, ...]] = None,
+    std: Optional[Tuple[float, ...]] = None,
+    gputransform: bool = False,
+    clip_model: str = "CLIP",
 ):
     model = create_model(
         model_name, pretrained, precision, device, jit,
@@ -176,7 +176,7 @@ def create_model_and_transforms(
         pretrained_image=pretrained_image,
         clip_model=clip_model,
     )
-    preprocess_train = image_transform(model.visual.image_size, is_train=True, mean=mean, std=std, inmem=inmem)
+    preprocess_train = image_transform(model.visual.image_size, is_train=True, mean=mean, std=std, gputransform=gputransform)
     preprocess_val = image_transform(model.visual.image_size, is_train=False, mean=mean, std=std)
     return model, preprocess_train, preprocess_val
 
