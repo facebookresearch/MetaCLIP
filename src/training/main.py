@@ -1,7 +1,8 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates
 
 import sys
-sys.path.append("src")
+sys.path.append("./") # trick to avoid bash env. on PYTHONPATH
+
 import re
 import logging
 import os
@@ -16,54 +17,42 @@ from torch.cuda.amp import GradScaler
 
 
 try:
-    import wandb
-except ImportError:
-    wandb = None
-
-try:
     import torch.utils.tensorboard as tensorboard
 except ImportError:
     tensorboard = None
 
-try:
-    import horovod.torch as hvd
-except ImportError:
-    hvd = None
 
-from open_clip import create_model_and_transforms, trace_model, get_mean_std
-from open_clip.model import CLIP, VisualTransformer, Transformer, ResidualAttentionBlock
-from training.data import get_data
-from training.distributed import is_master, init_distributed_device, world_info_from_env
-from training.logger import setup_logging
-from training.params import parse_args
-from training.scheduler import cosine_lr
-from training.train import train_one_epoch, evaluate
-from training import train
+from src.open_clip.factory import create_model_and_transforms, unwrap_state_dict
+from src.open_clip.transform import get_mean_std
+from src.open_clip.model import CLIP, VisualTransformer, Transformer, ResidualAttentionBlock
+from src.training.data import get_data
+from src.training.distributed import is_master, init_distributed_device, world_info_from_env
+from src.training.logger import setup_logging
+from src.training.scheduler import cosine_lr
+from src.training import train
 
 
-def save_checkpoint(model, optimizer, scaler, completed_epoch, args):
-    checkpoint_dict = {
-        "epoch": completed_epoch,
-        "name": args.name,
-        "state_dict": model.state_dict(),
-        "optimizer": optimizer.state_dict(),
-    }
-    if scaler is not None:
-        checkpoint_dict["scaler"] = scaler.state_dict()
+# huxu: move to src/training/checkpoint.py
+def resume_checkpoint(args, checkpoint_fn, model, optimizer, scaler):
+    checkpoint = torch.load(checkpoint_fn, map_location='cpu')
+    step, positions = 0, None
+    if isinstance(checkpoint, dict):
+        state_dict = unwrap_state_dict(args, checkpoint["state_dict"])
+        model.load_state_dict(state_dict)
 
-    if args.save_logs:
-        if completed_epoch == args.epochs or (
-            args.save_frequency > 0 and (completed_epoch % args.save_frequency) == 0
-        ):
-            torch.save(
-                checkpoint_dict,
-                os.path.join(args.checkpoint_path, f"epoch_{completed_epoch}.pt"),
-            )
-        if args.save_most_recent:
-            torch.save(
-                checkpoint_dict,
-                os.path.join(args.checkpoint_path, f"epoch_latest.pt"),
-            )
+        if optimizer is not None:
+            optimizer.load_state_dict(checkpoint["optimizer"])
+        if scaler is not None and 'scaler' in checkpoint:
+            scaler.load_state_dict(checkpoint['scaler'])
+        step = checkpoint["step"]
+        logging.info(f"=> resuming checkpoint '{checkpoint_fn}' (step {step})")
+        if "positions" in checkpoint:
+            positions = checkpoint["positions"]
+    else:
+        # loading a bare (model only) checkpoint for fine-tune or evaluation
+        model.load_state_dict(checkpoint)
+        logging.info(f"=> loaded checkpoint '{checkpoint_fn}'")
+    return step, positions
 
 
 def random_seed(seed=42, rank=0):
@@ -72,10 +61,7 @@ def random_seed(seed=42, rank=0):
     random.seed(seed + rank)
 
 
-def main(args=None):
-    if args is None:
-        args = parse_args()
-
+def main(args):
     # sanitize model name for filesystem / uri use, easier if we don't use / in name as a rule?
     args.model = args.model.replace('/', '-')
 
@@ -102,7 +88,7 @@ def main(args=None):
         args.log_path = os.path.join(log_base_path, log_filename)
         if os.path.exists(args.log_path) and args.resume is None and not hasattr(args, "eval"):
             print(
-                "Error. Experiment already exists. Use --name {} to specify a new experiment."
+                "Error. Experiment already exists. `rm -rf logs/{args.name}` ?"
             )
             return -1
 
@@ -115,7 +101,6 @@ def main(args=None):
     torch.backends.cudnn.deterministic = False
     device = init_distributed_device(args)
 
-    args.wandb = 'wandb' in args.report_to or 'all' in args.report_to
     args.tensorboard = 'tensorboard' in args.report_to or 'all' in args.report_to
     if is_master(args):
         args.tensorboard_path = os.path.join(args.logs, args.name, "tensorboard") if args.tensorboard else ''
@@ -127,19 +112,12 @@ def main(args=None):
         args.tensorboard_path = ''
         args.checkpoint_path = ''
 
-    if args.copy_codebase:
-        copy_codebase(args)
-
-    assert args.precision in ['amp', 'fp16', 'fp32']
+    assert args.precision in ['amp', 'fp16', 'fp32', 'amp_bf16']
     if args.precision == 'fp16':
         logging.warning(
             'It is recommended to use AMP mixed-precision instead of FP16. '
             'FP16 support needs further verification and tuning, especially for train.')
 
-    if args.horovod:
-        logging.info(
-            f'Running in horovod mode with multiple processes / nodes. Device: {args.device}.'
-            f'Process (global: {args.rank}, local {args.local_rank}), total {args.world_size}.')
     elif args.distributed:
         logging.info(
             f'Running in distributed mode with multiple processes. Device: {args.device}.'
@@ -148,7 +126,8 @@ def main(args=None):
         logging.info(f'Running with a single process. Device {args.device}.')
 
     random_seed(args.seed, 0)
-    mean, std = get_mean_std(args)
+    mean, std = get_mean_std()
+
     model, preprocess_train, preprocess_val = create_model_and_transforms(
         args.model,
         args.pretrained,
@@ -162,15 +141,6 @@ def main(args=None):
         clip_model=args.clip_model,
     )
     random_seed(args.seed, args.rank)
-
-    if args.trace:
-        model = trace_model(model, batch_size=args.batch_size, device=device)
-
-    if args.lock_image:
-        # lock image tower as per LiT - https://arxiv.org/abs/2111.07991
-        model.lock_image_tower(
-            unlocked_groups=args.lock_image_unlocked_groups,
-            freeze_bn_stats=args.lock_image_freeze_bn_stats)
 
     if args.grad_checkpointing:
         model.set_grad_checkpointing()
@@ -186,28 +156,18 @@ def main(args=None):
                 logging.info(f"  {name}: {val}")
                 f.write(f"{name}: {val}\n")
 
-    if args.distributed and not args.horovod:
-        if args.use_bn_sync:
-            model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
-        
-        if args.distributed_engine == 'ddp':
-            ddp_args = {}
-            if args.ddp_static_graph:
-                # this doesn't exist in older PyTorch, arg only added if enabled
-                ddp_args['static_graph'] = True
-            # ddp_args['find_unused_parameters'] = True if "Alt" in args.clip_model or "Dot" in args.clip_model else False   # huxu
-            model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[device], **ddp_args)
-        else:
-            print("--distrubted_engine should be either 'ddp'")
-            sys.exit(1)
+    if args.distributed:
+        ddp_args = {}
+        if args.ddp_static_graph:
+            # this doesn't exist in older PyTorch, arg only added if enabled
+            ddp_args['static_graph'] = True
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[device], **ddp_args)
 
     # create optimizer and scaler
     optimizer = None
     scaler = None
     if args.train_data:
-        assert not args.trace, 'Cannot train with traced model'
-
-        exclude = lambda n, p: p.ndim < 2 or "bn" in n or "ln" in n or "bias" in n or 'logit_scale' in n
+        exclude = lambda n, p: p.ndim < 2 or "bn" in n or "ln" in n or "bias" in n or 'logit_scale' in n or 'norm' in n or 'layer_norm' in n
         include = lambda n, p: not exclude(n, p)
 
         named_parameters = list(model.named_parameters())
@@ -223,50 +183,21 @@ def main(args=None):
             betas=(args.beta1, args.beta2),
             eps=args.eps,
         )
-        if args.horovod:
-            optimizer = hvd.DistributedOptimizer(optimizer, named_parameters=model.named_parameters())
-            hvd.broadcast_parameters(model.state_dict(), root_rank=0)
-            hvd.broadcast_optimizer_state(optimizer, root_rank=0)
-
-        if args.precision == "amp":
-            scaler = GradScaler()
-        else:
-            scaler = None
+        scaler = GradScaler() if args.precision == "amp" else None
 
     # optionally resume from a checkpoint
-    start_epoch = 0
-    start_epoch_step = 0
+    step, positions = -1, None
+    
+    
     if args.resume is not None:
         if os.path.isfile(args.resume):
-            checkpoint = torch.load(args.resume, map_location='cpu')
-            if 'epoch' in checkpoint:
-                # resuming a train checkpoint w/ epoch and optimizer state
-                start_epoch = checkpoint["epoch"]
-                sd = checkpoint["state_dict"]
-                if next(iter(sd.items()))[0].startswith('_orig_mod'):
-                    sd = {k[len('_orig_mod.'):]: v for k, v in sd.items()}
-                if not args.distributed and next(iter(sd.items()))[0].startswith('module'):
-                    sd = {k[len('module.'):]: v for k, v in sd.items()}
-                model.load_state_dict(sd)
-                if optimizer is not None:
-                    optimizer.load_state_dict(checkpoint["optimizer"])
-                if scaler is not None and 'scaler' in checkpoint:
-                    scaler.load_state_dict(checkpoint['scaler'])
-                if 'epoch_step' in checkpoint:  # resuming a train checkpoint w/ epoch and optimizer state
-                    start_epoch_step = checkpoint["epoch_step"] + 1
-                    logging.info(f"=> resuming checkpoint '{args.resume}' (epoch {start_epoch}, step {start_epoch_step})")
-                else:
-                    start_epoch_step = 0
-                    logging.info(f"=> resuming checkpoint '{args.resume}' (epoch {start_epoch})")
-            else:
-                # loading a bare (model only) checkpoint for fine-tune or evaluation
-                model.load_state_dict(checkpoint)
-                logging.info(f"=> loaded checkpoint '{args.resume}' (epoch {start_epoch})")
+            model_to_load = model
+            step, positions = resume_checkpoint(args, args.resume, model_to_load, optimizer, scaler)
         else:
             logging.info("=> no checkpoint found at '{}'".format(args.resume))
 
     # initialize datasets
-    data = get_data(args, (preprocess_train, preprocess_val), epoch=start_epoch)
+    data = get_data(args, (preprocess_train, preprocess_val), positions)
     assert len(data), 'At least one train or eval dataset must be specified.'
 
     if hasattr(args, "torchcompile") and args.torchcompile:
@@ -289,81 +220,41 @@ def main(args=None):
         assert tensorboard is not None, "Please install tensorboard."
         writer = tensorboard.SummaryWriter(args.tensorboard_path)
 
-    if args.wandb and is_master(args):
-        assert wandb is not None, 'Please install wandb.'
-        logging.debug('Starting wandb.')
-        args.train_sz = data["train"].dataloader.num_samples
-        if args.val_data is not None:
-            args.val_sz = data["val"].dataloader.num_samples
-        # you will have to configure this for your project!
-        wandb.init(
-            project="open-clip",
-            notes=args.wandb_notes,
-            tags=[],
-            config=vars(args),
-        )
-        if args.debug:
-            wandb.watch(model, log='all')
-        wandb.save(params_file)
-        logging.debug('Finished loading wandb.')
-
     if 'train' not in data or hasattr(args, "eval") and args.eval:  # huxu: merge native/SLIP eval.
         # TODO: move to below first.
-        from training.slip_evaluate import slip_evaluate
-        from open_clip import tokenize
+        from src.training.slip_evaluate import slip_evaluate
+        from src.open_clip.tokenizer import tokenize
         # in case a downloaded model.
         os.makedirs(args.output_dir, exist_ok=True)
         slip_evaluate(args, model, preprocess_val, tokenize)
         evaluate(model, data, start_epoch, args, writer)
         return
 
-    epoch_step = start_epoch_step
+    start_step = step + 1
 
+    if hasattr(args, "engine"):
+        engine = args.engine
 
-    for epoch in range(start_epoch, args.epochs):
-        if is_master(args):
-            logging.info(f'Start epoch {epoch}')
-        if hasattr(args, "engine"):
-            engine = args.engine
-            module = train
-            engine_cls = getattr(module, engine)
-            engine_cls(model, data, epoch, epoch_step, optimizer, scaler, scheduler, args, writer)
+        import importlib
+        for model_code in os.listdir(f"src/training"):
+            if model_code.startswith("train"):
+                module = importlib.import_module("src.training." + model_code[:-len(".py")])
+                if hasattr(module, engine):
+                    engine_cls = getattr(module, engine)
+                    break
         else:
-            train_one_epoch(model, data, epoch, optimizer, scaler, scheduler, args, writer)
+            raise ValueError(f"{engine} not found.")
+    else:
+        engine_cls = train.train_one_epoch_ex
 
-        epoch_step = 0  # reset for next epoch.
+    engine_cls(args, model, data, start_step, total_steps, optimizer, scaler, scheduler, writer)
 
-        completed_epoch = epoch + 1
-
-        if any(v in data for v in ('val', 'imagenet-val', 'imagenet-v2')):
-            evaluate(model, data, completed_epoch, args, writer)
-        save_checkpoint(model, optimizer, scaler, completed_epoch, args)
-
+    
     if hasattr(args, "eval") and args.eval and any(v in data for v in ('val', 'imagenet-val', 'imagenet-v2')):
-        from training.slip_evaluate import slip_evaluate
-        from open_clip import tokenize
+        from src.training.slip_evaluate import slip_evaluate
+        from src.open_clip import tokenize
 
         slip_evaluate(args, model, preprocess_val, tokenize)
-
-    if args.wandb and is_master(args):
-        wandb.finish()
-
-
-def copy_codebase(args):
-    from shutil import copytree, ignore_patterns
-    new_code_path = os.path.join(args.logs, args.name, "code")
-    if os.path.exists(new_code_path):
-        print(
-            f"Error. Experiment already exists at {new_code_path}. Use --name to specify a new experiment."
-        )
-        return -1
-    print(f"Copying codebase to {new_code_path}")
-    current_code_path = os.path.realpath(__file__)
-    for _ in range(3):
-        current_code_path = os.path.dirname(current_code_path)
-    copytree(current_code_path, new_code_path, ignore=ignore_patterns('log', 'logs', 'wandb'))
-    print("Done copying code.")
-    return 1
 
 
 if __name__ == "__main__":

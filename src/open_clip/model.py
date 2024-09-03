@@ -16,8 +16,7 @@ import torch.nn.functional as F
 from torch import nn
 from torch.utils.checkpoint import checkpoint
 
-from .timm_model import TimmModel
-from .utils import freeze_batch_norm_2d, to_2tuple
+from src.open_clip.utils import freeze_batch_norm_2d, to_2tuple
 
 
 class Bottleneck(nn.Module):
@@ -313,10 +312,6 @@ class CLIPVisionCfg:
     mlp_ratio: float = 4.0
     patch_size: int = 16
     image_size: Union[Tuple[int, int], int] = 224
-    timm_model_name: str = None  # a valid model name overrides layers, width, patch_size
-    timm_model_pretrained: bool = False  # use (imagenet) pretrained weights for named model
-    timm_pool: str = 'avg'  # feature pooling for timm model ('abs_attn', 'rot_attn', 'avg', '')
-    timm_proj: str = 'linear'  # linear projection for timm model output ('linear', 'mlp', '')
 
 
 @dataclass
@@ -344,21 +339,10 @@ class CLIP(nn.Module):
 
         self.context_length = text_cfg.context_length
 
-        # OpenAI models are pretrained w/ QuickGELU 
-        # NOTE: timm models always use native GELU regardless of quick_gelu flag.
+        # OpenAI models are pretrained w/ QuickGELU
         act_layer = QuickGELU if quick_gelu else nn.GELU
 
-        if vision_cfg.timm_model_name:
-            self.visual = TimmModel(
-                vision_cfg.timm_model_name,
-                pretrained=vision_cfg.timm_model_pretrained,
-                pool=vision_cfg.timm_pool,
-                proj=vision_cfg.timm_proj,
-                embed_dim=embed_dim,
-                image_size=vision_cfg.image_size
-            )
-            act_layer = nn.GELU  # so that text transformer doesn't use QuickGELU w/ timm models
-        elif isinstance(vision_cfg.layers, (tuple, list)):
+        if isinstance(vision_cfg.layers, (tuple, list)):
             vision_heads = vision_cfg.width * 32 // vision_cfg.head_width
             self.visual = ModifiedResNet(
                 layers=vision_cfg.layers,

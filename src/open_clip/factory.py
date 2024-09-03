@@ -11,11 +11,11 @@ from typing import Optional, Tuple
 
 import torch
 
-from . import model as model_zoo
-from .model import CLIP, convert_weights_to_fp16, resize_pos_embed
-from .openai import load_openai_model
-from .pretrained import get_pretrained_url, download_pretrained
-from .transform import image_transform
+from src.open_clip import model as model_zoo
+from src.open_clip.model import CLIP, convert_weights_to_fp16, resize_pos_embed
+from src.open_clip.openai import load_openai_model
+from src.open_clip.pretrained import get_pretrained_url, download_pretrained
+from src.open_clip.transform import image_transform
 
 
 _MODEL_CONFIG_PATHS = [Path(__file__).parent / f"model_configs/"]
@@ -50,15 +50,28 @@ def _rescan_model_configs():
 _rescan_model_configs()  # initial populate of model config registry
 
 
+def unwrap_model(model):
+    if hasattr(model, 'module'):
+        return model.module
+    else:
+        return model
+
+
+def unwrap_state_dict(sd):
+    if next(iter(sd.items()))[0].startswith('_orig_mod'):
+        sd = {k[len('_orig_mod.'):]: v for k, v in sd.items()}
+    if next(iter(sd.items()))[0].startswith('module'):
+        sd = {k[len('module.'):]: v for k, v in sd.items()}
+    return sd
+
+
 def load_state_dict(checkpoint_path: str, map_location='cpu'):
     checkpoint = torch.load(checkpoint_path, map_location=map_location)
     if isinstance(checkpoint, dict) and 'state_dict' in checkpoint:
         state_dict = checkpoint['state_dict']
     else:
         state_dict = checkpoint
-    if next(iter(state_dict.items()))[0].startswith('module'):
-        state_dict = {k[7:]: v for k, v in state_dict.items()}
-    return state_dict
+    return unwrap_state_dict(state_dict)
 
 
 def load_checkpoint(model, checkpoint_path, strict=True):
@@ -105,8 +118,18 @@ def create_model(
             else:
                 assert False, 'pretrained image towers currently only supported for timm models'
 
-        model_cls = getattr(model_zoo, clip_model)
-        model = model_cls(**model_cfg)  # via multiple CLIP models.
+        import importlib
+        for model_code in os.listdir(f"src/open_clip"):
+            if not model_code.endswith("model.py"):
+                continue
+            module_name = "src.open_clip." + model_code[:-len(".py")]
+            module = importlib.import_module(module_name)
+            if hasattr(module, clip_model):
+                model_cls = getattr(module, clip_model)
+                model = model_cls(**model_cfg)
+                break
+        else:
+            raise ValueError(f"{clip_model} not found with *model.py")
 
         if pretrained:
             checkpoint_path = ''

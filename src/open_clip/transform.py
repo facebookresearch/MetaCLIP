@@ -41,20 +41,20 @@ def _convert_to_rgb(image):
     return image.convert('RGB')
 
 
-def get_mean_std(args):
+def get_mean_std():
     mean = (0.48145466, 0.4578275, 0.40821073)  # OpenAI dataset mean
     std = (0.26862954, 0.26130258, 0.27577711)  # OpenAI dataset std
     return mean, std
 
 
 def image_transform(
-        image_size: int,
-        is_train: bool,
-        mean: Optional[Tuple[float, ...]] = None,
-        std: Optional[Tuple[float, ...]] = None,
-        resize_longest_max: bool = False,
-        fill_color: int = 0,
-        inmem = False
+    image_size: int,
+    is_train: bool,
+    mean: Optional[Tuple[float, ...]] = None,
+    std: Optional[Tuple[float, ...]] = None,
+    resize_longest_max: bool = False,
+    fill_color: int = 0,
+    inmem = False
 ):
     mean = mean or (0.48145466, 0.4578275, 0.40821073)  # OpenAI dataset mean
     std = std or (0.26862954, 0.26130258, 0.27577711)  # OpenAI dataset std

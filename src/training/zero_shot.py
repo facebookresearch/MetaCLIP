@@ -7,8 +7,8 @@ import torch
 import torch.nn.functional as F
 from tqdm import tqdm
 
-from open_clip import tokenize
-from .imagenet_zeroshot_data import imagenet_classnames, openai_imagenet_template
+from src.open_clip.tokenizer import tokenize
+from src.training.imagenet_zeroshot_data import imagenet_classnames, openai_imagenet_template
 
 
 def zero_shot_classifier(model, classnames, templates, args):
@@ -17,7 +17,7 @@ def zero_shot_classifier(model, classnames, templates, args):
         for classname in tqdm(classnames):
             texts = [template(classname) for template in templates]  # format with class
             texts = tokenize(texts).to(args.device)  # tokenize
-            if args.distributed and not args.horovod:
+            if args.distributed:
                 class_embeddings = model.module.encode_text(texts)
             else:
                 class_embeddings = model.encode_text(texts)
@@ -44,11 +44,8 @@ def run(model, classifier, dataloader, args):
 
             with autocast():
                 # predict
-                if args.distributed and not args.horovod:
-                    if args.distributed_engine == 'fsdp':
-                        image_features, _, _ = model(image=images, text=None)
-                    else:
-                        image_features = model.module.encode_image(images)
+                if args.distributed:
+                    image_features = model.module.encode_image(images)
                 else:
                     image_features = model.encode_image(images)
                 image_features = F.normalize(image_features, dim=-1)
