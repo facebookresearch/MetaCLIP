@@ -19,7 +19,6 @@ from src.open_clip.transform import get_mean_std
 from src.open_clip.factory import unwrap_model
 from src.training.distributed import is_master, world_info_from_env
 from src.training.zero_shot import zero_shot_eval
-from src.training.detect import detect_unused_parameters
 
 
 def agg_positions(positions, worker_ids, shard_ids):
@@ -170,6 +169,9 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
         if torch.isfinite(total_loss).all():
             if scaler is not None:
                 scaler.scale(total_loss).backward()
+                # if args.world_size == 1:
+                #    from src.training.detect import detect_unused_parameters
+                #    detect_unused_parameters(model)
                 if args.norm_gradient_clip is not None:
                     scaler.unscale_(optimizer)
                     torch.nn.utils.clip_grad_norm_(model.parameters(), args.norm_gradient_clip, norm_type=2.0)
@@ -177,6 +179,10 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
                 scaler.update()
             else:
                 total_loss.backward()
+                # if args.world_size == 1:
+                #    from src.training.detect import detect_unused_parameters
+                #    detect_unused_parameters(model)
+                # detect_nan(model, optimizer)
                 if args.norm_gradient_clip is not None:
                     torch.nn.utils.clip_grad_norm_(model.parameters(), args.norm_gradient_clip, norm_type=2.0)
                 optimizer.step()
