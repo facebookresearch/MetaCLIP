@@ -3,7 +3,7 @@
 try:
     import ahocorasick
 except ImportError:
-    print("`pip install ahocorasick` ?")
+    print("cannot import ahocorasick, try `pip install pyahocorasick`")
 
 
 from substr_matching import spacing
