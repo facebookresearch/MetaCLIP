@@ -13,14 +13,14 @@ import uuid
 from pathlib import Path
 
 import sys
-sys.path.append("src")
+sys.path.append("./")
 
-import training.main as main
+import src.training.main as main
 import submitit
 
 
 def parse_args():
-    parser = argparse.ArgumentParser("Submitit for openclip")
+    parser = argparse.ArgumentParser("Submitit")
     parser.add_argument("config_name", type=str, help="name of the config.")
     parser.add_argument("--ngpus", default=None, type=int, help="Number of gpus to request on each node")
     parser.add_argument("--nodes", default=None, type=int, help="Number of nodes to request")
@@ -60,8 +60,8 @@ class Trainer(object):
 
     def __call__(self):
         import sys
-        sys.path.append("src")
-        import training.main as main
+        sys.path.append("./")
+        import src.training.main as main
         self._setup_gpu_args()
         main.main(self.args.config)
 
