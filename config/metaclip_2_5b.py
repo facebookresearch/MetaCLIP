@@ -1,23 +1,24 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates
 
 # usage:
-# python src/training/main.py b32_400m
-# torchrun --nproc_per_node=8 src/training/main.py b32_400m
-# python submitit_openclip.py b32_400m
+# python src/training/main.py b32_fullcc
+# torchrun --nproc_per_node=8 src/training/main.py b32_fullcc
+# python submit.py b32_fullcc
 
 from dataclasses import dataclass
 from configs import Config
 
 
 @dataclass
-class b32_400m(Config):
+class b32_fullcc(Config):
+    one_iter=True
     inmem=True
     engine="train_one_epoch_ex"
     eval_steps=5000
     save_frequency=1
-    train_data="data/400m/{0..60800}.tar"
+    train_data="data/metaclip_v1_2_5B/{0..200000}.tar"
     workers=8
-    train_num_samples=400000000
+    train_num_samples=400000000   # assume same freq. of validation as 400M.
     batch_size=512
     epochs=32
     model="ViT-B-32-quickgelu"
@@ -27,25 +28,48 @@ class b32_400m(Config):
     seed=0
     local_loss=True
     gather_with_grad=True
-    nodes=16
-    ngpus=4
+    nodes=8
+    ngpus=8
 
 
 @dataclass
-class b16_400m(b32_400m):
+class b16_fullcc(b32_fullcc):
     model="ViT-B-16-quickgelu"
     name="ViT-B-16"
     grad_checkpointing=True
 
 
 @dataclass
-class l14_400m(b32_400m): 
+class l14_fullcc(b32_fullcc):
     model="ViT-L-14-quickgelu"
     name="ViT-L-14"
     lr=0.0004
-    grad_checkpointing=True
     batch_size=256
+    grad_checkpointing=True
     nodes=16
+    ngpus=8
+
+
+@dataclass
+class h14_fullcc(b32_fullcc):
+    model="ViT-H-14-quickgelu"
+    name="ViT-H-14"
+    lr=0.0004
+    batch_size=256
+    grad_checkpointing=True
+    nodes=16
+    ngpus=8
+
+
+@dataclass
+class G14_fullcc(b32_fullcc):
+    model="ViT-bigG-14-quickgelu"
+    name="ViT-bigG-14"
+    lr=0.0004
+    batch_size=128
+    force_quick_gelu=True
+    grad_checkpointing=True
+    nodes=32
     ngpus=8
 
 

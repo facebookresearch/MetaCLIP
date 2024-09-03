@@ -4,10 +4,7 @@ import inspect
 from collections import OrderedDict
 from dataclasses import dataclass
 
-import sys
-sys.path.append("src")
-
-from training.params import get_default_params
+from src.training.params import get_default_params
 
 
 @dataclass
@@ -35,7 +32,7 @@ class Config:
     eps = None
     wd = 0.2
     warmup = 2000  # 10000
-    use_bn_sync = False
+    min_ratio = 0.
     skip_scheduler = False
     save_frequency = 1
     save_most_recent = True  # False
@@ -47,9 +44,6 @@ class Config:
     model = "RN50"
     pretrained = ''
     pretrained_image = False
-    lock_image = False
-    lock_image_unlocked_groups = 0
-    lock_image_freeze_bn_stats = False
     grad_checkpointing = False
     local_loss = False
     gather_with_grad = False
@@ -58,11 +52,8 @@ class Config:
     trace = False
     dist_url = "env://"
     dist_backend = "nccl"
-    report_to = ""
-    wandb_notes = ''
     debug = False
-    copy_codebase = False
-    horovod = False
+    report_to = ""
     ddp_static_graph = False
     no_set_device_rank = False
     seed = 0
@@ -78,18 +69,12 @@ class Config:
                 setattr(args, name, val)
 
 
-def parse_start_end(shards):
-    start, end = os.path.basename(shards).split("{")[1].split("}")[0].split("..")
-    return int(start), int(end)
-
-
 def search_config(config_name):
     import importlib
-    project_dir = os.path.dirname(__file__)
     all_configs = {}
-    for code in os.listdir(project_dir):
-        if code.endswith(".py") and code.startswith("run_configs"):
-            module = importlib.import_module(code[:-3])
+    for code in os.listdir("config"):
+        if code.endswith(".py"):
+            module = importlib.import_module(f"config.{code[:-3]}")
             for _config_name in dir(module):
                 if _config_name in ["Config"] or _config_name.startswith("__") or _config_name.startswith("run_config"):
                     continue
