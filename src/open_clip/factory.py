@@ -137,7 +137,7 @@ def create_model_and_transforms(
     pretrained_image: bool = False,
     mean: Optional[Tuple[float, ...]] = None,
     std: Optional[Tuple[float, ...]] = None,
-    inmem = False,
+    gpu_trans = False,
     clip_model: str = "CLIP",
 ):
     model = create_model(
@@ -146,7 +146,7 @@ def create_model_and_transforms(
         pretrained_image=pretrained_image,
         clip_model=clip_model,
     )
-    preprocess_train = image_transform(model.visual.image_size, is_train=True, mean=mean, std=std, inmem=inmem)
+    preprocess_train = image_transform(model.visual.image_size, is_train=True, mean=mean, std=std, gpu_trans=gpu_trans)
     preprocess_val = image_transform(model.visual.image_size, is_train=False, mean=mean, std=std)
     return model, preprocess_train, preprocess_val
 
