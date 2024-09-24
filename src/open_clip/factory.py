@@ -16,6 +16,7 @@ from src.open_clip.model import CLIP, convert_weights_to_fp16, resize_pos_embed
 from src.open_clip.openai import load_openai_model
 from src.open_clip.pretrained import get_pretrained_url, download_pretrained
 from src.open_clip.transform import image_transform
+from src.training.checkpoint import load_checkpoint
 
 
 _MODEL_CONFIG_PATHS = [Path(__file__).parent / f"model_configs/"]
@@ -50,46 +51,15 @@ def _rescan_model_configs():
 _rescan_model_configs()  # initial populate of model config registry
 
 
-def unwrap_model(model):
-    if hasattr(model, 'module'):
-        return model.module
-    else:
-        return model
-
-
-def unwrap_state_dict(sd):
-    if next(iter(sd.items()))[0].startswith('_orig_mod'):
-        sd = {k[len('_orig_mod.'):]: v for k, v in sd.items()}
-    if next(iter(sd.items()))[0].startswith('module'):
-        sd = {k[len('module.'):]: v for k, v in sd.items()}
-    return sd
-
-
-def load_state_dict(checkpoint_path: str, map_location='cpu'):
-    checkpoint = torch.load(checkpoint_path, map_location=map_location)
-    if isinstance(checkpoint, dict) and 'state_dict' in checkpoint:
-        state_dict = checkpoint['state_dict']
-    else:
-        state_dict = checkpoint
-    return unwrap_state_dict(state_dict)
-
-
-def load_checkpoint(model, checkpoint_path, strict=True):
-    state_dict = load_state_dict(checkpoint_path)
-    resize_pos_embed(state_dict, model)
-    incompatible_keys = model.load_state_dict(state_dict, strict=strict)
-    return incompatible_keys
-
-
 def create_model(
-        model_name: str,
-        pretrained: str = '',
-        precision: str = 'fp32',
-        device: torch.device = torch.device('cpu'),
-        jit: bool = False,
-        force_quick_gelu: bool = False,
-        pretrained_image: bool = False,
-        clip_model: str = "CLIP",
+    model_name: str,
+    pretrained: str = '',
+    precision: str = 'fp32',
+    device: torch.device = torch.device('cpu'),
+    jit: bool = False,
+    force_quick_gelu: bool = False,
+    pretrained_image: bool = False,
+    clip_model: str = "CLIP",
 ):
     model_name = model_name.replace('/', '-')  # for callers using old naming with / in ViT names
 
@@ -141,7 +111,7 @@ def create_model(
 
             if checkpoint_path:
                 logging.info(f'Loading pretrained {model_name} weights ({pretrained}).')
-                load_checkpoint(model, checkpoint_path)
+                load_checkpoint(checkpoint_path, model, resize_pos_embed=True)
             else:
                 logging.warning(f'Pretrained weights ({pretrained}) not found for model {model_name}.')
                 raise RuntimeError(f'Pretrained weights ({pretrained}) not found for model {model_name}.')
@@ -158,17 +128,17 @@ def create_model(
 
 
 def create_model_and_transforms(
-        model_name: str,
-        pretrained: str = '',
-        precision: str = 'fp32',
-        device: torch.device = torch.device('cpu'),
-        jit: bool = False,
-        force_quick_gelu: bool = False,
-        pretrained_image: bool = False,
-        mean: Optional[Tuple[float, ...]] = None,
-        std: Optional[Tuple[float, ...]] = None,
-        inmem = False,
-        clip_model: str = "CLIP",
+    model_name: str,
+    pretrained: str = '',
+    precision: str = 'fp32',
+    device: torch.device = torch.device('cpu'),
+    jit: bool = False,
+    force_quick_gelu: bool = False,
+    pretrained_image: bool = False,
+    mean: Optional[Tuple[float, ...]] = None,
+    std: Optional[Tuple[float, ...]] = None,
+    inmem = False,
+    clip_model: str = "CLIP",
 ):
     model = create_model(
         model_name, pretrained, precision, device, jit,

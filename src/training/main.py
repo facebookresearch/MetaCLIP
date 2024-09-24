@@ -22,7 +22,7 @@ except ImportError:
     tensorboard = None
 
 
-from src.open_clip.factory import create_model_and_transforms, unwrap_state_dict
+from src.open_clip.factory import create_model_and_transforms
 from src.open_clip.transform import get_mean_std
 from src.open_clip.model import CLIP, VisualTransformer, Transformer, ResidualAttentionBlock
 from src.training.data import get_data
@@ -30,29 +30,7 @@ from src.training.distributed import is_master, init_distributed_device, world_i
 from src.training.logger import setup_logging
 from src.training.scheduler import cosine_lr
 from src.training import train
-
-
-# huxu: move to src/training/checkpoint.py
-def resume_checkpoint(args, checkpoint_fn, model, optimizer, scaler):
-    checkpoint = torch.load(checkpoint_fn, map_location='cpu')
-    step, positions = 0, None
-    if isinstance(checkpoint, dict):
-        state_dict = unwrap_state_dict(args, checkpoint["state_dict"])
-        model.load_state_dict(state_dict)
-
-        if optimizer is not None:
-            optimizer.load_state_dict(checkpoint["optimizer"])
-        if scaler is not None and 'scaler' in checkpoint:
-            scaler.load_state_dict(checkpoint['scaler'])
-        step = checkpoint["step"]
-        logging.info(f"=> resuming checkpoint '{checkpoint_fn}' (step {step})")
-        if "positions" in checkpoint:
-            positions = checkpoint["positions"]
-    else:
-        # loading a bare (model only) checkpoint for fine-tune or evaluation
-        model.load_state_dict(checkpoint)
-        logging.info(f"=> loaded checkpoint '{checkpoint_fn}'")
-    return step, positions
+from src.training.checkpoint import load_checkpoint
 
 
 def random_seed(seed=42, rank=0):
@@ -151,7 +129,9 @@ def main(args):
         logging.info("Params:")
         params_file = os.path.join(args.logs, args.name, "params.txt")
         with open(params_file, "w") as f:
-            for name in sorted(vars(args)):
+            for name in sorted(dir(args)):
+                if name.startswith('__'):
+                    continue
                 val = getattr(args, name)
                 logging.info(f"  {name}: {val}")
                 f.write(f"{name}: {val}\n")
@@ -192,7 +172,8 @@ def main(args):
     if args.resume is not None:
         if os.path.isfile(args.resume):
             model_to_load = model
-            step, positions = resume_checkpoint(args, args.resume, model_to_load, optimizer, scaler)
+            step, positions = load_checkpoint(args.resume, model_to_load, optimizer=optimizer, scaler=scaler)
+            logging.info(f"=> resuming checkpoint '{checkpoint_path}' (step {step})")
         else:
             logging.info("=> no checkpoint found at '{}'".format(args.resume))
 

@@ -1,17 +1,17 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates
 
 import logging
-from contextlib import suppress
-
 import torch
 import torch.nn.functional as F
+
 from tqdm import tqdm
 
 from src.open_clip.tokenizer import tokenize
 from src.training.imagenet_zeroshot_data import imagenet_classnames, openai_imagenet_template
+from src.training.precision import get_autocast
 
 
-def zero_shot_classifier(model, classnames, templates, args):
+def zero_shot_classifier(args, model, classnames, templates):
     with torch.no_grad():
         zeroshot_weights = []
         for classname in tqdm(classnames):
@@ -34,8 +34,9 @@ def accuracy(output, target, topk=(1,)):
     return [float(correct[:k].reshape(-1).float().sum(0, keepdim=True).cpu().numpy()) for k in topk]
 
 
-def run(model, classifier, dataloader, args):
-    autocast = torch.cuda.amp.autocast if args.precision == 'amp' else suppress
+def run(args, model, classifier, dataloader):
+    autocast = get_autocast(args.precision)
+
     with torch.no_grad():
         top1, top5, n = 0., 0., 0.
         for images, target in tqdm(dataloader, unit_scale=args.batch_size):
@@ -62,7 +63,7 @@ def run(model, classifier, dataloader, args):
     return top1, top5
 
 
-def zero_shot_eval(model, data, epoch, args):
+def zero_shot_eval(args, model, data, epoch):
     if 'imagenet-val' not in data and 'imagenet-v2' not in data:
         return {}
     if args.zeroshot_frequency == 0:
@@ -73,16 +74,16 @@ def zero_shot_eval(model, data, epoch, args):
     logging.info('Starting zero-shot imagenet.')
 
     logging.info('Building zero-shot classifier')
-    classifier = zero_shot_classifier(model, imagenet_classnames, openai_imagenet_template, args)
+    classifier = zero_shot_classifier(args, model, imagenet_classnames, openai_imagenet_template)
 
     logging.info('Using classifier')
     results = {}
     if 'imagenet-val' in data:
-        top1, top5 = run(model, classifier, data['imagenet-val'].dataloader, args)
+        top1, top5 = run(args, model, classifier, data['imagenet-val'].dataloader)
         results['imagenet-zeroshot-val-top1'] = top1
         results['imagenet-zeroshot-val-top5'] = top5
     if 'imagenet-v2' in data:
-        top1, top5 = run(model, classifier, data['imagenet-v2'].dataloader, args)
+        top1, top5 = run(args, model, classifier, data['imagenet-v2'].dataloader)
         results['imagenetv2-zeroshot-val-top1'] = top1
         results['imagenetv2-zeroshot-val-top5'] = top5
 
