@@ -34,6 +34,12 @@ class IterativeWebDataset(torch.utils.data.IterableDataset):
         uuid2.json
         uuid2.jpeg
     ```
+    Each json has a `text` field with a list of texts associated with the image (uuid):
+    [
+        ['alt', 'this is a caption.'],
+        ['alt', 'this is another caption for the same image.'],
+        ...
+    ]
     """
 
     def __init__(self, args, transform, tokenize):

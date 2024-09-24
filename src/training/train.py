@@ -5,68 +5,19 @@ import logging
 import math
 import os
 import time
-from contextlib import suppress
 
 import numpy as np
 import torch
 import torch.nn.functional as F
 
-import collections
 from collections import defaultdict
 
 from src.open_clip.loss import ClipLoss
 from src.open_clip.transform import get_mean_std
-from src.open_clip.factory import unwrap_model
 from src.training.distributed import is_master, world_info_from_env
 from src.training.zero_shot import zero_shot_eval
-
-
-def agg_positions(positions, worker_ids, shard_ids):
-    if positions is None or worker_ids is None or shard_ids is None:
-        return None
-    assert sum(worker_ids) == worker_ids[0] * worker_ids.shape[0]  # pt dataloader should iter over worker for each batch;
-    positions[worker_ids[0]] = shard_ids.max()
-    return positions
-
-
-def collect_positions(args, positions):
-    if positions is None:
-        return None
-    if args.distributed:
-        import torch.distributed as dist
-    
-        _, _, world_size = world_info_from_env()
-
-        gathered_tensors = [torch.zeros_like(positions, device=args.device) for _ in range(world_size)]
-        dist.all_gather(gathered_tensors, positions.to(args.device))
-    else:
-        gathered_tensors = [positions]
-    gathered_tensors = [gathered_tensor.cpu() for gathered_tensor in gathered_tensors]
-    positions = {f"{rank}_{worker_id}": shard_id for rank, gathered_tensor in enumerate(gathered_tensors) for worker_id, shard_id in enumerate(gathered_tensor)}
-    return positions
-
-
-def save_checkpoint(args, model, optimizer, scaler, step, checkpoint_fn="epoch_latest.pt", positions_dict=None):
-    checkpoint_dict = {
-        "step": step,
-        "name": args.name,
-        "state_dict": model.state_dict(),
-        "optimizer": optimizer.state_dict(),
-    }
-
-    if scaler is not None:
-        checkpoint_dict["scaler"] = scaler.state_dict()
-
-    if positions_dict is not None:
-        checkpoint_dict["positions"] = positions_dict
-
-    # Saving checkpoints. use eval_steps to save a checkpoint.
-    if args.save_logs:  # master_only.
-        # epoch saving is removed. only save `epoch_latest.pt`.
-        torch.save(
-            checkpoint_dict,
-            os.path.join(args.checkpoint_path, checkpoint_fn),
-        )
+from src.training.checkpoint import save_checkpoint, agg_positions, collect_positions, unwrap_model
+from src.training.precision import get_autocast
 
 
 class AverageMeter(object):
@@ -124,9 +75,41 @@ def build_loss(args):
     return loss
 
 
+def backward(args, total_loss, scaler, optimizer, model):
+    if torch.isfinite(total_loss).all():
+        if scaler is not None:
+            scaler.scale(total_loss).backward()
+            # if args.world_size == 1:
+            #    from src.training.detect import detect_unused_parameters
+            #    detect_unused_parameters(model)
+            if args.norm_gradient_clip is not None:
+                scaler.unscale_(optimizer)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), args.norm_gradient_clip, norm_type=2.0)
+            scaler.step(optimizer)
+            scaler.update()
+        else:
+            total_loss.backward()
+            # if args.world_size == 1:
+            #    from src.training.detect import detect_unused_parameters
+            #    detect_unused_parameters(model)
+            # detect_nan(model, optimizer)
+            if args.norm_gradient_clip is not None:
+                torch.nn.utils.clip_grad_norm_(model.parameters(), args.norm_gradient_clip, norm_type=2.0)
+            optimizer.step()
+
+        # Note: we clamp to 4.6052 = ln(100), as in the original paper.
+        if hasattr(unwrap_model(model), "logit_scale"):
+            with torch.no_grad():
+                unwrap_model(model).logit_scale.clamp_(0, math.log(100))
+    else:
+        logging.warn(f"Loss is {total_loss}, skip back prop.")
+        import sys
+        sys.exit(1)  # protect the checkpoint for debugging.
+
+
 def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, scaler, scheduler, tb_writer=None):
     device = torch.device(args.device)
-    autocast = torch.cuda.amp.autocast if args.precision == 'amp' else suppress
+    autocast = get_autocast(args.precision)
 
     model.train()
 
@@ -166,35 +149,7 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
             image_features, text_features, logit_scale = model(images, texts)
             total_loss = loss(image_features, text_features, logit_scale)
 
-        if torch.isfinite(total_loss).all():
-            if scaler is not None:
-                scaler.scale(total_loss).backward()
-                # if args.world_size == 1:
-                #    from src.training.detect import detect_unused_parameters
-                #    detect_unused_parameters(model)
-                if args.norm_gradient_clip is not None:
-                    scaler.unscale_(optimizer)
-                    torch.nn.utils.clip_grad_norm_(model.parameters(), args.norm_gradient_clip, norm_type=2.0)
-                scaler.step(optimizer)
-                scaler.update()
-            else:
-                total_loss.backward()
-                # if args.world_size == 1:
-                #    from src.training.detect import detect_unused_parameters
-                #    detect_unused_parameters(model)
-                # detect_nan(model, optimizer)
-                if args.norm_gradient_clip is not None:
-                    torch.nn.utils.clip_grad_norm_(model.parameters(), args.norm_gradient_clip, norm_type=2.0)
-                optimizer.step()
-
-            # Note: we clamp to 4.6052 = ln(100), as in the original paper.
-            with torch.no_grad():
-                unwrap_model(model).logit_scale.clamp_(0, math.log(100))
-        else:
-            logging.warn(f"Loss is {total_loss}, skip back prop.")
-            import sys
-            sys.exit(1)  # protect the checkpoint for debugging.
-
+        backward(args, total_loss, scaler, optimizer, model)
 
         batch_time_m.update(time.time() - end)
         end = time.time()
@@ -237,7 +192,8 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
 
         if hasattr(args, "save_steps") and (step + 1) % args.save_steps == 0:
             positions_dict = collect_positions(args, positions)
-            save_checkpoint(args, model, optimizer, scaler, step, positions_dict=positions_dict)
+            if args.save_logs:
+                save_checkpoint(f"{args.checkpoint_path}/epoch_latest.pt", model, optimizer, scaler, step, positions_dict=positions_dict)
     
         # TODO: copied from main.py, wrap as a function call.
         if hasattr(args, "eval_steps") and (step + 1) % args.eval_steps == 0: # TODO (huxu): put eval on master only?
@@ -245,7 +201,8 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
                 evaluate_ex(args, model, data, step, tb_writer)  # completed_epoch -> epoch, writer -> tb_writer
             model.train()  # evaluate won't turn model back to train.
             positions_dict = collect_positions(args, positions)
-            save_checkpoint(args, model, optimizer, scaler, step, positions_dict=positions_dict)
+            if args.save_logs:
+                save_checkpoint(f"{args.checkpoint_path}/epoch_latest.pt", model, optimizer, scaler, step, positions_dict=positions_dict)
     # end for
 
 
@@ -256,10 +213,10 @@ def evaluate_ex(args, model, data, step, tb_writer=None):
     device = torch.device(args.device)
     model.eval()
 
-    zero_shot_metrics = zero_shot_eval(model, data, 0, args)  # huxu: epoch = 0 as a trick to bypass checking.
+    zero_shot_metrics = zero_shot_eval(args, model, data, 0)  # huxu: epoch = 0 as a trick to bypass checking.
     metrics.update(zero_shot_metrics)
 
-    autocast = torch.cuda.amp.autocast if args.precision == 'amp' else suppress
+    autocast = get_autocast(args.precision)
     if 'val' in data:  # and (args.val_frequency and ((epoch % args.val_frequency) == 0 or epoch == args.epochs)):  # huxu: val anytime called.
         dataloader = data['val'].dataloader
         num_samples = 0
