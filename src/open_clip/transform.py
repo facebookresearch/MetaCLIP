@@ -54,7 +54,7 @@ def image_transform(
     std: Optional[Tuple[float, ...]] = None,
     resize_longest_max: bool = False,
     fill_color: int = 0,
-    inmem = False
+    gpu_trans = False
 ):
     mean = mean or (0.48145466, 0.4578275, 0.40821073)  # OpenAI dataset mean
     std = std or (0.26862954, 0.26130258, 0.27577711)  # OpenAI dataset std
@@ -64,7 +64,7 @@ def image_transform(
 
     normalize = Normalize(mean=mean, std=std)
     if is_train:
-        if inmem:
+        if gpu_trans:
             return Compose([
                 RandomResizedCrop(image_size, scale=(0.9, 1.0), interpolation=InterpolationMode.BICUBIC),
                 _convert_to_rgb,
