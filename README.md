@@ -25,6 +25,7 @@ MetaCLIP is trained w/ face blurred images.
 ```
 
 ## Updates
+* 08/15/2024: [v0.1](https://github.com/facebookresearch/MetaCLIP/releases/tag/v0.1) released.
 * 04/25/2024: 🔥 paper [MoDE: CLIP Data Experts via Clustering](https://arxiv.org/abs/2404.16030) is accepted by CVPR 2024 with [code](mode/README.md) released.
 * 01/18/2024: 🔥 add [code](metaclip/README_metadata.md) for building metadata.
 * 01/16/2024: 🔥 paper accepted by ICLR as [spotlight presentation](https://openreview.net/group?id=ICLR.cc/2024/Conference#tab-accept-spotlight).
@@ -48,7 +49,7 @@ MetaCLIP is trained w/ face blurred images.
 ## Quick Start
 The pre-trained MetaCLIP models are available in
 <details>
-<summary>[Huggingface](https://huggingface.co/models?other=metaclip)</summary>
+<summary>Huggingface</summary>
 
 ```python
 from PIL import Image
@@ -69,7 +70,7 @@ print("Label probs:", text_probs)
 </details>
 
 <details>
-<summary>[OpenCLIP](https://github.com/mlfoundations/open_clip) (or this repo)</summary>
+<summary>This repo or (OpenCLIP)</summary>
 
 ```python
 import torch
@@ -202,10 +203,8 @@ Please cite our paper (accepted by ICLR2024 as spotlight presentation) if MetaCL
 The training code is developed based on [OpenCLIP](https://github.com/mlfoundations/open_clip), modified to the vanilla CLIP training setup.
 
 ## TODO
-- v0.1 code release;
 - refactor openclip as v0.2;
-- pip installation;
-- (welcome your use cases or suggestions to update this codebase regularly)
+- pip installation of metaclip package;
 
 
 ## License
