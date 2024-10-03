@@ -115,9 +115,16 @@ def main(args):
         force_quick_gelu=args.force_quick_gelu,
         pretrained_image=args.pretrained_image,
         mean=mean, std=std,
-        gpu_trans=hasattr(args, "gpu_trans") and args.gpu_trans,
+        gpu_trans=hasattr(args, "gpu_trans"),
         clip_model=args.clip_model,
     )
+
+    composed_model = model
+    if hasattr(args, "cap_model"):
+        from src.training.train_altogether import create_captioner
+        clip_model, model = create_captioner(args, model, device)
+        composed_model = clip_model, model
+
     random_seed(args.seed, args.rank)
 
     if args.grad_checkpointing:
@@ -173,7 +180,7 @@ def main(args):
         if os.path.isfile(args.resume):
             model_to_load = model
             step, positions = load_checkpoint(args.resume, model_to_load, optimizer=optimizer, scaler=scaler)
-            logging.info(f"=> resuming checkpoint '{checkpoint_path}' (step {step})")
+            logging.info(f"=> resuming checkpoint '{args.resume}' (step {step})")
         else:
             logging.info("=> no checkpoint found at '{}'".format(args.resume))
 
@@ -228,7 +235,7 @@ def main(args):
     else:
         engine_cls = train.train_one_epoch_ex
 
-    engine_cls(args, model, data, start_step, total_steps, optimizer, scaler, scheduler, writer)
+    engine_cls(args, composed_model, data, start_step, total_steps, optimizer, scaler, scheduler, writer)
 
     
     if hasattr(args, "eval") and args.eval and any(v in data for v in ('val', 'imagenet-val', 'imagenet-v2')):
