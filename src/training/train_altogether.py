@@ -164,20 +164,20 @@ def train_altogether(args, model, data, start_step, total_steps, optimizer, scal
             positions_dict = collect_positions(args, positions)
             if is_master(args):
                 model_to_save = model
-                save_checkpoint(model_to_save, optimizer, scaler, step, args, positions=positions_dict)
+                save_checkpoint(f"{args.checkpoint_path}/epoch_latest.pt", model, optimizer, scaler, step, positions_dict=positions_dict)
 
         if "endsft" in data and (step + 1) == (total_steps - (data["endsft"].dataloader.num_batches * args.endsft_epochs)): 
             # end for
             positions_dict = collect_positions(args, positions)
             if is_master(args):
                 model_to_save = model
-                save_checkpoint(model_to_save, optimizer, scaler, step, args, checkpoint_fn="epoch_pt.pt", positions=positions_dict)
+                save_checkpoint(f"{args.checkpoint_path}/epoch_pt.pt", model, optimizer, scaler, step, positions_dict=positions_dict)
     
     # end for
     positions_dict = collect_positions(args, positions)
     if is_master(args):
         model_to_save = model
-        save_checkpoint(model_to_save, optimizer, scaler, step, args, positions=positions_dict)
+        save_checkpoint(f"{args.checkpoint_path}/epoch_ft.pt", model, optimizer, scaler, step, positions_dict=positions_dict)
 
 
 def llm_decode(llm_tokenizer, gen_ids, remove_new_line=True):

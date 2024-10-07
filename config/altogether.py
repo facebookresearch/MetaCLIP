@@ -13,7 +13,7 @@ from configs import Config
 @dataclass
 class altogether(Config):
     gpu_trans = True
-    train_data = "/fsx-data/huxu/data/depr/202308_pll/{0..400000}.tar"  # "data/aiant_metaclip_v2_4/jsons_combined/{2..4000}.json"  # change this to metaclip path when release.
+    train_data = "data/metaclip_v1_2_5B/{0..200000}.tar"
     train_data_len = 22_807_024
     dataset_cls = "Altogether_PT"
 
@@ -24,13 +24,12 @@ class altogether(Config):
     
     model = "ViT-H-14-quickgelu"
     force_quick_gelu = True
-    pretrained = "logs/h14256_fullcc/checkpoints/epoch_latest.pt"
+    pretrained = "metaclip_2_5b"
 
     cap_model = "Altogether"
 
     max_seq_len = 320
     rewrite_prompt = 128
-    # random_prompt = True
 
     batch_size = 32
     epochs = 1
@@ -46,7 +45,7 @@ class altogether(Config):
     ngpus = 8
     nodes = 2
 
-    endsft_train_data = "data/witmetaclip_may26/v4_train_release.json"
+    endsft_train_data = "your_ft_dataset"
     endsft_response = "round3"
     endsft_dataset_cls = "Altogether_FT"
     endsft_epochs = 2

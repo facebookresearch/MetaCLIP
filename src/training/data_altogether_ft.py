@@ -68,7 +68,7 @@ class Altogether_FT(torch.utils.data.IterableDataset):
         self.tokenizer = AutoTokenizer.from_pretrained(args.clipcap_args["decoder"], use_fast=True)
 
         with open(args.endsft_train_data) as f:
-            records = json.load(f)
+            records = json.load(f)["data"]
 
         self.records = []
         for record in records:

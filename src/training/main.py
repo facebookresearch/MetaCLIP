@@ -30,7 +30,7 @@ from src.training.distributed import is_master, init_distributed_device, world_i
 from src.training.logger import setup_logging
 from src.training.scheduler import cosine_lr
 from src.training import train
-from src.training.checkpoint import load_checkpoint
+from src.training.checkpoint import load_checkpoint, unwrap_model
 
 
 def random_seed(seed=42, rank=0):
@@ -178,7 +178,7 @@ def main(args):
     
     if args.resume is not None:
         if os.path.isfile(args.resume):
-            model_to_load = model
+            model_to_load = unwrap_model(model)
             step, positions = load_checkpoint(args.resume, model_to_load, optimizer=optimizer, scaler=scaler)
             logging.info(f"=> resuming checkpoint '{args.resume}' (step {step})")
         else:
@@ -199,6 +199,11 @@ def main(args):
     scheduler = None
     if 'train' in data and optimizer is not None:
         total_steps = data["train"].dataloader.num_batches * args.epochs
+        if "endsft" in data:
+            endsft_steps = data["endsft"].dataloader.num_batches * args.endsft_epochs
+            logging.info(f"appending {endsft_steps} endsft steps")
+            total_steps += endsft_steps
+
         scheduler = cosine_lr(optimizer, args.lr, args.warmup, total_steps)
 
     # determine if this worker should save logs and checkpoints. only do so if it is rank == 0

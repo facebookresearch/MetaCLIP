@@ -188,6 +188,10 @@ def get_data(args, preprocess_fns, positions=None):
         data["train"] = get_dataset_fn(args, args.train_data, args.dataset_type)(
             args, preprocess_train, is_train=True, positions=positions)
 
+    if hasattr(args, "endsft_train_data"):
+        data["endsft"] = get_dataset_fn(args, args.endsft_train_data, args.dataset_type)(
+            args, preprocess_train, is_train=True)
+    
     if args.val_data:
         data["val"] = get_dataset_fn(args, args.val_data, args.dataset_type)(
             args, preprocess_val, is_train=False)
