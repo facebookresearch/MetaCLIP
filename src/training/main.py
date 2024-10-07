@@ -30,7 +30,7 @@ from src.training.distributed import is_master, init_distributed_device, world_i
 from src.training.logger import setup_logging
 from src.training.scheduler import cosine_lr
 from src.training import train
-from src.training.checkpoint import load_checkpoint
+from src.training.checkpoint import load_checkpoint, unwrap_model
 
 
 def random_seed(seed=42, rank=0):
@@ -115,9 +115,16 @@ def main(args):
         force_quick_gelu=args.force_quick_gelu,
         pretrained_image=args.pretrained_image,
         mean=mean, std=std,
-        gpu_trans=hasattr(args, "gpu_trans") and args.gpu_trans,
+        gpu_trans=hasattr(args, "gpu_trans"),
         clip_model=args.clip_model,
     )
+
+    composed_model = model
+    if hasattr(args, "cap_model"):
+        from src.training.train_altogether import create_captioner
+        clip_model, model = create_captioner(args, model, device)
+        composed_model = clip_model, model
+
     random_seed(args.seed, args.rank)
 
     if args.grad_checkpointing:
@@ -171,9 +178,9 @@ def main(args):
     
     if args.resume is not None:
         if os.path.isfile(args.resume):
-            model_to_load = model
+            model_to_load = unwrap_model(model)
             step, positions = load_checkpoint(args.resume, model_to_load, optimizer=optimizer, scaler=scaler)
-            logging.info(f"=> resuming checkpoint '{checkpoint_path}' (step {step})")
+            logging.info(f"=> resuming checkpoint '{args.resume}' (step {step})")
         else:
             logging.info("=> no checkpoint found at '{}'".format(args.resume))
 
@@ -192,6 +199,11 @@ def main(args):
     scheduler = None
     if 'train' in data and optimizer is not None:
         total_steps = data["train"].dataloader.num_batches * args.epochs
+        if "endsft" in data:
+            endsft_steps = data["endsft"].dataloader.num_batches * args.endsft_epochs
+            logging.info(f"appending {endsft_steps} endsft steps")
+            total_steps += endsft_steps
+
         scheduler = cosine_lr(optimizer, args.lr, args.warmup, total_steps)
 
     # determine if this worker should save logs and checkpoints. only do so if it is rank == 0
@@ -228,7 +240,7 @@ def main(args):
     else:
         engine_cls = train.train_one_epoch_ex
 
-    engine_cls(args, model, data, start_step, total_steps, optimizer, scaler, scheduler, writer)
+    engine_cls(args, composed_model, data, start_step, total_steps, optimizer, scaler, scheduler, writer)
 
     
     if hasattr(args, "eval") and args.eval and any(v in data for v in ('val', 'imagenet-val', 'imagenet-v2')):

@@ -78,7 +78,8 @@ def collect_positions(args, positions):
         return None
     if args.distributed:
         import torch.distributed as dist
-    
+        from src.training.distributed import world_info_from_env
+
         _, _, world_size = world_info_from_env()
 
         gathered_tensors = [torch.zeros_like(positions, device=args.device) for _ in range(world_size)]

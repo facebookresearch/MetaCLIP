@@ -204,6 +204,10 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
             if args.save_logs:
                 save_checkpoint(f"{args.checkpoint_path}/epoch_latest.pt", model, optimizer, scaler, step, positions_dict=positions_dict)
     # end for
+    positions_dict = collect_positions(args, positions)
+    if is_master(args):
+        positions_dict = collect_positions(args, positions)
+        save_checkpoint(f"{args.checkpoint_path}/epoch_latest.pt", model, optimizer, scaler, step, positions_dict=positions_dict)
 
 
 def evaluate_ex(args, model, data, step, tb_writer=None):
