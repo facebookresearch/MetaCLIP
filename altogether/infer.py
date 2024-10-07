@@ -1,3 +1,5 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates
+
 import os
 import json
 import torch
@@ -230,7 +232,6 @@ def main(config_name, checkpoint_name, batch_size, data_path, cap_path, todo):
 
 
 if __name__ == "__main__":
-    # python altogether/infer.py altogether:epoch_ft.pt /fsx-data/huxu/data/depr/202308_pll /fsx-data/shared/cap_altogether
     # python altogether/infer.py altogether:epoch_ft.pt <your_wds_path> <output_path>
 
     import sys
