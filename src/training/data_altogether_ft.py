@@ -23,7 +23,6 @@ from src.open_clip.tokenizer import tokenize
 
 from src.training.distributed import world_info_from_env
 from src.training.data import DataInfo
-from src.training.fb import fairblurbbox, load_fb_bbox
 from src.open_clip.transform import _convert_to_rgb
 
 
@@ -105,8 +104,9 @@ class Altogether_FT(torch.utils.data.IterableDataset):
 
         with Image.open(rec["img_path"]) as img:
             image = img.convert("RGB")
-            # face blurring
-            # image = fairblurbbox(image, rec["face_bbox"])
+            from src.training.fb import fairblurbbox
+            image = fairblurbbox(image, rec["face_bbox"])
+
             image = self.transform(image)
 
         pad_token_id = self.args.clipcap_args["pad_token_id"]

@@ -19,7 +19,6 @@ from torch.utils.data.distributed import DistributedSampler
 from src.open_clip.tokenizer import tokenize
 from src.training.distributed import world_info_from_env
 from src.training.data import DataInfo
-from src.training.fb import fairblurbbox, load_fb_bbox
 
 
 class Altogether_PT(torch.utils.data.IterableDataset):
@@ -148,7 +147,6 @@ class Altogether_PT(torch.utils.data.IterableDataset):
 
                     with Image.open(BytesIO(img)) as img:
                         image = img.convert("RGB")
-                        # already blurred.
                         # assert "face_bbox" in text_json
                         # image = fairblurbbox(image, text_json["face_bbox"])
                         image = self.transform(image)
