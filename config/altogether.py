@@ -46,6 +46,6 @@ class altogether(Config):
     nodes = 2
 
     endsft_train_data = "your_ft_dataset"
-    endsft_response = "round3"
+    endsft_response = "your_response_key"
     endsft_dataset_cls = "Altogether_FT"
     endsft_epochs = 2
