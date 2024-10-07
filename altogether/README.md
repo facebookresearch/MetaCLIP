@@ -1,6 +1,6 @@
 # Altogether: Image Captioning via Re-aligning Alt-text
 
-Altogehter is a captioner that transforms Internet-scale alt-texts into dense captions. It does not caption images from scratch and generative naive and well-known visual concepts that provide little value to an average user (e.g., "a dog is walking in the park" offer minimal utility to most users). Instead, it completes Internet-scale alt-texts into dense captions while preserving information in alt-texts that describing the image that most annotators cannot annotate.
+(EMNLP 2024) Altogether is a captioner that transforms Internet-scale alt-texts into dense captions. It does not caption images from scratch and generative naive and well-known visual concepts that provide little value to an average user (e.g., "a dog is walking in the park" offer minimal utility to most users). Instead, it completes Internet-scale alt-texts into dense captions while preserving information in alt-texts that describing the image that most annotators cannot annotate.
 
 ![Altogether](altogether.png)
 
