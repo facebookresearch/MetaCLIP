@@ -247,7 +247,7 @@ if __name__ == "__main__":
     else:
         checkpoint_name = "epoch_ft.pt"
     
-    if True:  # testing
+    if False:  # testing
         main(config_name, checkpoint_name, batch_size, data_path, cap_path, [0])
     else:
         import os
@@ -255,8 +255,7 @@ if __name__ == "__main__":
         import sys
 
         job_plans = [
-            ("data", (0, 200000), 256),
-            ("onellm", (200000, 400000), 256),
+            ("my_partition", (0, 200000), 256),
         ]
         
         for partition, (start_shard, end_shard), world_size in job_plans:
@@ -276,10 +275,8 @@ if __name__ == "__main__":
                 mem_gb=4,
                 cpus_per_task=2,  # one for dataloader one for main loop.
                 nodes=1,
-                slurm_partition='learn', # partition,
+                slurm_partition='my_partition',
                 timeout_min=4320,
-                # exclusive="user",
-                slurm_additional_parameters={"account": partition, "qos": "lowest"},
             )
 
             executor = submitit.AutoExecutor(
