@@ -39,6 +39,10 @@ python submit.py altogether  # --resume epoch_pt.pt  # for fine-tuning from exis
 python altogether/infer.py altogether:epoch_ft.pt <your_wds_path> <output_path>
 ```
 
+## MetaCLIPv2
+
+Altogether powers MetaCLIPv2, w/ this [configs](config/altogether.py).
+
 
 ## License
 
