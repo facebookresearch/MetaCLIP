@@ -1,8 +1,10 @@
 # Altogether: Image Captioning via Re-aligning Alt-text
 
-[Dataset](https://huggingface.co/datasets/activebus/Altogether-FT), [Paper]()
+[Dataset](https://huggingface.co/datasets/activebus/Altogether-FT), [Paper](https://arxiv.org/abs/xxxx.xxxxx)
 
-(EMNLP 2024) Altogether is a captioner that transforms Internet-scale alt-texts into dense captions. It does not caption images from scratch and generative naive and well-known visual concepts that provide little value to an average user (e.g., "a dog is walking in the park" offer minimal utility to most users). Instead, it completes Internet-scale alt-texts into dense captions while preserving information in alt-texts that describing the image that most annotators cannot annotate.
+(EMNLP 2024) Altogether is a captioner that transforms/re-aligns Internet-scale alt-texts into dense captions. It does not caption images from scratch and generate naive captions that provide little value to an average user (e.g., "a dog is walking in the park" offer minimal utility to users not blind). Instead, it complements and completes alt-texts into dense captions, while preserving supervisions in alt-texts by expert human/agents around the world (that describe the images an average annotators do not understand).  
+
+We use this re-aligned captions to train MetaCLIPv2.
 
 ![Altogether](altogether.png)
 
@@ -16,6 +18,15 @@
 }
 ```
 
+## Dataset
+
+```python
+from datasets import load_dataset
+
+train_dataset = load_dataset("json", data_files="https://huggingface.co/datasets/activebus/Altogether-FT/resolve/main/altogether_ft_train.json", field="data")
+
+eval_dataset = load_dataset("json", data_files="https://huggingface.co/datasets/activebus/Altogether-FT/resolve/main/altogether_ft_eval.json", field="data")
+```
 
 ## Training
 

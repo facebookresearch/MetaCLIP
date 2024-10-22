@@ -25,7 +25,7 @@ MetaCLIP is trained w/ face blurred images.
 ```
 
 ## Updates
-* 10/09/2024: 🔥 paper [Altogether: Image Captioning via Re-aligning Alt-text](https://arxiv.org/abs/xxxx.xxxxx) is accepted by EMNLP 2024 with [code](altogether/README.md) released.
+* 10/09/2024: 🔥 [Altogether: Image Captioning via Re-aligning Alt-text](https://arxiv.org/abs/xxxx.xxxxx) (aka MetaCLIPv2) is accepted by EMNLP 2024 with [code](altogether/README.md) released.
 * 08/15/2024: [v0.1](https://github.com/facebookresearch/MetaCLIP/releases/tag/v0.1) released.
 * 04/25/2024: 🔥 paper [MoDE: CLIP Data Experts via Clustering](https://arxiv.org/abs/2404.16030) is accepted by CVPR 2024 with [code](mode/README.md) released.
 * 01/18/2024: 🔥 add [code](metaclip/README_metadata.md) for building metadata.
