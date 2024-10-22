@@ -95,6 +95,10 @@ class IterativeWebDataset(torch.utils.data.IterableDataset):
                 with open(f"{self.args.online_curation}/{shard_id % 100}/{shard_id}.json") as f:
                     online_txts = json.load(f)
 
+            if hasattr(self.args, "syn_ratio"):
+                with open(f"{self.args.cap_dir}/{shard_id % 100}/{shard_id}.json") as f:
+                    syn_cap = json.load(f)
+
             with tarfile.open(tarball_path) as tar:
                 members = tar.getmembers()
 
@@ -128,6 +132,12 @@ class IterativeWebDataset(torch.utils.data.IterableDataset):
                             continue
                     else:
                         txt = random.choice(text_json["texts"])[1]
+                    
+                    if hasattr(self.args, "syn_ratio"):
+                        if random.random() < self.args.syn_ratio:
+                            if json_uuid in syn_cap:
+                                txt = syn_cap[json_uuid]
+
                     txt = self.tokenizer([txt])[0]
 
                     with Image.open(BytesIO(img)) as img:
