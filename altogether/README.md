@@ -1,6 +1,6 @@
 # Altogether: Image Captioning via Re-aligning Alt-text
 
-[Dataset](https://huggingface.co/datasets/activebus/Altogether-FT), [Paper](https://arxiv.org/abs/2410.17251)
+[[Dataset](https://huggingface.co/datasets/activebus/Altogether-FT)], [[Paper](https://arxiv.org/abs/2410.17251)]
 
 (EMNLP 2024) Altogether is a captioner that transforms/re-aligns Internet-scale alt-texts into dense captions. It does not caption images from scratch and generate naive captions that provide little value to an average user (e.g., "a dog is walking in the park" offer minimal utility to users not blind). Instead, it complements and completes alt-texts into dense captions, while preserving supervisions in alt-texts by expert human/agents around the world (that describe the images an average annotators do not understand).  
 
@@ -52,7 +52,7 @@ python altogether/infer.py altogether:epoch_ft.pt <your_wds_path> <output_path>
 
 ## MetaCLIPv2
 
-Altogether powers MetaCLIPv2, w/ this [configs](config/altogether.py).
+Altogether powers MetaCLIPv2, w/ this [configs](https://github.com/facebookresearch/MetaCLIP/blob/main/config/metaclip_v2.py).
 
 
 ## License
