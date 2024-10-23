@@ -1,6 +1,6 @@
 # Altogether: Image Captioning via Re-aligning Alt-text
 
-[Dataset](https://huggingface.co/datasets/activebus/Altogether-FT), [Paper](https://arxiv.org/abs/xxxx.xxxxx)
+[Dataset](https://huggingface.co/datasets/activebus/Altogether-FT), [Paper](https://arxiv.org/abs/2410.17251)
 
 (EMNLP 2024) Altogether is a captioner that transforms/re-aligns Internet-scale alt-texts into dense captions. It does not caption images from scratch and generate naive captions that provide little value to an average user (e.g., "a dog is walking in the park" offer minimal utility to users not blind). Instead, it complements and completes alt-texts into dense captions, while preserving supervisions in alt-texts by expert human/agents around the world (that describe the images an average annotators do not understand).  
 
@@ -12,8 +12,8 @@ We use this re-aligned captions to train MetaCLIPv2.
 ```bibtex
 @inproceedings{xu2024altogether,
    title={Altogether: Image Captioning via Re-aligning Alt-text},
-   author={Hu Xu, Po-Yao Huang, Xiaoqing Ellen Tan, Ching-Feng Yeh, Jacob Kahn, Christine Jou, Gargi Ghosh, Omer Levy, Luke Zettlemoyer, Wen-tau Yih, Shang-Wen Li, Saining Xie and Christoph Feichtenhofer},
-   journal={arXiv preprint arXiv:xxxx.xxxxx},
+   author={Hu Xu, Po-Yao Huang, Xiaoqing Ellen Tan, Ching-Feng Yeh, Jacob Kahn, Christine Jou, Gargi Ghosh, Omer Levy, Luke Zettlemoyer, Wen-tau Yih, Shang-Wen Li, Saining Xie, Christoph Feichtenhofer},
+   journal={arXiv preprint arXiv:2410.17251},
    year={2024}
 }
 ```
