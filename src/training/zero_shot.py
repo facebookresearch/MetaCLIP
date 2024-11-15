@@ -63,12 +63,10 @@ def run(args, model, classifier, dataloader):
     return top1, top5
 
 
-def zero_shot_eval(args, model, data, epoch):
+def zero_shot_eval(args, model, data):
     if 'imagenet-val' not in data and 'imagenet-v2' not in data:
         return {}
     if args.zeroshot_frequency == 0:
-        return {}
-    if (epoch % args.zeroshot_frequency) != 0 and epoch != args.epochs:
         return {}
 
     logging.info('Starting zero-shot imagenet.')
