@@ -10,13 +10,13 @@ f, ax = plt.subplots(figsize=(12, 8), dpi=200)
 sns.despine(f)
 
 
-def count_cumsum_bal(args):
+def count_cumsum_bal(fn_entry_counts):
     # adjust color
     g = sns.lineplot(x=[0], y=[0], linewidth=0)
     g = sns.lineplot(x=[0], y=[0], linewidth=0)
     g = sns.lineplot(x=[0], y=[0], linewidth=0)
 
-    word_counts = np.load(f"{args.meta_index_path}/entry_counts.npy")
+    word_counts = np.load(fn_entry_counts)
     counts = np.sort(word_counts)
 
     cumsum_counts = np.cumsum(counts)
@@ -55,13 +55,10 @@ plots = {
     "count_cumsum_bal": count_cumsum_bal,
 }
 
-# python scripts/huxu/balancing/plot_entry_counting.py llama2c8_v01
+# python scripts/huxu/balancing/plot_entry_counting.py
 import sys
 sys.path.append("./")
 
-from btm.utils import load_config
-config = load_config(sys.argv[1])
 
-count_cumsum_bal(config)
-plt.savefig(os.path.join("plots", f"{sys.argv[1]}.jpg"))
-# plt.savefig(os.path.join("plots/queries", f"{sys.argv[1]}.pdf"))
+count_cumsum_bal("your_entry_count.npy")  # eg from entry_counts_400m.json
+plt.savefig(os.path.join("plots", f"count_cumsum_bal.jpg"))
