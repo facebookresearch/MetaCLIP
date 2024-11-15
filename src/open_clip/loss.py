@@ -66,7 +66,7 @@ class ClipLoss(nn.Module):
         if self.world_size > 1:
             all_image_features, all_text_features = gather_features(
                 image_features, text_features,
-                self.local_loss, self.gather_with_grad, self.rank, self.world_size, self.use_horovod)
+                self.local_loss, self.gather_with_grad, self.rank, self.world_size)
 
             if self.local_loss:
                 logits_per_image = logit_scale * image_features @ all_text_features.T

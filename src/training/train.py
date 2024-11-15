@@ -117,7 +117,6 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
 
     dataloader = data['train'].dataloader
     num_batches_per_epoch = dataloader.num_batches
-    epoch = start_step // num_batches_per_epoch
     sample_digits = math.ceil(math.log(dataloader.num_samples + 1, 10))
 
     loss_m = AverageMeter()
@@ -126,9 +125,7 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
     end = time.time()
 
     positions = torch.full((args.workers,), fill_value=-1, dtype=torch.long)
-
     batch_iter = iter(dataloader)
-
     for step in range(start_step, total_steps):
         batch = next(batch_iter)
         scheduler(step)
@@ -153,18 +150,19 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
 
         batch_time_m.update(time.time() - end)
         end = time.time()
-        batch_count = step + 1
-        if is_master(args) and (step % 100 == 0 or batch_count == num_batches_per_epoch):
+        batch_count = (step + 1) % num_batches_per_epoch
+        epoch = step // num_batches_per_epoch
+        if is_master(args) and (batch_count % 100 == 0 or batch_count == 0):
             batch_size = len(images)
             num_samples = batch_count * batch_size * args.world_size
-            samples_per_epoch = dataloader.num_samples
+            samples_per_epoch = dataloader.num_samples // 1_000_000
             percent_complete = 100.0 * batch_count / num_batches_per_epoch
 
             # NOTE loss is coarsely sampled, just master node and per log update
             loss_m.update(total_loss.item(), batch_size)
             logit_scale_scalar = logit_scale.item()
             logging.info(
-                f"Train Epoch: {epoch} [{num_samples:>{sample_digits}}/{samples_per_epoch} ({percent_complete:.0f}%)] "
+                f"Train Step: {batch_count} (Epoch: {epoch}[{num_samples:>{sample_digits}}/{samples_per_epoch}({percent_complete:.0f}%)]) "
                 f"Loss: {loss_m.val:#.5g} ({loss_m.avg:#.4g}) "
                 f"Data (t): {data_time_m.avg:.3f} "
                 f"Batch (t): {batch_time_m.avg:.3f}, {args.batch_size*args.world_size / batch_time_m.val:#g}/s "
@@ -193,31 +191,32 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
         if hasattr(args, "save_steps") and (step + 1) % args.save_steps == 0:
             positions_dict = collect_positions(args, positions)
             if args.save_logs:
-                save_checkpoint(f"{args.checkpoint_path}/epoch_latest.pt", model, optimizer, scaler, step, positions_dict=positions_dict)
+                save_checkpoint(f"{args.checkpoint_path}/epoch_latest.pt", model, optimizer, scaler, step + 1, positions_dict=positions_dict)
     
         # TODO: copied from main.py, wrap as a function call.
-        if hasattr(args, "eval_steps") and (step + 1) % args.eval_steps == 0: # TODO (huxu): put eval on master only?
+        if hasattr(args, "eval_steps") and ((step + 1) % args.eval_steps == 0 or batch_count == 0):
             if any(v in data for v in ('val', 'imagenet-val', 'imagenet-v2')):
-                evaluate_ex(args, model, data, step, tb_writer)  # completed_epoch -> epoch, writer -> tb_writer
+                evaluate_ex(args, model, data, step + 1, epoch, tb_writer)  # completed_epoch -> epoch, writer -> tb_writer
             model.train()  # evaluate won't turn model back to train.
             positions_dict = collect_positions(args, positions)
             if args.save_logs:
-                save_checkpoint(f"{args.checkpoint_path}/epoch_latest.pt", model, optimizer, scaler, step, positions_dict=positions_dict)
+                ckpt_id = "latest" if (step + 1) % num_batches_per_epoch != 0 else f"{epoch}"
+                save_checkpoint(f"{args.checkpoint_path}/epoch_{ckpt_id}.pt", model, optimizer, scaler, step + 1, positions_dict=positions_dict)
+    
     # end for
     positions_dict = collect_positions(args, positions)
     if is_master(args):
-        positions_dict = collect_positions(args, positions)
-        save_checkpoint(f"{args.checkpoint_path}/epoch_latest.pt", model, optimizer, scaler, step, positions_dict=positions_dict)
+        save_checkpoint(f"{args.checkpoint_path}/epoch_latest.pt", model, optimizer, scaler, step + 1, positions_dict=positions_dict)
 
 
-def evaluate_ex(args, model, data, step, tb_writer=None):
+def evaluate_ex(args, model, data, step, epoch, tb_writer=None):
     metrics = {}
     if not is_master(args):
         return metrics
     device = torch.device(args.device)
     model.eval()
 
-    zero_shot_metrics = zero_shot_eval(args, model, data, 0)  # huxu: epoch = 0 as a trick to bypass checking.
+    zero_shot_metrics = zero_shot_eval(args, model, data)
     metrics.update(zero_shot_metrics)
 
     autocast = get_autocast(args.precision)
@@ -255,7 +254,7 @@ def evaluate_ex(args, model, data, step, tb_writer=None):
                 num_samples += batch_size
                 if is_master(args) and (i % 100) == 0:
                     logging.info(
-                        f"Eval Step: {step} [{num_samples} / {samples_per_val}]\t"
+                        f"Eval Step: {step}/Epoch {epoch} [{num_samples} / {samples_per_val}]\t"
                         f"Loss: {cumulative_loss / num_samples:.6f}\t")
 
             val_metrics = get_metrics(
@@ -265,14 +264,14 @@ def evaluate_ex(args, model, data, step, tb_writer=None):
             )
             loss = cumulative_loss / num_samples
             metrics.update(
-                {**val_metrics, "val_loss": loss.item(), "step": step, "num_samples": num_samples}
+                {**val_metrics, "val_loss": loss.item(), "num_samples": num_samples}
             )
 
     if not metrics:
         return metrics
 
     logging.info(
-        f"Eval Step: {step} "
+        f"Eval Step: {step}/Epoch: {epoch} "
         + "\t".join([f"{k}: {round(v, 4):.4f}" for k, v in metrics.items()])
     )
 
@@ -282,6 +281,7 @@ def evaluate_ex(args, model, data, step, tb_writer=None):
                 tb_writer.add_scalar(f"val_step/{name}", val, step)
 
         with open(os.path.join(args.checkpoint_path, "results.jsonl"), "a+") as f:
+            metrics.update({"step": step, "epoch": epoch})
             f.write(json.dumps(metrics))
             f.write("\n")
 
