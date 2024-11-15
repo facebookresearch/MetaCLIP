@@ -66,7 +66,7 @@ def main(args):
         args.log_path = os.path.join(log_base_path, log_filename)
         if os.path.exists(args.log_path) and args.resume is None and not hasattr(args, "eval"):
             print(
-                "Error. Experiment already exists. `rm -rf logs/{args.name}` ?"
+                f"Error. Experiment already exists. `rm -rf logs/{args.name}` ?"
             )
             return -1
 
@@ -119,7 +119,6 @@ def main(args):
         clip_model=args.clip_model,
     )
 
-    composed_model = model
     if hasattr(args, "cap_model"):
         from src.training.train_altogether import create_captioner
         clip_model, model = create_captioner(args, model, device)
@@ -173,7 +172,7 @@ def main(args):
         scaler = GradScaler() if args.precision == "amp" else None
 
     # optionally resume from a checkpoint
-    step, positions = -1, None
+    step, positions = 0, None
     
     
     if args.resume is not None:
@@ -190,6 +189,7 @@ def main(args):
 
     if hasattr(args, "torchcompile") and args.torchcompile:
         logging.info('Compiling model...')
+        os.environ["TORCHINDUCTOR_COMPILE_THREADS"] = "1"
         try:
             model = torch.compile(model)
         except Exception:
@@ -223,8 +223,6 @@ def main(args):
         evaluate(model, data, start_epoch, args, writer)
         return
 
-    start_step = step + 1
-
     if hasattr(args, "engine"):
         engine = args.engine
 
@@ -240,7 +238,11 @@ def main(args):
     else:
         engine_cls = train.train_one_epoch_ex
 
-    engine_cls(args, composed_model, data, start_step, total_steps, optimizer, scaler, scheduler, writer)
+    engine_cls(
+        args, 
+        (clip_model, model) if hasattr(args, "cap_model") else model,
+        data, step, total_steps, optimizer, scaler, scheduler, writer
+    )
 
     
     if hasattr(args, "eval") and args.eval and any(v in data for v in ('val', 'imagenet-val', 'imagenet-v2')):
