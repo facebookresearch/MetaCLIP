@@ -155,7 +155,7 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
         if is_master(args) and (batch_count % 100 == 0 or batch_count == 0):
             batch_size = len(images)
             num_samples = batch_count * batch_size * args.world_size
-            samples_per_epoch = dataloader.num_samples // 1_000_000
+            samples_per_epoch = dataloader.num_samples
             percent_complete = 100.0 * batch_count / num_batches_per_epoch
 
             # NOTE loss is coarsely sampled, just master node and per log update
