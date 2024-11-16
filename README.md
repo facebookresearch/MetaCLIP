@@ -213,6 +213,11 @@ The training code is developed based on [OpenCLIP](https://github.com/mlfoundati
 ## TODO
 - pip installation of metaclip package;
 
+  ### Many Thanks To Our Contributors:
+  <a href="https://github.com/facebookresearch/MetaCLIP/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=facebookresearch/MetaCLIP" />
+</a>
+
 
 ## License
 
