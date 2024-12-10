@@ -10,7 +10,7 @@ from configs import Config
 
 
 @dataclass
-class b32_v2_online(Config):
+class b32_v1_2_online(Config):
     gpu_trans=True
     engine="train_one_epoch_ex"
     eval_steps=5000
@@ -33,13 +33,13 @@ class b32_v2_online(Config):
 
 
 @dataclass
-class b32_v2_syn(b32_v2_online):
+class b32_v1_2_syn(b32_v1_2_online):
     cap_dir="data/cap_altogether"
     syn_ratio = 0.15
 
 
 @dataclass
-class h14_v2_syn(b32_v2_syn):
+class h14_v1_2_syn(b32_v1_2_syn):
     precision = "amp_bf16"
     model="ViT-H-14"
     name="ViT-H-14"

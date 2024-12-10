@@ -32,13 +32,14 @@ MetaCLIP is trained w/ face blurred images.
 ```
 
 ## Updates
-* 10/09/2024: 🔥 [Altogether: Image Captioning via Re-aligning Alt-text](https://arxiv.org/abs/2410.17251) (aka MetaCLIPv2) is accepted by EMNLP 2024 with [code](altogether/README.md) released.
+* 12/10/2024: 🔥 MetaCLIPv1.2 (ViT-H/14) trained with Altogether synthetic captions is released.
+* 10/09/2024: 🔥 [Altogether: Image Captioning via Re-aligning Alt-text](https://arxiv.org/abs/2410.17251) (aka MetaCLIPv1.2) is accepted by EMNLP 2024 with [code](altogether/README.md) released.
 * 08/15/2024: [v0.1](https://github.com/facebookresearch/MetaCLIP/releases/tag/v0.1) released.
 * 04/25/2024: 🔥 paper [MoDE: CLIP Data Experts via Clustering](https://arxiv.org/abs/2404.16030) is accepted by CVPR 2024 with [code](mode/README.md) released.
 * 01/18/2024: 🔥 add [code](metaclip/README_metadata.md) for building metadata.
 * 01/16/2024: 🔥 paper accepted by ICLR as [spotlight presentation](https://openreview.net/group?id=ICLR.cc/2024/Conference#tab-accept-spotlight).
 * 12/25/2023: [Huggingface Space](https://huggingface.co/spaces/activebus/MetaCLIP) demo and [Colab](https://colab.research.google.com/drive/1V0Rv1QQJkcolTjiwJuRsqWycROvYjOwg?usp=sharing) released.
-* 12/21/2023: ViT-G/14 released.
+* 12/21/2023: MetaCLIPv1.1 (ViT-G/14) released.
 * 09/28/2023: initial release.
 
 
@@ -78,17 +79,19 @@ print("Label probs:", text_probs)
 </details>
 
 <details>
-<summary>This repo or (OpenCLIP)</summary>
+<summary>This repo or (Similarly OpenCLIP)</summary>
 
 ```python
 import torch
 from PIL import Image
-import open_clip
+from src.open_clip.factory import create_model_and_transforms
+from src.open_clip.tokenizer import tokenize
 
-model, _, preprocess = open_clip.create_model_and_transforms('ViT-B-32-quickgelu', pretrained='metaclip_400m')  # for 2.5B use 'metaclip_fullcc' in OpenCLIP or 'metaclip_2_5b' in this repo
+
+model, _, preprocess = create_model_and_transforms('ViT-B-32-quickgelu', pretrained='metaclip_400m')  # for 2.5B use 'metaclip_fullcc' in OpenCLIP or 'metaclip_2_5b' in this repo
 
 image = preprocess(Image.open("docs/CLIP.png")).unsqueeze(0)
-text = open_clip.tokenize(["a diagram", "a dog", "a cat"])
+text = tokenize(["a diagram", "a dog", "a cat"])
 
 with torch.no_grad():
     image_features = model.encode_image(image)
@@ -115,8 +118,8 @@ All MetaCLIP adhere to OpenAI CLIP training setup: we hope to bring back control
 | `ViT-B-16-quickgelu` | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 64 x V100 | 72.1 |
 | `ViT-L-14-quickgelu` | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 128 x V100 | 79.2 |
 | `ViT-H-14-quickgelu` | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | 80.5 |
-| `ViT-bigG-14-quickgelu` | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/G14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | 82.1 |
-
+| `ViT-bigG-14-quickgelu` (v1.1) | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/G14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | 82.1 |
+| `ViT-H-14` (v1.2) | [`metaclip_v1_2_altogether`](https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_v1.2_altogether.pt) | Online Curation | 35B | 224 | 256 x H100 | 82.0 |
 
 
 
