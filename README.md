@@ -118,8 +118,8 @@ All MetaCLIP adhere to OpenAI CLIP training setup: we hope to bring back control
 | `ViT-B-16-quickgelu` | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 64 x V100 | 72.1 |
 | `ViT-L-14-quickgelu` | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/l14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 128 x V100 | 79.2 |
 | `ViT-H-14-quickgelu` | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | 80.5 |
-| `ViT-bigG-14-quickgelu` | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/G14_fullcc2.5b.pt) (v1.1) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | 82.1 |
-| `ViT-H-14` | [`metaclip_v1_2_altogether`](https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_v1.2_altogether.pt) | Online Curation | 35B | 224 | 256 x H100 | 82.0 |
+| `ViT-bigG-14-quickgelu` (v1.1) | [`metaclip_2_5b`](https://dl.fbaipublicfiles.com/MMPT/metaclip/G14_fullcc2.5b.pt) | [data card](https://dl.fbaipublicfiles.com/MMPT/metaclip/datacard_fullcc2.5b.json) | 12.8B | 224 | 256 x A100 | 82.1 |
+| `ViT-H-14` (v1.2) | [`metaclip_v1_2_altogether`](https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_v1.2_altogether.pt) | Online Curation | 35B | 224 | 256 x H100 | 82.0 |
 
 
 

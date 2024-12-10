@@ -52,7 +52,7 @@ python altogether/infer.py altogether:epoch_ft.pt <your_wds_path> <output_path>
 
 ## MetaCLIPv2
 
-Altogether powers MetaCLIPv2, w/ this [configs](https://github.com/facebookresearch/MetaCLIP/blob/main/config/metaclip_v2.py).
+Altogether powers MetaCLIP v1.2, w/ this [configs](https://github.com/facebookresearch/MetaCLIP/blob/main/config/metaclip_v1_2.py).
 
 
 ## License
