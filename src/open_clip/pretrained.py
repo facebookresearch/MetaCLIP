@@ -102,6 +102,11 @@ _VITH14_quickgelu = dict(
     metaclip_fullcc=("https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_fullcc2.5b.pt", "1286807d5cc8d9a0b12563b47474efb53b9522eb3d7eac5a9a5d39c3a776ad5c"),
 )
 
+_VITH14 = dict(
+    metaclip_v1_2_altogether=("https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_v1.2_altogether.pt", "c4ee0a62c58a38867df142d7be3b0aa1988d6ac49293971b177a03ead6092cc6"),
+)
+
+
 _VITbigG14_quickgelu = dict(
     metaclip2_5b=("https://dl.fbaipublicfiles.com/MMPT/metaclip/G14_fullcc2.5b.pt", "5fe2b83c7439e0caa2c855dec9a2eaa54f17f3ced288218564b640ca7953447f"),
     metaclip_2_5b=("https://dl.fbaipublicfiles.com/MMPT/metaclip/G14_fullcc2.5b.pt", "5fe2b83c7439e0caa2c855dec9a2eaa54f17f3ced288218564b640ca7953447f"),
@@ -126,6 +131,7 @@ _PRETRAINED = {
     "ViT-L-14-quickgelu": _VITL14_quickgelu,
     "ViT-L-14-336": _VITL14_336,
     "ViT-H-14-quickgelu": _VITH14_quickgelu,
+    "ViT-H-14": _VITH14,
     "ViT-bigG-14-quickgelu": _VITbigG14_quickgelu,
 }
 
