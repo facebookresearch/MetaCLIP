@@ -80,7 +80,7 @@ class IterativeWebDataset(torch.utils.data.IterableDataset):
         if self.positions is not None and self.positions[f"{global_rank}_{worker_id}"] != -1:
             self.global_shard_id = self.positions[f"{global_rank}_{worker_id}"]
             print(f"{global_rank}_{worker_id} restore {self.global_shard_id}")
-            shard_id = self._get_next_shard_id()
+            shard_id = self._get_next_shard_id(shard_id)
         else:
             self.global_shard_id = global_rank * num_workers + worker_id
             shard_id = self.global_shard_id
