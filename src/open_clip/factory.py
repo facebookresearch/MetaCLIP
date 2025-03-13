@@ -151,6 +151,24 @@ def create_model_and_transforms(
     return model, preprocess_train, preprocess_val
 
 
+def get_tokenizer(
+    tokenizer = None
+):
+    if tokenizer is None:
+        from src.open_clip.tokenizer import tokenize            
+        return tokenize
+    else:
+        from transformers import AutoTokenizer
+        os.environ["TOKENIZERS_PARALLELISM"] = "false"
+        tokenizer = AutoTokenizer.from_pretrained(tokenizer, use_fast=True)
+
+        def tokenize_fn(txt_list):
+            input_ids = tokenizer(txt_list, return_tensors='pt', padding='max_length', truncation=True, max_length=77)['input_ids']
+            return input_ids
+
+        return tokenize_fn
+
+
 def list_models():
     """ enumerate available model architectures based on config files """
     return list(_MODEL_CONFIGS.keys())
