@@ -90,6 +90,8 @@ def create_model(
 
         import importlib
         for model_code in os.listdir(f"src/open_clip"):
+            if not model_code.endswith(".py"):
+                continue
             if not model_code.startswith("model"):
                 continue
             module_name = "src.open_clip." + model_code[:-len(".py")]
