@@ -1,7 +1,7 @@
 from src.open_clip.model import CLIP
 
 
-class TokCLIP(CLIP):
+class WorldWideCLIP(CLIP):
     def encode_text(self, text):
         x = self.token_embedding(text)  # [batch_size, n_ctx, d_model]
 
@@ -12,8 +12,7 @@ class TokCLIP(CLIP):
         x = self.ln_final(x)
 
         # x.shape = [batch_size, n_ctx, transformer.width]
-        # take features from the eot embedding (eot_token is the highest number in each sequence)
-        index = (text > 1).sum(-1)  # eos is 1.
+        index = (text > 1).sum(-1)  # eos is 1 for worldwide (XLM-V) tokenizer.
         
         x = x[torch.arange(x.shape[0]), index] @ self.text_projection
         return x
