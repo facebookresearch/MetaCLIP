@@ -59,9 +59,14 @@ def create_model(
     jit: bool = False,
     force_quick_gelu: bool = False,
     pretrained_image: bool = False,
-    clip_model: str = "CLIP",
 ):
-    model_name = model_name.replace('/', '-')  # for callers using old naming with / in ViT names
+    if not isinstance(model_name, dict):
+        if '@' in model_name:
+            logging.info(f'find @ in model_name: {model_name}.')
+            model_name, clip_model = model_name.split('@')
+            clip_model = clip_model.split('#')[0]
+        model_name = model_name.replace('/', '-')  # for callers using old naming with / in ViT names
+        
 
     if pretrained.lower() == 'openai':
         logging.info(f'Loading pretrained {model_name} from OpenAI.')
@@ -70,7 +75,9 @@ def create_model(
         if precision == "amp" or precision == "fp32":
             model = model.float()
     else:
-        if model_name in _MODEL_CONFIGS:
+        if isinstance(model_name, dict):
+            model_cfg = model_name
+        elif model_name in _MODEL_CONFIGS:
             logging.info(f'Loading {model_name} model config.')
             model_cfg = deepcopy(_MODEL_CONFIGS[model_name])
         else:
@@ -79,7 +86,7 @@ def create_model(
 
         if force_quick_gelu:
             # override for use of QuickGELU on non-OpenAI transformer models
-            model_cfg["quick_gelu"] = True
+            model_cfg["quick_gelu"] = force_quick_gelu
 
         if pretrained_image:
             if 'timm_model_name' in model_cfg.get('vision_cfg', {}):
@@ -87,7 +94,7 @@ def create_model(
                 model_cfg['vision_cfg']['timm_model_pretrained'] = True
             else:
                 assert False, 'pretrained image towers currently only supported for timm models'
-
+            
         import importlib
         for model_code in os.listdir(f"src/open_clip"):
             if not model_code.endswith(".py"):
@@ -140,14 +147,13 @@ def create_model_and_transforms(
     mean: Optional[Tuple[float, ...]] = None,
     std: Optional[Tuple[float, ...]] = None,
     gpu_trans = False,
-    clip_model: str = "CLIP",
 ):
     model = create_model(
         model_name, pretrained, precision, device, jit,
         force_quick_gelu=force_quick_gelu,
         pretrained_image=pretrained_image,
-        clip_model=clip_model,
     )
+
     preprocess_train = image_transform(model.visual.image_size, is_train=True, mean=mean, std=std, gpu_trans=gpu_trans)
     preprocess_val = image_transform(model.visual.image_size, is_train=False, mean=mean, std=std)
     return model, preprocess_train, preprocess_val
@@ -156,7 +162,7 @@ def create_model_and_transforms(
 def get_tokenizer(
     tokenizer = None
 ):
-    if tokenizer is None:
+    if tokenizer is None or tokenizer == 'None':
         from src.open_clip.tokenizer import tokenize            
         return tokenize
     else:
