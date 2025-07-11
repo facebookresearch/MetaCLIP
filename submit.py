@@ -27,6 +27,7 @@ def parse_args():
     parser.add_argument("--resume", default="", type=str, help="resume a checkpoint.")
     parser.add_argument("--timeout", default=4320, type=int, help="Duration of the job")
     parser.add_argument("--job_dir", default="", type=str, help="Job dir. Leave empty for automatic.")
+    parser.add_argument("--dependency", default=5, type=int, help="dependency for job failure.")
 
     parser.add_argument("--partition", default="learnlab", type=str, help="Partition where to submit")
     parser.add_argument("--use_volta32", action='store_true', help="Request 32G V100 GPUs")
@@ -127,13 +128,22 @@ def main(args):
 
     executor.update_parameters(name=args.config.name)
 
-    args.dist_url = get_init_file().as_uri()
-    args.output_dir = args.job_dir
+    for job_idx in range(args.dependency):  # dependency loop
+        if job_idx >= 1:
+            kwargs['slurm_additional_parameters']['dependency'] = job.job_id
+            args.config.resume = os.path.join(args.config.output_dir, "checkpoints", "epoch_latest.pt")
 
-    trainer = Trainer(args)
-    job = executor.submit(trainer)
+        executor.update_parameters(
+            **kwargs
+        )
 
-    print("Submitted job_id:", job.job_id, "@", str(args.job_dir).replace("%j", job.job_id))
+        args.dist_url = get_init_file(cluster_config).as_uri()
+        args.output_dir = args.job_dir
+
+        trainer = Trainer(args)
+        job = executor.submit(trainer)
+
+        print("Submitted job_id:", job.job_id, "@", str(args.job_dir).replace("%j", job.job_id))
 
 
 def submit():
