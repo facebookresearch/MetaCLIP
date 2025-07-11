@@ -64,7 +64,8 @@ def to_device(batch, device):
 
 def build_loss(args):
     from src.open_clip import loss as loss_module
-    loss_cls = getattr(loss_module, "ClipLoss")
+    loss_name = args.loss_name if hasattr(args, "loss_name") else "ClipLoss"
+    loss_cls = getattr(loss_module, loss_name)
 
     loss = loss_cls(
         local_loss=args.local_loss,
@@ -76,6 +77,7 @@ def build_loss(args):
 
 
 def backward(args, total_loss, scaler, optimizer, model):
+    # total_loss.requires_grad = True
     if torch.isfinite(total_loss).all():
         if scaler is not None:
             scaler.scale(total_loss).backward()
@@ -117,7 +119,7 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
 
     dataloader = data['train'].dataloader
     num_batches_per_epoch = dataloader.num_batches
-    sample_digits = math.ceil(math.log(dataloader.num_samples + 1, 10))
+    # sample_digits = math.ceil(math.log(dataloader.num_samples + 1, 10))
 
     loss_m = AverageMeter()
     batch_time_m = AverageMeter()
@@ -150,19 +152,26 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
 
         batch_time_m.update(time.time() - end)
         end = time.time()
-        batch_count = (step + 1) % num_batches_per_epoch
-        epoch = step // num_batches_per_epoch
-        if is_master(args) and (batch_count % 100 == 0 or batch_count == 0):
+        
+        batch_count = step % num_batches_per_epoch + 1
+        epoch = (step + 1) // num_batches_per_epoch
+        
+        # if is_master(args) and (batch_count % 50 == 0 or batch_count == num_batches_per_epoch):
+        if is_master(args) and (step + 1) % 50 == 0:
             batch_size = len(images)
-            num_samples = batch_count * batch_size * args.world_size
-            samples_per_epoch = dataloader.num_samples
-            percent_complete = 100.0 * batch_count / num_batches_per_epoch
+            # num_samples = batch_count * batch_size * args.world_size
+            num_samples = (step + 1) * batch_size * args.world_size
+            # samples_per_epoch = dataloader.num_samples
+            total_num_samples = (total_steps + 1) * batch_size * args.world_size
+            # percent_complete = 100.0 * batch_count / num_batches_per_epoch
+            percent_complete = 100.0 * (step + 1) / total_steps
 
             # NOTE loss is coarsely sampled, just master node and per log update
             loss_m.update(total_loss.item(), batch_size)
             logit_scale_scalar = logit_scale.item()
+            # f"Train Step: {step + 1} (Epoch: {epoch} {batch_count} {num_batches_per_epoch} [{num_samples:>{sample_digits}}/{samples_per_epoch}({percent_complete:.0f}%)]) "
             logging.info(
-                f"Train Step: {batch_count} (Epoch: {epoch}[{num_samples:>{sample_digits}}/{samples_per_epoch}({percent_complete:.0f}%)]) "
+                f"Step: {step + 1}/{total_steps} [{num_samples}/{total_num_samples} ({percent_complete:.0f}%)] "
                 f"Loss: {loss_m.val:#.5g} ({loss_m.avg:#.4g}) "
                 f"Data (t): {data_time_m.avg:.3f} "
                 f"Batch (t): {batch_time_m.avg:.3f}, {args.batch_size*args.world_size / batch_time_m.val:#g}/s "
@@ -194,15 +203,17 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
                 save_checkpoint(f"{args.checkpoint_path}/epoch_latest.pt", model, optimizer, scaler, step + 1, positions_dict=positions_dict)
     
         # TODO: copied from main.py, wrap as a function call.
-        if hasattr(args, "eval_steps") and ((step + 1) % args.eval_steps == 0 or batch_count == 0):
+        if hasattr(args, "eval_steps") and ((step + 1) % args.eval_steps == 0 or batch_count == num_batches_per_epoch):
             if any(v in data for v in ('val', 'imagenet-val', 'imagenet-v2')):
                 evaluate_ex(args, model, data, step + 1, epoch, tb_writer)  # completed_epoch -> epoch, writer -> tb_writer
-            model.train()  # evaluate won't turn model back to train.
+
             positions_dict = collect_positions(args, positions)
             if args.save_logs:
-                ckpt_id = "latest" if (step + 1) % num_batches_per_epoch != 0 else f"{epoch}"
+                ckpt_id = "latest" if batch_count != num_batches_per_epoch else f"{epoch}"
                 save_checkpoint(f"{args.checkpoint_path}/epoch_{ckpt_id}.pt", model, optimizer, scaler, step + 1, positions_dict=positions_dict)
-    
+            
+            model.train()  # evaluate won't turn model back to train.
+            
     # end for
     positions_dict = collect_positions(args, positions)
     if is_master(args):

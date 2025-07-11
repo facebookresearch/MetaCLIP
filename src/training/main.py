@@ -104,6 +104,7 @@ def main(args):
         logging.info(f'Running with a single process. Device {args.device}.')
 
     random_seed(args.seed, 0)
+
     mean, std = get_mean_std()
 
     model, preprocess_train, preprocess_val = create_model_and_transforms(
@@ -115,8 +116,7 @@ def main(args):
         force_quick_gelu=args.force_quick_gelu,
         pretrained_image=args.pretrained_image,
         mean=mean, std=std,
-        gpu_trans=hasattr(args, "gpu_trans"),
-        clip_model=args.clip_model,
+        gpu_trans=args.gpu_trans if hasattr(args, "gpu_trans") else False,
     )
 
     if hasattr(args, "cap_model"):
@@ -147,6 +147,8 @@ def main(args):
         if args.ddp_static_graph:
             # this doesn't exist in older PyTorch, arg only added if enabled
             ddp_args['static_graph'] = True
+        if hasattr(args, "find_unused_parameters"):
+            ddp_args['find_unused_parameters'] = args.find_unused_parameters
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[device], **ddp_args)
 
     # create optimizer and scaler
@@ -157,9 +159,21 @@ def main(args):
         include = lambda n, p: not exclude(n, p)
 
         named_parameters = list(model.named_parameters())
+        
+        if hasattr(args, "trainable"):
+            for n, p in named_parameters:
+                if n.startswith('module.'):
+                    n = n[len('module.'):]
+                for trainable_param in args.trainable:
+                    if n.startswith(trainable_param):
+                        break
+                else:
+                    logging.info(f"freeze {n}")
+                    p.requires_grad = False
+        
         gain_or_bias_params = [p for n, p in named_parameters if exclude(n, p) and p.requires_grad]
         rest_params = [p for n, p in named_parameters if include(n, p) and p.requires_grad]
-
+        
         optimizer = optim.AdamW(
             [
                 {"params": gain_or_bias_params, "weight_decay": 0.},
@@ -174,7 +188,6 @@ def main(args):
     # optionally resume from a checkpoint
     step, positions = 0, None
     
-    
     if args.resume is not None:
         if os.path.isfile(args.resume):
             model_to_load = unwrap_model(model)
@@ -182,7 +195,7 @@ def main(args):
             logging.info(f"=> resuming checkpoint '{args.resume}' (step {step})")
         else:
             logging.info("=> no checkpoint found at '{}'".format(args.resume))
-
+    
     # initialize datasets
     data = get_data(args, (preprocess_train, preprocess_val), positions)
     assert len(data), 'At least one train or eval dataset must be specified.'
@@ -192,6 +205,7 @@ def main(args):
         os.environ["TORCHINDUCTOR_COMPILE_THREADS"] = "1"
         try:
             model = torch.compile(model)
+            torch._dynamo.config.optimize_ddp=False
         except Exception:
             logging.warn("please use PyTorch 2.0")
 
@@ -213,16 +227,6 @@ def main(args):
         assert tensorboard is not None, "Please install tensorboard."
         writer = tensorboard.SummaryWriter(args.tensorboard_path)
 
-    if 'train' not in data or hasattr(args, "eval") and args.eval:  # huxu: merge native/SLIP eval.
-        # TODO: move to below first.
-        from src.training.slip_evaluate import slip_evaluate
-        from src.open_clip.tokenizer import tokenize
-        # in case a downloaded model.
-        os.makedirs(args.output_dir, exist_ok=True)
-        slip_evaluate(args, model, preprocess_val, tokenize)
-        evaluate(model, data, start_epoch, args, writer)
-        return
-
     if hasattr(args, "engine"):
         engine = args.engine
 
@@ -243,13 +247,6 @@ def main(args):
         (clip_model, model) if hasattr(args, "cap_model") else model,
         data, step, total_steps, optimizer, scaler, scheduler, writer
     )
-
-    
-    if hasattr(args, "eval") and args.eval and any(v in data for v in ('val', 'imagenet-val', 'imagenet-v2')):
-        from src.training.slip_evaluate import slip_evaluate
-        from src.open_clip import tokenize
-
-        slip_evaluate(args, model, preprocess_val, tokenize)
 
 
 if __name__ == "__main__":
