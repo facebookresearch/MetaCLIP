@@ -6,21 +6,24 @@ import torch.nn.functional as F
 
 from tqdm import tqdm
 
-from src.open_clip.tokenizer import tokenize
+
 from src.training.imagenet_zeroshot_data import imagenet_classnames, openai_imagenet_template
 from src.training.precision import get_autocast
+from src.training.checkpoint import unwrap_model
 
 
 def zero_shot_classifier(args, model, classnames, templates):
+    from src.open_clip.factory import get_tokenizer
+
+    tokenize = get_tokenizer(args.tokenizer if hasattr(args, "tokenizer") else None)
+    model = unwrap_model(model)
+    
     with torch.no_grad():
         zeroshot_weights = []
         for classname in tqdm(classnames):
             texts = [template(classname) for template in templates]  # format with class
             texts = tokenize(texts).to(args.device)  # tokenize
-            if args.distributed:
-                class_embeddings = model.module.encode_text(texts)
-            else:
-                class_embeddings = model.encode_text(texts)
+            class_embeddings = model.encode_text(texts)
             class_embedding = F.normalize(class_embeddings, dim=-1).mean(dim=0)
             class_embedding /= class_embedding.norm()
             zeroshot_weights.append(class_embedding)
@@ -36,6 +39,7 @@ def accuracy(output, target, topk=(1,)):
 
 def run(args, model, classifier, dataloader):
     autocast = get_autocast(args.precision)
+    model = unwrap_model(model)
 
     with torch.no_grad():
         top1, top5, n = 0., 0., 0.
@@ -45,10 +49,8 @@ def run(args, model, classifier, dataloader):
 
             with autocast():
                 # predict
-                if args.distributed:
-                    image_features = model.module.encode_image(images)
-                else:
-                    image_features = model.encode_image(images)
+
+                image_features = model.encode_image(images)
                 image_features = F.normalize(image_features, dim=-1)
                 logits = 100. * image_features @ classifier
 
