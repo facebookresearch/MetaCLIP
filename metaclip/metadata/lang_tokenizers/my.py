@@ -1,9 +1,10 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates
 
-
 # Word Segmentation for Burmese Language using Conditional Random Field
 # Author : Thura Aung
 # 5 July, 2022
+# Source: https://github.com/ThuraAung1601/mmCRFseg
+# MIT License
 
 print('Loading my tokenizer...', end=' ')
 
@@ -15,7 +16,17 @@ import os
 # Get the directory of the current script
 dir_path = os.path.dirname(os.path.realpath(__file__))
 # Construct the path to the model file
-model_file_path = os.path.join(dir_path, 'my.crfsuite')
+model_file_path = os.path.join(dir_path, 'mm-word-segmentation-300.crfsuite')
+
+if not os.path.exists(model_file_path):
+    # Download the model file if it does not exist
+    import urllib.request
+    print("Downloading model file...")
+    urllib.request.urlretrieve(
+        "https://github.com/ThuraAung1601/mmCRFseg/raw/refs/heads/main/model/mm-word-segmentation-300.crfsuite",
+        model_file_path
+    )
+    print("Model file downloaded.")
 
 #open trained model
 tagger = pycrfsuite.Tagger()
