@@ -43,7 +43,7 @@ mkdir -p data/valid_uuids
 Download Wikipedia text for all 329 supported languages:
 
 ```bash
-# Download all Wikipedia corpora (parallel processing recommended)
+# Download all Wikipedia corpora (parallel processing recommended rather than sequential)
 for lang_code in ab ace ady af als alt am ami an ang anp ar arc ary arz as ast atj av avk awa ay az azb ba ban bar bat_smg bbc bcl be be_tarask bew bg bh bi bjn blk bm bn bo bpy br bs bug bxr ca cbk_zam cdo ce ceb ch chr chy ckb co cr crh cs csb cu cv cy da dag de dga din diq dsb dtp dty dv dz ee el eml en eo es et eu ext fa fat ff fi fiu_vro fj fo fon fr frp frr fur fy ga gag gan gcr gd gl glk gn gom gor got gpe gu guc gur guw gv ha hak haw he hi hif hr hsb ht hu hy hyw ia id ie ig igl ik ilo inh io is it iu ja jam jbo jv ka kaa kab kbd kbp kcg kg ki kk kl km kn ko koi krc ks ksh ku kus kv kw ky la lad lb lbe lez lfn lg li lij lld lmo ln lo lt ltg lv mad mai map_bms mdf mg mhr mi min mk ml mn mni mnw mr mrj ms mt mwl my myv mzn nah nap nds nds_nl ne new nia nl nn no nov nqo nrm nso nv ny oc olo om or os pa pag pam pap pcd pcm pdc pfl pi pih pl pms pnb pnt ps pt pwn qu rm rmy rn ro roa_rup roa_tara ru rue rw sa sah sat sc scn sco sd se sg sh shi shn si simple sk skr sl sm smn sn so sq sr srn ss st stq su sv sw szl szy ta tay tcy te tet tg th ti tk tl tly tn to tpi tr trv ts tt tum tw ty tyv udm ug uk ur uz ve vec vep vi vls vo wa war wo wuu xal xh xmf yi yo za zea zgh zh zh_classical zh_min_nan zh_yue zu; do
     bash metaclip/metadata/download_wikipedia.sh $lang_code data/metadata_source/wiki_text
 done
@@ -53,7 +53,7 @@ done
 
 ### Step 2: Build Multilingual WordNet
 
-Extract and organize WordNet synsets for supported languages:
+Extract and organize Multilingual WordNet synsets for supported languages:
 
 ```bash
 # (TODO) Put the .py file
@@ -78,9 +78,7 @@ python metaclip/metadata/build_ngram.py
 
 **Special Tokenization**: Languages like Chinese (zh), Japanese (ja), Thai (th), Khmer (km), Lao (lo), Myanmar (my), and Tibetan (bo) use specialized tokenizers located in `metaclip/metadata/lang_tokenizers/`.
 
-**Thresholds**:
-- Unigrams: Keep terms with >100 occurrences
-- Bigrams: Keep pairs with PMI score >30
+> Note: We use [`ckip-transformers`](https://github.com/ckiplab/ckip-transformers), a BERT-based word segmentation tool for Chinese. Running `build_ngram.py` for languages with Chinese characters (zh, zh_yue, zh_classical) will require GPUs, while other languages can run on CPUs.
 
 ### Step 4: Build Wikipedia Article Titles
 
@@ -94,9 +92,6 @@ python metaclip/metadata/build_title.py submitit
 python metaclip/metadata/build_title.py
 ```
 
-**Data Source**: Uses Wikipedia pageview statistics from past 5 years, randomly sampling 25 days.
-**Threshold**: Keep titles with >70 pageviews.
-
 ### Step 5: Merge Metadata Sources
 
 Combine all metadata sources (WordNet + unigrams + bigrams + titles) for each language:
@@ -109,7 +104,7 @@ python metaclip/metadata/build_metadata.py
 - **WordNet synsets**: No limit (language-dependent)
 - **Unigrams**: sorted by frequency, take top 10% of available unigrams per language, max at 251,465 terms (number of English unigrams)
 - **Bigrams**: sorted by PMI, take top "x" bigrams per language, where x="40% of number of unigrams in the same language", max at 100,646 terms (number of English bigrams)
-- **Titles**: sorted by pageviews, take 76% of available titles per language, max at 61,235 titles (number of English titles)
+- **Titles**: sorted by pageviews, take the top 76% of available titles per language, max at 61,235 titles (number of English titles)
 
 **Special Handling**:
 - Non-space languages (Chinese, Japanese, etc.): Bigrams are concatenated without spaces
