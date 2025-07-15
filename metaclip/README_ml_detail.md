@@ -20,10 +20,6 @@ pip install nltk wikiextractor submitit==1.2.1
 
 # Language-specific tokenizers (install as needed)
 pip install -r metaclip/metadata/requirements.txt
-
-# NLTK data
-python -m nltk.downloader wordnet
-python -m nltk.downloader omw-1.4
 ```
 
 ### Directory Structure Setup
@@ -56,11 +52,10 @@ done
 Extract and organize Multilingual WordNet synsets for supported languages:
 
 ```bash
-# (TODO) Put the .py file
-python metaclip/metadata/build_wordnet.py
+python metaclip/metadata/build_multilingual_wordnet.py
 ```
 
-This creates `data/metadata_source/wordnet_per_lang.json` with WordNet synsets mapped to language codes.
+This creates `data/metadata_source/wordnet_per_lang.json` with Multilingual WordNet synsets mapped to language codes.
 
 **Language Mapping**: The system maps between WordNet language codes and Wikipedia language codes using the mapping in `metaclip/metadata/build_metadata.py:40-71`.
 
