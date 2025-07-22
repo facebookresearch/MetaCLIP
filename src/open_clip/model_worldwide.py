@@ -1,3 +1,8 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates
+
+
+import torch
+
 from src.open_clip.model import CLIP
 
 

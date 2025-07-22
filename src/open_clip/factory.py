@@ -65,6 +65,8 @@ def create_model(
             logging.info(f'find @ in model_name: {model_name}.')
             model_name, clip_model = model_name.split('@')
             clip_model = clip_model.split('#')[0]
+        else:
+            clip_model = "CLIP"
         model_name = model_name.replace('/', '-')  # for callers using old naming with / in ViT names
         
 

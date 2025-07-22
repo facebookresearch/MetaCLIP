@@ -4,6 +4,7 @@ Adapted from https://github.com/openai/CLIP. Originally MIT License, Copyright (
 """
 # Copyright (c) Meta Platforms, Inc. and affiliates
 
+
 from collections import OrderedDict
 from dataclasses import dataclass
 import logging
