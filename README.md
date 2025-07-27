@@ -200,10 +200,10 @@ Please cite our papers (ICLR 2024 spotlight, CVPR 2024, EMNLP 2024) if MetaCLIP 
 }
 
 @inproceedings{xu-etal-2024-altogether,
-    title = "Altogether: Image Captioning via Re-aligning Alt-text",
-    author = "Hu Xu, Po-Yao Huang, Xiaoqing Ellen Tan, Ching-Feng Yeh, Jacob Kahn, Christine Jou, Gargi Ghosh, Omer Levy, Luke Zettlemoyer, Wen-tau Yih, Shang-Wen Li, Saining Xie and Christoph Feichtenhofer",
-    booktitle = "Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing",
-    year = "2024"
+    title={Altogether: Image Captioning via Re-aligning Alt-text},
+    author={Hu Xu, Po-Yao Huang, Xiaoqing Ellen Tan, Ching-Feng Yeh, Jacob Kahn, Christine Jou, Gargi Ghosh, Omer Levy, Luke Zettlemoyer, Wen-tau Yih, Shang-Wen Li, Saining Xie and Christoph Feichtenhofer},
+    booktitle={Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing},
+    year={2024}
 }
 ```
 
