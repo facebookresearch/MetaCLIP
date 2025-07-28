@@ -13,23 +13,7 @@ We conclude that:
   - Our algorithm is simpler and scalable to curate the whole Internet
   - Open-sourcing does not just entail a trained model checkpoint but more importantly the **pre-training data distribution**.
 
-MetaCLIP is trained w/ face blurred images.
-
-```bibtex
-@inproceedings{xu2023metaclip,
-   title={Demystifying CLIP Data},
-   author={Hu Xu, Saining Xie, Xiaoqing Ellen Tan, Po-Yao Huang, Russell Howes, Vasu Sharma, Shang-Wen Li, Gargi Ghosh, Luke Zettlemoyer and Christoph Feichtenhofer},
-   journal={arXiv preprint arXiv:2309.16671},
-   year={2023}
-}
-
-@inproceedings{xu2024altogether,
-   title={Altogether: Image Captioning via Re-aligning Alt-text},
-   author={Hu Xu, Po-Yao Huang, Xiaoqing Ellen Tan, Ching-Feng Yeh, Jacob Kahn, Christine Jou, Gargi Ghosh, Omer Levy, Luke Zettlemoyer, Wen-tau Yih, Shang-Wen Li, Saining Xie, Christoph Feichtenhofer},
-   journal={arXiv preprint arXiv:2410.17251},
-   year={2024}
-}
-```
+MetaCLIP is trained with face blurred images.
 
 ## Updates
 * 12/10/2024: 🔥 MetaCLIPv1.2 (ViT-H/14) trained with Altogether synthetic captions is released.
@@ -198,14 +182,28 @@ If you have any questions related to the code or the paper, feel free to email H
 
 ## Citation
 
-Please cite our paper (accepted by ICLR2024 as spotlight presentation) if MetaCLIP helps your work:
+Please cite our papers (ICLR 2024 spotlight, CVPR 2024, EMNLP 2024) if MetaCLIP helps your work:
 
 ```bibtex
-@inproceedings{xu2023metaclip,
-   title={Demystifying CLIP Data},
-   author={Hu Xu, Saining Xie, Xiaoqing Ellen Tan, Po-Yao Huang, Russell Howes, Vasu Sharma, Shang-Wen Li, Gargi Ghosh, Luke Zettlemoyer and Christoph Feichtenhofer},
-   journal={arXiv preprint arXiv:2309.16671},
-   year={2023}
+@inproceedings{xu2024demystifying,
+    title={Demystifying {CLIP} Data},
+    author={Hu Xu, Saining Xie, Xiaoqing Ellen Tan, Po-Yao Huang, Russell Howes, Vasu Sharma, Shang-Wen Li, Gargi Ghosh, Luke Zettlemoyer and Christoph Feichtenhofer},
+    booktitle={The Twelfth International Conference on Learning Representations},
+    year={2024}
+}
+
+@inproceedings{ma2024mode,
+  title={Mode: Clip data experts via clustering},
+  author={Jiawei Ma, Po-Yao Huang, Saining Xie, Shang-Wen Li, Luke Zettlemoyer, Shih-Fu Chang, Wen-Tau Yih and Hu Xu},
+  booktitle={Proceedings of the IEEE/CVF conference on computer vision and pattern recognition},
+  year={2024}
+}
+
+@inproceedings{xu-etal-2024-altogether,
+    title={Altogether: Image Captioning via Re-aligning Alt-text},
+    author={Hu Xu, Po-Yao Huang, Xiaoqing Ellen Tan, Ching-Feng Yeh, Jacob Kahn, Christine Jou, Gargi Ghosh, Omer Levy, Luke Zettlemoyer, Wen-tau Yih, Shang-Wen Li, Saining Xie and Christoph Feichtenhofer},
+    booktitle={Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing},
+    year={2024}
 }
 ```
 
