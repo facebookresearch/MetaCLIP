@@ -22,9 +22,9 @@ except ImportError:
     tensorboard = None
 
 
-from src.open_clip.factory import create_model_and_transforms
-from src.open_clip.transform import get_mean_std
-from src.open_clip.model import CLIP, VisualTransformer, Transformer, ResidualAttentionBlock
+from src.mini_clip.factory import create_model_and_transforms
+from src.mini_clip.transform import get_mean_std
+from src.mini_clip.model import CLIP, VisualTransformer, Transformer, ResidualAttentionBlock
 from src.training.data import get_data
 from src.training.distributed import is_master, init_distributed_device, world_info_from_env
 from src.training.logger import setup_logging

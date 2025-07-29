@@ -18,7 +18,7 @@ from torch.utils.data.distributed import DistributedSampler
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFilter
 
-from src.open_clip.tokenizer import tokenize
+from src.mini_clip.tokenizer import tokenize
 from src.training.data import DataInfo
 from src.training.distributed import world_info_from_env
 

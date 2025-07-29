@@ -13,7 +13,7 @@ from src.training.checkpoint import unwrap_model
 
 
 def zero_shot_classifier(args, model, classnames, templates):
-    from src.open_clip.factory import get_tokenizer
+    from src.mini_clip.factory import get_tokenizer
 
     tokenize = get_tokenizer(args.tokenizer if hasattr(args, "tokenizer") else None)
     model = unwrap_model(model)

@@ -11,11 +11,11 @@ from typing import Optional, Tuple
 
 import torch
 
-from src.open_clip import model as model_zoo
-from src.open_clip.model import CLIP, convert_weights_to_fp16, resize_pos_embed
-from src.open_clip.openai import load_openai_model
-from src.open_clip.pretrained import get_pretrained_url, download_pretrained
-from src.open_clip.transform import image_transform
+from src.mini_clip import model as model_zoo
+from src.mini_clip.model import CLIP, convert_weights_to_fp16, resize_pos_embed
+from src.mini_clip.openai import load_openai_model
+from src.mini_clip.pretrained import get_pretrained_url, download_pretrained
+from src.mini_clip.transform import image_transform
 from src.training.checkpoint import load_checkpoint
 
 
@@ -98,12 +98,12 @@ def create_model(
                 assert False, 'pretrained image towers currently only supported for timm models'
             
         import importlib
-        for model_code in os.listdir(f"src/open_clip"):
+        for model_code in os.listdir(f"src/mini_clip"):
             if not model_code.endswith(".py"):
                 continue
             if not model_code.startswith("model"):
                 continue
-            module_name = "src.open_clip." + model_code[:-len(".py")]
+            module_name = "src.mini_clip." + model_code[:-len(".py")]
             module = importlib.import_module(module_name)
             if hasattr(module, clip_model):
                 model_cls = getattr(module, clip_model)
@@ -165,7 +165,7 @@ def get_tokenizer(
     tokenizer = None
 ):
     if tokenizer is None or tokenizer == 'None':
-        from src.open_clip.tokenizer import tokenize            
+        from src.mini_clip.tokenizer import tokenize            
         return tokenize
     else:
         from transformers import AutoTokenizer

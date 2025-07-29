@@ -3,7 +3,7 @@
 
 import torch
 
-from src.open_clip.model import CLIP
+from src.mini_clip.model import CLIP
 
 
 class WorldWideCLIP(CLIP):

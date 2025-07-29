@@ -15,8 +15,8 @@ from collections import defaultdict
 
 from transformers import AutoTokenizer
 
-from src.open_clip.transform import get_mean_std
-from src.open_clip.tokenizer import tokenize as clip_tokenizer
+from src.mini_clip.transform import get_mean_std
+from src.mini_clip.tokenizer import tokenize as clip_tokenizer
 from src.training.distributed import is_master, world_info_from_env
 from src.training.zero_shot import zero_shot_eval
 from src.training.precision import get_autocast
@@ -30,9 +30,9 @@ def create_captioner(args, model, device):
     clip_model = model
 
     import importlib  # TODO: wrap as a file search func.
-    for model_code in os.listdir(f"src/open_clip"):
+    for model_code in os.listdir(f"src/mini_clip"):
         if model_code.endswith(".py") and "model" in model_code:
-            module = importlib.import_module("src.open_clip." + model_code[:-len(".py")])
+            module = importlib.import_module("src.mini_clip." + model_code[:-len(".py")])
             if hasattr(module, args.cap_model):
                 model_cls = getattr(module, args.cap_model)
                 break

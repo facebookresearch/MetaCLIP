@@ -9,24 +9,24 @@ from tqdm import tqdm
 
 _RN50 = dict(
     openai="https://openaipublic.azureedge.net/clip/models/afeb0e10f9e5a86da6080e35cf09123aca3b358a0c3e3b6c78a7b63bc04b6762/RN50.pt",
-    yfcc15m="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/rn50-quickgelu-yfcc15m-455df137.pt",
-    cc12m="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/rn50-quickgelu-cc12m-f000538c.pt"
+    yfcc15m="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/rn50-quickgelu-yfcc15m-455df137.pt",
+    cc12m="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/rn50-quickgelu-cc12m-f000538c.pt"
 )
 
 _RN50_quickgelu = dict(
     openai="https://openaipublic.azureedge.net/clip/models/afeb0e10f9e5a86da6080e35cf09123aca3b358a0c3e3b6c78a7b63bc04b6762/RN50.pt",
-    yfcc15m="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/rn50-quickgelu-yfcc15m-455df137.pt",
-    cc12m="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/rn50-quickgelu-cc12m-f000538c.pt"
+    yfcc15m="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/rn50-quickgelu-yfcc15m-455df137.pt",
+    cc12m="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/rn50-quickgelu-cc12m-f000538c.pt"
 )
 
 _RN101 = dict(
     openai="https://openaipublic.azureedge.net/clip/models/8fa8567bab74a42d41c5915025a8e4538c3bdbe8804a470a72f30b0d94fab599/RN101.pt",
-    yfcc15m="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/rn101-quickgelu-yfcc15m-3e04b30e.pt"
+    yfcc15m="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/rn101-quickgelu-yfcc15m-3e04b30e.pt"
 )
 
 _RN101_quickgelu = dict(
     openai="https://openaipublic.azureedge.net/clip/models/8fa8567bab74a42d41c5915025a8e4538c3bdbe8804a470a72f30b0d94fab599/RN101.pt",
-    yfcc15m="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/rn101-quickgelu-yfcc15m-3e04b30e.pt"
+    yfcc15m="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/rn101-quickgelu-yfcc15m-3e04b30e.pt"
 )
 
 _RN50x4 = dict(
@@ -43,15 +43,15 @@ _RN50x64 = dict(
 
 _VITB32 = dict(
     openai="https://openaipublic.azureedge.net/clip/models/40d365715913c9da98579312b702a82c18be219cc2a73407c4526f58eba950af/ViT-B-32.pt",
-    laion2b_e16="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_32-laion2b_e16-af8dbd0c.pth",
-    laion400m_e31="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_32-quickgelu-laion400m_e31-d867053b.pt",
-    laion400m_e32="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_32-quickgelu-laion400m_e32-46683a32.pt",
+    laion2b_e16="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_b_32-laion2b_e16-af8dbd0c.pth",
+    laion400m_e31="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_b_32-quickgelu-laion400m_e31-d867053b.pt",
+    laion400m_e32="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_b_32-quickgelu-laion400m_e32-46683a32.pt",
 )
 
 _VITB32_quickgelu = dict(
     openai="https://openaipublic.azureedge.net/clip/models/40d365715913c9da98579312b702a82c18be219cc2a73407c4526f58eba950af/ViT-B-32.pt",
-    laion400m_e31="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_32-quickgelu-laion400m_e31-d867053b.pt",
-    laion400m_e32="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_32-quickgelu-laion400m_e32-46683a32.pt",
+    laion400m_e31="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_b_32-quickgelu-laion400m_e31-d867053b.pt",
+    laion400m_e32="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_b_32-quickgelu-laion400m_e32-46683a32.pt",
     metaclip_400m=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_400m.pt", "3c68642594a329afc1ec0fe489ee2b58ab19c9d0556ccf7c404a59baa0762d71"),
     metaclip_2_5b=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt", "885b7ec11fe07a9826e2e6812d70e5011918e32fe9b12136b49d5dded92b4386"),
     metaclip_fullcc=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt", "885b7ec11fe07a9826e2e6812d70e5011918e32fe9b12136b49d5dded92b4386"),
@@ -61,8 +61,8 @@ _VITB32_quickgelu = dict(
 
 _VITB16 = dict(
     openai="https://openaipublic.azureedge.net/clip/models/5806e77cd80f8b59890b7e101eabd078d9fb84e6937f9e85e4ecb61988df416f/ViT-B-16.pt",
-    laion400m_e31="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_16-laion400m_e31-00efa78f.pt",
-    laion400m_e32="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_16-laion400m_e32-55e67d44.pt",
+    laion400m_e31="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_b_16-laion400m_e31-00efa78f.pt",
+    laion400m_e32="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_b_16-laion400m_e32-55e67d44.pt",
 )
 
 _VITB16_quickgelu = dict(
@@ -74,14 +74,14 @@ _VITB16_quickgelu = dict(
 )
 
 _VITB16_PLUS_240 = dict(
-    laion400m_e31="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_16_plus_240-laion400m_e31-8fb26589.pt",
-    laion400m_e32="https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_b_16_plus_240-laion400m_e32-699c4b84.pt",
+    laion400m_e31="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_b_16_plus_240-laion400m_e31-8fb26589.pt",
+    laion400m_e32="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_b_16_plus_240-laion400m_e32-699c4b84.pt",
 )
 
 _VITL14 = dict(
     openai="https://openaipublic.azureedge.net/clip/models/b8cca3fd41ae0c99ba7e8951adf17d267cdb84cd88be6f7c2e0eca1737a03836/ViT-L-14.pt",
-    laion400m_e31='https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_l_14-laion400m_e31-69988bb6.pt',
-    laion400m_e32='https://github.com/mlfoundations/open_clip/releases/download/v0.2-weights/vit_l_14-laion400m_e32-3d133497.pt',
+    laion400m_e31='https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_l_14-laion400m_e31-69988bb6.pt',
+    laion400m_e32='https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_l_14-laion400m_e32-3d133497.pt',
 )
 
 _VITL14_quickgelu = dict(
@@ -102,15 +102,30 @@ _VITH14_quickgelu = dict(
     metaclip_fullcc=("https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_fullcc2.5b.pt", "1286807d5cc8d9a0b12563b47474efb53b9522eb3d7eac5a9a5d39c3a776ad5c"),
 )
 
+_VITH14_quickgelu_worldwide = dict(
+    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_h14_quickgelu_224px_worldwide.pt","9d28636c949d20d9c2e4cb4fd3824082e12d383851b6bfcd65eb33e165c63e37"),
+)
+
 _VITH14 = dict(
     metaclip_v1_2_altogether=("https://dl.fbaipublicfiles.com/MMPT/metaclip/h14_v1.2_altogether.pt", "c4ee0a62c58a38867df142d7be3b0aa1988d6ac49293971b177a03ead6092cc6"),
 )
 
+_VITH14_378_worldwide = dict(
+    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_h14_378px_worldwide.pt", "914d25384ad6655af5309e875abc17619f4a4ce9c2030675bcec7626214341a9"),
+)
 
 _VITbigG14_quickgelu = dict(
     metaclip2_5b=("https://dl.fbaipublicfiles.com/MMPT/metaclip/G14_fullcc2.5b.pt", "5fe2b83c7439e0caa2c855dec9a2eaa54f17f3ced288218564b640ca7953447f"),
     metaclip_2_5b=("https://dl.fbaipublicfiles.com/MMPT/metaclip/G14_fullcc2.5b.pt", "5fe2b83c7439e0caa2c855dec9a2eaa54f17f3ced288218564b640ca7953447f"),
     metaclip_fullcc=("https://dl.fbaipublicfiles.com/MMPT/metaclip/G14_fullcc2.5b.pt", "5fe2b83c7439e0caa2c855dec9a2eaa54f17f3ced288218564b640ca7953447f"),
+)
+
+_VITbigG14_worldwide = dict(
+    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_bigG14_224px_worldwide.pt", "aa87c36904aa607b0f58a6537d965ce08e62073e4204acc38e8a5c586cc83624"),
+)
+
+_VITbigG14_378_worldwide = dict(
+    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_bigG14_378px_worldwide.pt", "42166f47ec5b52771865931c266d5f09b67e031cea2daa6df68bee3c7ca0baa6"),
 )
 
 
@@ -132,7 +147,11 @@ _PRETRAINED = {
     "ViT-L-14-336": _VITL14_336,
     "ViT-H-14-quickgelu": _VITH14_quickgelu,
     "ViT-H-14": _VITH14,
+    "ViT-H-14-quickgelu-worldwide": _VITH14_quickgelu_worldwide,
+    "ViT-H-14-378-worldwide": _VITH14_378_worldwide,
     "ViT-bigG-14-quickgelu": _VITbigG14_quickgelu,
+    "ViT-bigG-14-worldwide": _VITbigG14_worldwide,
+    "ViT-bigG-14-378-worldwide": _VITbigG14_378_worldwide,
 }
 
 

@@ -12,8 +12,8 @@ import torch.nn.functional as F
 
 from collections import defaultdict
 
-from src.open_clip.loss import ClipLoss
-from src.open_clip.transform import get_mean_std
+from src.mini_clip.loss import ClipLoss
+from src.mini_clip.transform import get_mean_std
 from src.training.distributed import is_master, world_info_from_env
 from src.training.zero_shot import zero_shot_eval
 from src.training.checkpoint import save_checkpoint, agg_positions, collect_positions, unwrap_model
@@ -63,7 +63,7 @@ def to_device(batch, device):
 
 
 def build_loss(args):
-    from src.open_clip import loss as loss_module
+    from src.mini_clip import loss as loss_module
     loss_name = args.loss_name if hasattr(args, "loss_name") else "ClipLoss"
     loss_cls = getattr(loss_module, loss_name)
 
