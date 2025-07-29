@@ -123,6 +123,10 @@ conda create -n metaclip python=3.10 pytorch torchvision pytorch-cuda=11.7 tqdm 
     -c anaconda
 ```
 
+## Curation
+
+See [MetaCLIP 2](docs/metaclip2.md) and [MetaCLIP 1](docs/metaclip1.md).
+
 
 ## Bugs or questions?
 
