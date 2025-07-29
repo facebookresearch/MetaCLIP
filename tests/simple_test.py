@@ -3,6 +3,10 @@
 
 import torch
 from PIL import Image
+
+import sys
+sys.path.append('.')
+
 from src.mini_clip.factory import get_tokenizer, create_model_and_transforms
 from src.mini_clip import tokenizer
 
@@ -27,9 +31,10 @@ def test_inference():
 
 
 def test_metaclip2_inference():
-    model, _, preprocess = create_model_and_transforms(
-        "ViT-H-14-quickgelu-worldwide@WorldWideCLIP", pretrained="ckpts/metaclip2_h14_quickgelu_224px_worldwide.pt"
-    )
+    # model, _, preprocess = create_model_and_transforms('ViT-H-14-quickgelu-worldwide@WorldWideCLIP', pretrained='metaclip2_worldwide')
+    # model, _, preprocess = create_model_and_transforms('ViT-H-14-378-worldwide@WorldWideCLIP', pretrained='metaclip2_worldwide')
+    # model, _, preprocess = create_model_and_transforms('ViT-bigG-14-worldwide@WorldWideCLIP', pretrained='metaclip2_worldwide')
+    model, _, preprocess = create_model_and_transforms('ViT-bigG-14-378-worldwide@WorldWideCLIP', pretrained='metaclip2_worldwide')
 
     tokenizer = get_tokenizer("facebook/xlm-v-base")
 
