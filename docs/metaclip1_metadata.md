@@ -1,4 +1,4 @@
-# Building Metadata Entries for MetaCLIP
+# Building Metadata Entries for MetaCLIP 1
 
 tl;dr:
 ```bash

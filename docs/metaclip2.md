@@ -1,4 +1,4 @@
-# MetaCLIP 2: Worldwide Scaling Recipe
+# MetaCLIP 2 Curation
 
 Detailed step-by-step guide for building metadata and curating data for MetaCLIP's worldwide (multilingual) implementation, covering 329 languages.
 
