@@ -18,7 +18,7 @@ from torch.utils.data.distributed import DistributedSampler
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFilter
 
-from src.open_clip.tokenizer import tokenize
+from src.mini_clip.tokenizer import tokenize
 from src.training.data import DataInfo
 from src.training.distributed import world_info_from_env
 
@@ -80,7 +80,7 @@ class IterativeWebDataset(torch.utils.data.IterableDataset):
         if self.positions is not None and self.positions[f"{global_rank}_{worker_id}"] != -1:
             self.global_shard_id = self.positions[f"{global_rank}_{worker_id}"]
             print(f"{global_rank}_{worker_id} restore {self.global_shard_id}")
-            shard_id = self._get_next_shard_id()
+            shard_id = self._get_next_shard_id(shard_id)
         else:
             self.global_shard_id = global_rank * num_workers + worker_id
             shard_id = self.global_shard_id

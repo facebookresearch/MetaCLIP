@@ -21,8 +21,8 @@ import sys
 sys.path.append(".")
 
 from src.training.train import to_device
-from src.open_clip.factory import create_model_and_transforms
-from src.open_clip import model_altogether
+from src.mini_clip.factory import create_model_and_transforms
+from src.mini_clip import model_altogether
 from src.training.train_altogether import llm_decode
 from src.training.checkpoint import load_checkpoint
 

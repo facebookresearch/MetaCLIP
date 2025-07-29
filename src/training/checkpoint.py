@@ -3,7 +3,7 @@
 import torch
 import logging
 
-from src.open_clip.model import resize_pos_embed as _resize_pos_embed
+from src.mini_clip.model import resize_pos_embed as _resize_pos_embed
 
 
 def unwrap_model(model):

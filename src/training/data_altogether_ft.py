@@ -19,11 +19,11 @@ from torchvision.transforms import Normalize, Compose, RandomResizedCrop, Interp
 
 from PIL import Image
 
-from src.open_clip.tokenizer import tokenize
+from src.mini_clip.tokenizer import tokenize
 
 from src.training.distributed import world_info_from_env
 from src.training.data import DataInfo
-from src.open_clip.transform import _convert_to_rgb
+from src.mini_clip.transform import _convert_to_rgb
 
 
 def pad_tokens(tokens: int, prefix_length, pad_token_id, max_seq_len = 77):

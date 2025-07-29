@@ -11,11 +11,11 @@ from typing import Optional, Tuple
 
 import torch
 
-from src.open_clip import model as model_zoo
-from src.open_clip.model import CLIP, convert_weights_to_fp16, resize_pos_embed
-from src.open_clip.openai import load_openai_model
-from src.open_clip.pretrained import get_pretrained_url, download_pretrained
-from src.open_clip.transform import image_transform
+from src.mini_clip import model as model_zoo
+from src.mini_clip.model import CLIP, convert_weights_to_fp16, resize_pos_embed
+from src.mini_clip.openai import load_openai_model
+from src.mini_clip.pretrained import get_pretrained_url, download_pretrained
+from src.mini_clip.transform import image_transform
 from src.training.checkpoint import load_checkpoint
 
 
@@ -59,9 +59,16 @@ def create_model(
     jit: bool = False,
     force_quick_gelu: bool = False,
     pretrained_image: bool = False,
-    clip_model: str = "CLIP",
 ):
-    model_name = model_name.replace('/', '-')  # for callers using old naming with / in ViT names
+    if not isinstance(model_name, dict):
+        if '@' in model_name:
+            logging.info(f'find @ in model_name: {model_name}.')
+            model_name, clip_model = model_name.split('@')
+            clip_model = clip_model.split('#')[0]
+        else:
+            clip_model = "CLIP"
+        model_name = model_name.replace('/', '-')  # for callers using old naming with / in ViT names
+        
 
     if pretrained.lower() == 'openai':
         logging.info(f'Loading pretrained {model_name} from OpenAI.')
@@ -70,7 +77,9 @@ def create_model(
         if precision == "amp" or precision == "fp32":
             model = model.float()
     else:
-        if model_name in _MODEL_CONFIGS:
+        if isinstance(model_name, dict):
+            model_cfg = model_name
+        elif model_name in _MODEL_CONFIGS:
             logging.info(f'Loading {model_name} model config.')
             model_cfg = deepcopy(_MODEL_CONFIGS[model_name])
         else:
@@ -79,7 +88,7 @@ def create_model(
 
         if force_quick_gelu:
             # override for use of QuickGELU on non-OpenAI transformer models
-            model_cfg["quick_gelu"] = True
+            model_cfg["quick_gelu"] = force_quick_gelu
 
         if pretrained_image:
             if 'timm_model_name' in model_cfg.get('vision_cfg', {}):
@@ -87,12 +96,14 @@ def create_model(
                 model_cfg['vision_cfg']['timm_model_pretrained'] = True
             else:
                 assert False, 'pretrained image towers currently only supported for timm models'
-
+            
         import importlib
-        for model_code in os.listdir(f"src/open_clip"):
-            if not model_code.endswith("model.py"):
+        for model_code in os.listdir(f"src/mini_clip"):
+            if not model_code.endswith(".py"):
                 continue
-            module_name = "src.open_clip." + model_code[:-len(".py")]
+            if not model_code.startswith("model"):
+                continue
+            module_name = "src.mini_clip." + model_code[:-len(".py")]
             module = importlib.import_module(module_name)
             if hasattr(module, clip_model):
                 model_cls = getattr(module, clip_model)
@@ -138,17 +149,34 @@ def create_model_and_transforms(
     mean: Optional[Tuple[float, ...]] = None,
     std: Optional[Tuple[float, ...]] = None,
     gpu_trans = False,
-    clip_model: str = "CLIP",
 ):
     model = create_model(
         model_name, pretrained, precision, device, jit,
         force_quick_gelu=force_quick_gelu,
         pretrained_image=pretrained_image,
-        clip_model=clip_model,
     )
+
     preprocess_train = image_transform(model.visual.image_size, is_train=True, mean=mean, std=std, gpu_trans=gpu_trans)
     preprocess_val = image_transform(model.visual.image_size, is_train=False, mean=mean, std=std)
     return model, preprocess_train, preprocess_val
+
+
+def get_tokenizer(
+    tokenizer = None
+):
+    if tokenizer is None or tokenizer == 'None':
+        from src.mini_clip.tokenizer import tokenize            
+        return tokenize
+    else:
+        from transformers import AutoTokenizer
+        os.environ["TOKENIZERS_PARALLELISM"] = "false"
+        tokenizer = AutoTokenizer.from_pretrained(tokenizer, use_fast=True)
+
+        def tokenize_fn(txt_list):
+            input_ids = tokenizer(txt_list, return_tensors='pt', padding='max_length', truncation=True, max_length=77)['input_ids']
+            return input_ids
+
+        return tokenize_fn
 
 
 def list_models():

@@ -9,8 +9,8 @@ import logging
 import torch
 import json
 
-from open_clip import tokenize
-from open_clip import create_model_and_transforms, get_mean_std
+from mini_clip import tokenize
+from mini_clip import create_model_and_transforms, get_mean_std
 
 from training.distributed import init_distributed_device
 from training.logger import setup_logging

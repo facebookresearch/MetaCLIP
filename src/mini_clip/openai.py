@@ -10,8 +10,8 @@ from typing import Union, List
 
 import torch
 
-from src.open_clip.model import build_model_from_openai_state_dict
-from src.open_clip.pretrained import get_pretrained_url, list_pretrained_tag_models, download_pretrained
+from src.mini_clip.model import build_model_from_openai_state_dict
+from src.mini_clip.pretrained import get_pretrained_url, list_pretrained_tag_models, download_pretrained
 
 __all__ = ["list_openai_models", "load_openai_model"]
 

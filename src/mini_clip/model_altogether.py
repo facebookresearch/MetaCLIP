@@ -157,7 +157,7 @@ class Altogether(nn.Module):
         super().__init__()
         self.prefix_length = prefix_length
 
-        # from src.open_clip.model_altogether.llama_flash_attn_monkey_patch import replace_llama_attn_with_flash_attn
+        # from src.mini_clip.model_altogether.llama_flash_attn_monkey_patch import replace_llama_attn_with_flash_attn
         # replace_llama_attn_with_flash_attn()
         self.gpt = AutoModelForCausalLM.from_pretrained(
             decoder,

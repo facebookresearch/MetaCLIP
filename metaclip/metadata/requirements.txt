@@ -1,0 +1,9 @@
+ckip-transformers
+ipadic
+mecab-python3
+thai-segmenter
+laonlp
+python-crfsuite
+sklearn-crfsuite
+wget
+botok
