@@ -1,4 +1,4 @@
-# MetaCLIP Data Pipeline
+# MetaCLIP 1 Data Pipeline
 
 This is a minimal demo/skeleton code of CLIP curation, please check Algorithm 1 in [MetaCLIP paper](https://arxiv.org/pdf/2309.16671.pdf).
 **This is not the pipeline used to collect data in paper**.
