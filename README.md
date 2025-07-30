@@ -2,7 +2,7 @@
 
 [FAIR, Meta](https://ai.meta.com/research/)
 
-[![arXiv](https://img.shields.io/badge/arXiv-xxxx.xxxxx-b31b1b)](https://arxiv.org/abs/xxxx.xxxxx) [![arXiv](https://img.shields.io/badge/arXiv-2309.16671-b31b1b)](https://arxiv.org/abs/2309.16671) [![Hugging Face Collection](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Collection-blue)](https://huggingface.co/collections/facebook/meta-clip-687e97787e9155bc480ef446) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1V0Rv1QQJkcolTjiwJuRsqWycROvYjOwg?usp=sharing) [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/activebus/MetaCLIP)
+[![arXiv](https://img.shields.io/badge/arXiv-2507.22062-b31b1b)](https://arxiv.org/abs/2507.22062) [![arXiv](https://img.shields.io/badge/arXiv-2309.16671-b31b1b)](https://arxiv.org/abs/2309.16671) [![Hugging Face Collection](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Collection-blue)](https://huggingface.co/collections/facebook/meta-clip-687e97787e9155bc480ef446) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1V0Rv1QQJkcolTjiwJuRsqWycROvYjOwg?usp=sharing) [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/activebus/MetaCLIP)
 
 <img src="docs/metaclip2_scaling.png" style="width: 50%; margin: 0 auto; display: block;" />
 <img src="docs/metaclip2_teaser.png" style="width: 80%; margin: 0 auto; display: block;" />
@@ -15,7 +15,7 @@ With a complete recipe for worldwide CLIP—spanning data curation, modeling, an
 
 
 ## Updates
-* 07/29/2025: 🔥 [MetaCLIP 2 (worldwide)](https://arxiv.org/abs/xxxx.xxxxx) is released.
+* 07/29/2025: 🔥 [MetaCLIP 2 (worldwide)](https://arxiv.org/abs/2507.22062) is released.
 * 12/10/2024: 🔥 MetaCLIPv1.2 (ViT-H/14) trained with Altogether synthetic captions is released.
 * 10/09/2024: 🔥 [Altogether: Image Captioning via Re-aligning Alt-text](https://arxiv.org/abs/2410.17251) (aka MetaCLIPv1.2) is accepted by EMNLP 2024 with [code](altogether/README.md) released.
 * 08/15/2024: [v0.1](https://github.com/facebookresearch/MetaCLIP/releases/tag/v0.1) released.
@@ -140,10 +140,10 @@ Please cite the following paper if MetaCLIP helps your work:
 
 ```bibtex
 ```bibtex
-@inproceedings{Chuang2025metaclip2,
+@inproceedings{chuang2025metaclip2,
    title={MetaCLIP 2: A Worldwide Scaling Recipe},
    author={Yung-Sung Chuang, Yang Li, Dong Wang, Ching-Feng Yeh, Kehan Lyu, Ramya Raghavendra, James Glass, Lifei Huang, Jason Weston, Luke Zettlemoyer, Xinlei Chen, Zhuang Liu, Saining Xie, Wen-tau Yih, Shang-Wen Li and Hu Xu},
-   journal={arXiv preprint arXiv:xxxx.xxxxx},
+   journal={arXiv preprint arXiv:2507.22062},
    year={2025}
 }
 
