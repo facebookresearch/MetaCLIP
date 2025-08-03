@@ -4,7 +4,7 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-2507.22062-b31b1b)](https://arxiv.org/abs/2507.22062) [![arXiv](https://img.shields.io/badge/arXiv-2309.16671-b31b1b)](https://arxiv.org/abs/2309.16671) [![Hugging Face Collection](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Collection-blue)](https://huggingface.co/collections/facebook/meta-clip-687e97787e9155bc480ef446) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1V0Rv1QQJkcolTjiwJuRsqWycROvYjOwg?usp=sharing) [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/activebus/MetaCLIP)
 
-<img src="docs/metaclip2_scaling.png" style="width: 50%; margin: 0 auto; display: block;" />
+<img src="docs/metaclip2_scaling.gif" style="width: 50%; margin: 0 auto; display: block;" />
 <img src="docs/metaclip2_teaser.png" style="width: 80%; margin: 0 auto; display: block;" />
 
 After years of advancements in English-centric CLIP development, MetaCLIP 2 is now taking the next step: scaling CLIP to worldwide data. The effort addresses long-standing challenges:
@@ -177,7 +177,7 @@ The training code is developed based on [OpenCLIP](https://github.com/mlfoundati
 ## TODO
 - pip installation of metaclip package;
 - refactor mini_clip with apps for MoDE, altogether.
-
+- more updates for Meta CLIP 2: metadata, data loader, training code. 
 
 ## License
 
