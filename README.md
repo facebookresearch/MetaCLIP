@@ -43,7 +43,7 @@ model, _, preprocess = create_model_and_transforms('ViT-H-14-quickgelu-worldwide
 tokenizer = get_tokenizer("facebook/xlm-v-base")
 
 image = preprocess(Image.open("docs/CLIP.png")).unsqueeze(0)
-text = tokenize(["a diagram", "a dog", "a cat"])
+text = tokenizer(["a diagram", "a dog", "a cat"])
 
 with torch.no_grad():
     image_features = model.encode_image(image)
