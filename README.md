@@ -40,10 +40,10 @@ from src.mini_clip.factory import create_model_and_transforms, get_tokenizer
 
 
 model, _, preprocess = create_model_and_transforms('ViT-H-14-quickgelu-worldwide@WorldWideCLIP', pretrained='metaclip2_worldwide')
-tokenizer = get_tokenizer("facebook/xlm-v-base")
+tokenize = get_tokenizer("facebook/xlm-v-base")
 
 image = preprocess(Image.open("docs/CLIP.png")).unsqueeze(0)
-text = tokenizer(["a diagram", "a dog", "a cat"])
+text = tokenize(["a diagram", "a dog", "a cat"])
 
 with torch.no_grad():
     image_features = model.encode_image(image)
