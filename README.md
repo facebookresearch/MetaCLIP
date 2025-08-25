@@ -17,7 +17,7 @@ With a complete recipe for worldwide CLIP—spanning data curation, modeling, an
 ## Updates
 * 08/25/2025: 🔥 [Meta CLIP 2 (worldwide)](https://arxiv.org/abs/2507.22062) is on [open_clip](https://github.com/mlfoundations/open_clip/blob/main/src/open_clip/pretrained.py) and [Huggingface](https://huggingface.co/collections/facebook/meta-clip-687e97787e9155bc480ef446).
 * 07/29/2025: 🔥 [Meta CLIP 2 (worldwide)](https://arxiv.org/abs/2507.22062) is released.
-* 12/10/2024: 🔥 MetaCLIPv1.2 (ViT-H/14) trained with Altogether synthetic captions is released.
+* 12/10/2024: 🔥 Meta CLIP 1.2 (ViT-H/14) trained with Altogether synthetic captions is released.
 * 10/09/2024: 🔥 [Altogether: Image Captioning via Re-aligning Alt-text](https://arxiv.org/abs/2410.17251) (aka Meta CLIP 1.2) is accepted by EMNLP 2024 with [code](altogether/README.md) released.
 * 08/15/2024: [v0.1](https://github.com/facebookresearch/MetaCLIP/releases/tag/v0.1) released.
 * 04/25/2024: 🔥 paper [MoDE: CLIP Data Experts via Clustering](https://arxiv.org/abs/2404.16030) is accepted by CVPR 2024 with [code](mode/README.md) released.
