@@ -7,7 +7,7 @@
 <img src="docs/metaclip2_scaling.gif" style="width: 50%; margin: 0 auto; display: block;" />
 <img src="docs/metaclip2_teaser.png" style="width: 80%; margin: 0 auto; display: block;" />
 
-After years of advancements in English-centric CLIP development, MetaCLIP 2 is now taking the next step: scaling CLIP to worldwide data. The effort addresses long-standing challenges:
+After years of advancements in English-centric CLIP development, Meta CLIP 2 is now taking the next step: scaling CLIP to worldwide data. The effort addresses long-standing challenges:
 - large-scale non-English data curation pipelines are largely undeveloped;
 - the curse of multilinguality, where English performance often degrades in multilingual CLIP compared to English-only CLIP.
 
@@ -15,15 +15,16 @@ With a complete recipe for worldwide CLIP—spanning data curation, modeling, an
 
 
 ## Updates
-* 07/29/2025: 🔥 [MetaCLIP 2 (worldwide)](https://arxiv.org/abs/2507.22062) is released.
+* 08/25/2025: 🔥 [Meta CLIP 2 (worldwide)](https://arxiv.org/abs/2507.22062) is on [open_clip](https://github.com/mlfoundations/open_clip/blob/main/src/open_clip/pretrained.py) and [Huggingface](https://huggingface.co/collections/facebook/meta-clip-687e97787e9155bc480ef446).
+* 07/29/2025: 🔥 [Meta CLIP 2 (worldwide)](https://arxiv.org/abs/2507.22062) is released.
 * 12/10/2024: 🔥 MetaCLIPv1.2 (ViT-H/14) trained with Altogether synthetic captions is released.
-* 10/09/2024: 🔥 [Altogether: Image Captioning via Re-aligning Alt-text](https://arxiv.org/abs/2410.17251) (aka MetaCLIPv1.2) is accepted by EMNLP 2024 with [code](altogether/README.md) released.
+* 10/09/2024: 🔥 [Altogether: Image Captioning via Re-aligning Alt-text](https://arxiv.org/abs/2410.17251) (aka Meta CLIP 1.2) is accepted by EMNLP 2024 with [code](altogether/README.md) released.
 * 08/15/2024: [v0.1](https://github.com/facebookresearch/MetaCLIP/releases/tag/v0.1) released.
 * 04/25/2024: 🔥 paper [MoDE: CLIP Data Experts via Clustering](https://arxiv.org/abs/2404.16030) is accepted by CVPR 2024 with [code](mode/README.md) released.
 * 01/18/2024: 🔥 add [code](metaclip/README_metadata.md) for building metadata.
 * 01/16/2024: 🔥 paper accepted by ICLR as [spotlight presentation](https://openreview.net/group?id=ICLR.cc/2024/Conference#tab-accept-spotlight).
 * 12/25/2023: [Huggingface Space](https://huggingface.co/spaces/activebus/MetaCLIP) demo and [Colab](https://colab.research.google.com/drive/1V0Rv1QQJkcolTjiwJuRsqWycROvYjOwg?usp=sharing) released.
-* 12/21/2023: MetaCLIPv1.1 (ViT-G/14) released.
+* 12/21/2023: Meta CLIP 1.1 (ViT-G/14) released.
 * 09/28/2023: initial release.
 
 
@@ -59,14 +60,20 @@ print("Label probs:", text_probs)
 
 
 <details>
-<summary>Huggingface (MetaCLIP 1 only)</summary>
+<summary>Huggingface</summary>
 
 ```python
 from PIL import Image
 from transformers import AutoProcessor, AutoModel
 
+
+# Meta CLIP 1
 processor = AutoProcessor.from_pretrained("facebook/metaclip-b32-400m")
 model = AutoModel.from_pretrained("facebook/metaclip-b32-400m")
+
+# Meta CLIP 2
+# model = AutoModel.from_pretrained("facebook/metaclip-2-worldwide-huge-quickgelu")
+# processor = AutoProcessor.from_pretrained("facebook/metaclip-2-worldwide-huge-quickgelu")
 
 image = Image.open("docs/CLIP.png")
 inputs = processor(text=["a diagram", "a dog", "a cat"], images=image, return_tensors="pt", padding=True)
@@ -81,10 +88,10 @@ print("Label probs:", text_probs)
 
 ## Pre-trained Models
 
-MetaCLIP closely adhere to OpenAI CLIP training and model setup (you mostly just need to replace the weights): **to promote rigorous ablation studies and advance scientific understanding**, as in the old "era of ImageNet".
+Meta CLIP closely adhere to OpenAI CLIP training and model setup (you mostly just need to replace the weights): **to promote rigorous ablation studies and advance scientific understanding**, as in the old "era of ImageNet".
 
 
-MetaCLIP 2
+Meta CLIP 2
 
 |    `model_name`     | `pretrained` | Data Card | # of Seen Pairs | Res. | CVQA-LOCAL ZS Acc. |
 |:--------------------|:-------------|:---------:|:---------:|:---------:|:--------------:|
@@ -94,10 +101,10 @@ MetaCLIP 2
 | `ViT-bigG-14-378-worldwide` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_bigG14_378px_worldwide.pt) | Online Curation | 29B | 378 | 62.0 |
 
 
-(WIP): MetaCLIP 2: distilled smaller models and tokenizers.
+(WIP): Meta CLIP 2: distilled smaller models and tokenizers.
 
 
-MetaCLIP 1
+Meta CLIP 1
 
 |    `model_name`     | `pretrained` | Data Card | # of Seen Pairs | Res. | GPUs | IN ZS Acc. |
 |:--------------------|:-------------|:---------:|:---------:|:---------:|:---------:|:--------------:|
@@ -181,7 +188,7 @@ The training code is developed based on [OpenCLIP](https://github.com/mlfoundati
 
 ## License
 
-The majority of MetaCLIP is licensed under CC-BY-NC, however portions of the project are available under separate license terms: open_clip is licensed under the https://github.com/mlfoundations/open_clip license.
+The majority of Meta CLIP is licensed under CC-BY-NC, however portions of the project are available under separate license terms: open_clip is licensed under the https://github.com/mlfoundations/open_clip license.
 
 ## Acknowledgement
 We gratefully acknowledge the [OpenCLIP](https://github.com/mlfoundations/open_clip) team for initial CLIP codebase and integration and [NielsRogge](https://github.com/NielsRogge)'s integration into [Huggingface](https://huggingface.co/models?other=metaclip).
