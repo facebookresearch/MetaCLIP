@@ -58,10 +58,10 @@ class IterativeWebDataset(torch.utils.data.IterableDataset):
         return os.path.join(self.root_dir, f"{shard_id % 100}", f"{shard_id}.tar")
 
     def _get_next_shard_id(self, shard_id):
-        self.global_shard_id += self.worker_size
-        self.global_shard_id = shard_id % self.num_shards
-        return self.global_shard_id
-
+        shard_id += self.worker_size
+        shard_id = shard_id % self.num_shards
+        return shard_id
+    
     def _get_worker_info(self):
         worker_info = torch.utils.data.get_worker_info()
         if worker_info is None:
@@ -77,13 +77,12 @@ class IterativeWebDataset(torch.utils.data.IterableDataset):
     def __iter__(self):
         (global_rank, worker_id), num_workers, worker_size = self._get_worker_info()
         
-        if self.positions is not None and self.positions[f"{global_rank}_{worker_id}"] != -1:
-            self.global_shard_id = self.positions[f"{global_rank}_{worker_id}"]
-            print(f"{global_rank}_{worker_id} restore {self.global_shard_id}")
+        if self.positions is not None and f"{global_rank}_{worker_id}" in self.positions and self.positions[f"{global_rank}_{worker_id}"] != -1:
+            shard_id = self.positions[f"{global_rank}_{worker_id}"]
+            print(f"{global_rank}_{worker_id} restore {shard_id}")
             shard_id = self._get_next_shard_id(shard_id)
         else:
-            self.global_shard_id = global_rank * num_workers + worker_id
-            shard_id = self.global_shard_id
+            shard_id = global_rank * num_workers + worker_id
 
         while True:
             tarball_path = self._get_tarball_path(shard_id)
