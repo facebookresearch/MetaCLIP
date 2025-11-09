@@ -101,10 +101,6 @@ _VITB16_worldwide = dict(
     metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b16_224px_worldwide.pt", "f9a1f207ac79f78fe99dd252ded562031b587595b19a8b8ca36b89d36c6eb347"),
 )
 
-_VITB16_mT5_worldwide = dict(
-    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b16_224px_mt5_worldwide.pt", "13c63fa219c8458ccce67edec96c2f4a3803a326ef538e13224be062c0dd452a"),
-)
-
 _VITB16_PLUS_240 = dict(
     laion400m_e31="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_b_16_plus_240-laion400m_e31-8fb26589.pt",
     laion400m_e32="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_b_16_plus_240-laion400m_e32-699c4b84.pt",
@@ -184,7 +180,6 @@ _PRETRAINED = {
     "ViT-B-16": _VITB16,
     "ViT-B-16-quickgelu": _VITB16_quickgelu,
     "ViT-B-16-worldwide": _VITB16_worldwide,
-    "ViT-B-16-mT5-worldwide": _VITB16_mT5_worldwide,
     "ViT-B-16-plus-240": _VITB16_PLUS_240,
     "ViT-L-14": _VITL14,
     "ViT-L-14-quickgelu": _VITL14_quickgelu,
