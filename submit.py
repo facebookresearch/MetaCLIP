@@ -15,7 +15,6 @@ from pathlib import Path
 import sys
 sys.path.append("./")
 
-import src.training.main as main
 import submitit
 
 
@@ -62,9 +61,20 @@ class Trainer(object):
     def __call__(self):
         import sys
         sys.path.append("./")
-        import src.training.main as main
+
+        import importlib
+        if hasattr(self.args.config, "main_func"):
+            main_func_str = self.args.config.main_func
+        else:
+            main_func_str = "src.training.main.main"
+
+        module_name, func_name = main_func_str.rsplit('.', 1)
+
+        module = importlib.import_module(module_name)
+        main_func = getattr(module, func_name)
+
         self._setup_gpu_args()
-        main.main(self.args.config)
+        main_func(self.args.config)
 
     def checkpoint(self):
         import os
