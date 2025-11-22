@@ -15,15 +15,16 @@ With a complete recipe for worldwide CLIP—spanning data curation, modeling, an
 
 
 ## Updates
-* 09/18/2025: 🔥 paper [Meta CLIP 2 (worldwide)](https://arxiv.org/abs/2507.22062) accepted by NeurIPS 2025 as spotlight presentation.
-* 08/25/2025: 🔥 [Meta CLIP 2 (worldwide)](https://arxiv.org/abs/2507.22062) is on [open_clip](https://github.com/mlfoundations/open_clip/blob/main/src/open_clip/pretrained.py) and [Huggingface](https://huggingface.co/collections/facebook/meta-clip-687e97787e9155bc480ef446).
-* 07/29/2025: 🔥 paper [Meta CLIP 2: A Worldwide Scaling Recipe](https://arxiv.org/abs/2507.22062) (aka Meta CLIP 2 worldwide) is released.
-* 12/10/2024: 🔥 Meta CLIP 1.2 (ViT-H/14) trained with Altogether synthetic captions is released.
-* 10/09/2024: 🔥 [Altogether: Image Captioning via Re-aligning Alt-text](https://arxiv.org/abs/2410.17251) (aka Meta CLIP 1.2) is accepted by EMNLP 2024 with [code](altogether/README.md) released.
+* 11/21/2025: distillled models, training/eval code for Meta CLIP 2 are out.
+* 09/18/2025: 🔥 paper [Meta CLIP 2 (worldwide)](https://arxiv.org/abs/2507.22062) accepted by NeurIPS 2025 as a spotlight presentation.
+* 08/25/2025: [Meta CLIP 2 (worldwide)](https://arxiv.org/abs/2507.22062) is on [open_clip](https://github.com/mlfoundations/open_clip/blob/main/src/open_clip/pretrained.py) and [Huggingface](https://huggingface.co/collections/facebook/meta-clip-687e97787e9155bc480ef446).
+* 07/29/2025: paper [Meta CLIP 2: A Worldwide Scaling Recipe](https://arxiv.org/abs/2507.22062) (aka Meta CLIP 2 worldwide) is released.
+* 12/10/2024: Meta CLIP 1.2 (ViT-H/14) trained with Altogether synthetic captions is released.
+* 10/09/2024: [Altogether: Image Captioning via Re-aligning Alt-text](https://arxiv.org/abs/2410.17251) (aka Meta CLIP 1.2) is accepted by EMNLP 2024 with [code](altogether/README.md) released.
 * 08/15/2024: [v0.1](https://github.com/facebookresearch/MetaCLIP/releases/tag/v0.1) released.
-* 04/25/2024: 🔥 paper [MoDE: CLIP Data Experts via Clustering](https://arxiv.org/abs/2404.16030) is accepted by CVPR 2024 with [code](mode/README.md) released.
-* 01/18/2024: 🔥 add [code](metaclip/README_metadata.md) for building metadata.
-* 01/16/2024: 🔥 paper [Demystifying CLIP Data](https://arxiv.org/pdf/2309.16671) accepted by ICLR as [spotlight presentation](https://openreview.net/group?id=ICLR.cc/2024/Conference#tab-accept-spotlight).
+* 04/25/2024: paper [MoDE: CLIP Data Experts via Clustering](https://arxiv.org/abs/2404.16030) is accepted by CVPR 2024 with [code](mode/README.md) released.
+* 01/18/2024: add [code](metaclip/README_metadata.md) for building metadata.
+* 01/16/2024: paper [Demystifying CLIP Data](https://arxiv.org/pdf/2309.16671) accepted by ICLR as [spotlight presentation](https://openreview.net/group?id=ICLR.cc/2024/Conference#tab-accept-spotlight).
 * 12/25/2023: [Huggingface Space](https://huggingface.co/spaces/activebus/MetaCLIP) demo and [Colab](https://colab.research.google.com/drive/1V0Rv1QQJkcolTjiwJuRsqWycROvYjOwg?usp=sharing) released.
 * 12/21/2023: Meta CLIP 1.1 (ViT-G/14) released.
 * 09/28/2023: initial release.
@@ -96,22 +97,22 @@ Meta CLIP 2
 
 |    `model_name`     | `pretrained` | Tokenizer | Data Card | # of Seen Pairs | Res. | CVQA-LOCAL ZS Acc. |
 |:--------------------|:-------------|:----------|:---------:|:---------:|:---------:|:--------------:|
-| `ViT-H-14-quickgelu-worldwide` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_h14_quickgelu_224px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 224 | 57.4 |
-| `ViT-H-14-378-worldwide` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_h14_378px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 378 | 58.2 |
-| `ViT-bigG-14-worldwide` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_bigG14_224px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 224 | 60.7 |
-| `ViT-bigG-14-378-worldwide` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_bigG14_378px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 378 | 62.0 |
+| `ViT-H-14-quickgelu-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_h14_quickgelu_224px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 224 | 57.4 |
+| `ViT-H-14-378-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_h14_378px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 378 | 58.2 |
+| `ViT-bigG-14-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_bigG14_224px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 224 | 60.7 |
+| `ViT-bigG-14-378-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_bigG14_378px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 378 | 62.0 |
 
 Meta CLIP 2 Distilled
 |    `model_name`     | `pretrained` | Tokenizer | Data Card | # of Seen Pairs | Res. | CVQA-LOCAL ZS Acc. |
 |:--------------------|:-------------|:----------|:---------:|:---------:|:---------:|:---------:|
-| `ViT-S-16-worldwide` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_s16_224px_worldwide.pt) | `facebook/xlm-v-base`| Online Curation | 29B | 224 | 46.9 |
-| `ViT-S-16-mT5-worldwide` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_s16_224px_mt5_worldwide.pt) | `google/siglip-so400m-patch16-256-i18n` | Online Curation | 29B | 224 | 42.8 |
-| `ViT-M-16-worldwide` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_m16_224px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 224 | 49.3 |
-| `ViT-M-16-mT5-worldwide` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_m16_224px_mt5_worldwide.pt) | `google/siglip-so400m-patch16-256-i18n` | Online Curation | 29B | 224 | 48.7 |
-| `ViT-B-32-worldwide` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b32_224px_worldwide.pt) | `facebook/xlm-v-base`| Online Curation | 29B | 224 | 49.1 |
-| `ViT-B-32-mT5-worldwide` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b32_224px_mt5_worldwide.pt) | `google/siglip-so400m-patch16-256-i18n` | Online Curation | 29B | 224 | 48.4 |
-| `ViT-B-16-worldwide` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b16_224px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 224 | 50.9 |
-| `ViT-L-14-worldwide` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_l14_224px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 224 | 56.5 |
+| `ViT-S-16-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_s16_224px_worldwide.pt) | `facebook/xlm-v-base`| Online Curation | 29B | 224 | 46.9 |
+| `ViT-S-16-mT5-worldwide@mT5WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_s16_224px_mt5_worldwide.pt) | `google/siglip-so400m-patch16-256-i18n` | Online Curation | 29B | 224 | 42.8 |
+| `ViT-M-16-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_m16_224px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 224 | 49.3 |
+| `ViT-M-16-mT5-worldwide@mT5WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_m16_224px_mt5_worldwide.pt) | `google/siglip-so400m-patch16-256-i18n` | Online Curation | 29B | 224 | 48.7 |
+| `ViT-B-32-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b32_224px_worldwide.pt) | `facebook/xlm-v-base`| Online Curation | 29B | 224 | 49.1 |
+| `ViT-B-32-mT5-worldwide@mT5WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b32_224px_mt5_worldwide.pt) | `google/siglip-so400m-patch16-256-i18n` | Online Curation | 29B | 224 | 48.4 |
+| `ViT-B-16-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b16_224px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 224 | 50.9 |
+| `ViT-L-14-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_l14_224px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 224 | 56.5 |
 
 
 Meta CLIP 1
