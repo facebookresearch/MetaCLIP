@@ -13,7 +13,7 @@ from tqdm import tqdm
 import argparse
 from transformers import AutoModel, AutoTokenizer
 
-from src.training.distributed import init_distributed_device
+from training.distributed import init_distributed_device
 
 from get_prep_parser import get_args_parser, get_default_paths
 from prep_caption import gather_caption_from_tarfile, get_tarfile_path

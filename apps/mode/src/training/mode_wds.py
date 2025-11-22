@@ -17,10 +17,10 @@ from torch.utils.data.distributed import DistributedSampler
 
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFilter
-from training.distributed import world_info_from_env
+from src.training.distributed import world_info_from_env
 
-from open_clip import tokenize
-from .data import DataInfo
+from src.mini_clip import tokenize
+from apps.mode.src.training.data import DataInfo
 import pdb
 
 

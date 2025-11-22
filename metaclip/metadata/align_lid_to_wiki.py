@@ -12,7 +12,7 @@ sys.path.append(".")
 
 from metaclip.metadata.build_metadata import wiki_lang_code, is_punctuation
 
-from metaclip.curation.substr_matching import lid_to_wiki, get_spaced_metadata_ml, initialize_automaton, substr_match, spacing
+from metaclip.curation.substr_matching import lid_to_wiki, get_spaced_metadata, initialize_automaton, substr_match, spacing
 
 
 output_dir = f"data/metadata"
@@ -72,7 +72,7 @@ for wiki_code_key in merged_wiki_code:
     with open(f'{output_dir}/{wiki_code_key}.json', "w") as f:
         json.dump(metadata, f)
     
-    spaced_metadata = get_spaced_metadata_ml(metadata)
+    spaced_metadata = get_spaced_metadata(metadata)
     automaton = initialize_automaton(spaced_metadata)
 
     with open(f'{output_dir}/{wiki_code_key}.pkl', 'wb') as f:

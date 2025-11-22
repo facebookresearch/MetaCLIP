@@ -35,7 +35,7 @@ Config `config/altogether.py` to the proper path.
 Single GPU Testing
 
 ```bash
-python src/training/main.py altogether
+python apps/altogether/src/training/main.py altogether
 ```
 
 2 Nodes training via SLURM 
@@ -47,7 +47,7 @@ python submit.py altogether  # --resume epoch_pt.pt  # for fine-tuning from exis
 ## Inference
 
 ```bash
-python altogether/infer.py altogether:epoch_ft.pt <your_wds_path> <output_path>
+python apps/altogether/infer.py altogether:epoch_ft.pt <your_wds_path> <output_path>
 ```
 
 ## MetaCLIPv1.2

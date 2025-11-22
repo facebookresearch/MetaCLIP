@@ -31,28 +31,43 @@ def test_inference():
 
 
 def test_metaclip2_inference():
-    # model, _, preprocess = create_model_and_transforms('ViT-H-14-quickgelu-worldwide@WorldWideCLIP', pretrained='metaclip2_worldwide')
-    # model, _, preprocess = create_model_and_transforms('ViT-H-14-378-worldwide@WorldWideCLIP', pretrained='metaclip2_worldwide')
-    # model, _, preprocess = create_model_and_transforms('ViT-bigG-14-worldwide@WorldWideCLIP', pretrained='metaclip2_worldwide')
-    model, _, preprocess = create_model_and_transforms('ViT-bigG-14-378-worldwide@WorldWideCLIP', pretrained='metaclip2_worldwide')
 
-    tokenizer = get_tokenizer("facebook/xlm-v-base")
+    models = [
+        ('ViT-S-16-worldwide@WorldWideCLIP', 'metaclip2_worldwide'),
+        ('ViT-M-16-worldwide@WorldWideCLIP', 'metaclip2_worldwide'),
+        ('ViT-B-32-worldwide@WorldWideCLIP', 'metaclip2_worldwide'),
+        ('ViT-B-16-worldwide@WorldWideCLIP', 'metaclip2_worldwide'),
+        ('ViT-L-14-worldwide@WorldWideCLIP', 'metaclip2_worldwide'),
 
-    current_dir = os.path.dirname(os.path.realpath(__file__))
+        ('ViT-S-16-worldwide@mT5WorldWideCLIP', 'metaclip2_worldwide'),
+        ('ViT-M-16-worldwide@mT5WorldWideCLIP', 'metaclip2_worldwide'),
+        ('ViT-B-32-worldwide@mT5WorldWideCLIP', 'metaclip2_worldwide'),
+        ('ViT-B-16-worldwide@mT5WorldWideCLIP', 'metaclip2_worldwide'),
 
-    image = preprocess(Image.open(current_dir + "/../docs/CLIP.png")).unsqueeze(
-        0
-    )
-    text = tokenizer(["a diagram", "a dog", "a cat"])
+        # ('ViT-H-14-quickgelu-worldwide@WorldWideCLIP', 'metaclip2_worldwide'),
+        # ('ViT-H-14-378-worldwide@WorldWideCLIP', 'metaclip2_worldwide'),
+        # ('ViT-bigG-14-worldwide@WorldWideCLIP', 'metaclip2_worldwide'),
+        # ('ViT-bigG-14-378-worldwide@WorldWideCLIP', 'metaclip2_worldwide'),
+    ]
+
+    for model_name, pretrained in models:
+        model, _, preprocess = create_model_and_transforms(model_name, pretrained=pretrained)
+
+        tokenizer = get_tokenizer("facebook/xlm-v-base")
+
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+
+        image = preprocess(Image.open(current_dir + "/../docs/CLIP.png")).unsqueeze(0)
+        text = tokenizer(["a diagram", "a dog", "a cat"])
     
-    with torch.no_grad():
-        image_features = model.encode_image(image)
-        text_features = model.encode_text(text)
-
-        text_probs = (100.0 * image_features @ text_features.T).softmax(dim=-1)
-
-    text_probs = text_probs.cpu().numpy()[0].tolist()
-    assert text_probs[0] > text_probs[1] and text_probs[0] > text_probs[2]
+        with torch.no_grad():
+            image_features = model.encode_image(image)
+            text_features = model.encode_text(text)
+    
+            text_probs = (100.0 * image_features @ text_features.T).softmax(dim=-1)
+    
+        text_probs = text_probs.cpu().numpy()[0].tolist()
+        assert text_probs[0] > text_probs[1] and text_probs[0] > text_probs[2]
 
 
 if __name__ == "__main__":

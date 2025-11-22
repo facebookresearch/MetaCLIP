@@ -29,7 +29,7 @@ from src.training.data import get_data
 from src.training.distributed import is_master, init_distributed_device, world_info_from_env
 from src.training.logger import setup_logging
 from src.training.scheduler import cosine_lr
-from src.training import train
+from apps.multi_distill import train
 from src.training.checkpoint import load_checkpoint, unwrap_model
 
 
@@ -41,7 +41,7 @@ def random_seed(seed=42, rank=0):
 
 def main(args):
     # sanitize model name for filesystem / uri use, easier if we don't use / in name as a rule?
-    args.model = args.model.replace('/', '-')
+    args.model = [model_str.replace('/', '-') for model_str in args.model]
 
     # get the name of the experiments
     if args.name is None:
@@ -107,35 +107,55 @@ def main(args):
 
     mean, std = get_mean_std()
 
-    model, preprocess_train, preprocess_val = create_model_and_transforms(
-        args.model,
-        args.pretrained,
-        precision=args.precision,
-        device=device,
-        jit=args.torchscript,
-        force_quick_gelu=args.force_quick_gelu,
-        pretrained_image=args.pretrained_image,
-        mean=mean, std=std,
-        gpu_trans=args.gpu_trans if hasattr(args, "gpu_trans") else False,
-    )
+    if isinstance(args.model, str):
+        args.model = [args.model]
+        args.pretrained = [args.pretrained]
+
+    models = []
+    for model_name, pretrained in zip(args.model, args.pretrained):
+        model, preprocess_train, preprocess_val = create_model_and_transforms(
+            model_name,
+            pretrained,
+            precision=args.precision,
+            device=device,
+            jit=args.torchscript,
+            force_quick_gelu=args.force_quick_gelu,
+            pretrained_image=args.pretrained_image,
+            mean=mean, std=std,
+            gpu_trans=args.gpu_trans if hasattr(args, "gpu_trans") else False,
+            clip_model=args.clip_model,
+        )
+        models.append(model)
+
+    args.distill = hasattr(args, "distill_model") and hasattr(args, "distill_pretrained")
+    if args.distill:
+        # FIXME: currently assumes the model you're distilling from has the same tokenizer & transforms.
+        dist_model, _, _ = create_model_and_transforms(
+            args.distill_model,
+            args.distill_pretrained,
+            device=device,
+            precision=args.precision,
+        )
 
     random_seed(args.seed, args.rank)
 
     if args.grad_checkpointing:
-        model.set_grad_checkpointing()
+        for model in models:
+            model.set_grad_checkpointing()
 
     if is_master(args):
-        logging.info("Model:")
-        logging.info(f"{str(model)}")
-        logging.info("Params:")
-        params_file = os.path.join(args.logs, args.name, "params.txt")
-        with open(params_file, "w") as f:
-            for name in sorted(dir(args)):
-                if name.startswith('__'):
-                    continue
-                val = getattr(args, name)
-                logging.info(f"  {name}: {val}")
-                f.write(f"{name}: {val}\n")
+        for model_idx, model in enumerate(models):
+            logging.info("Model:")
+            logging.info(f"{str(model)}")
+            logging.info("Params:")
+            params_file = os.path.join(args.logs, args.name, f"params.txt.{model_idx}")
+            with open(params_file, "w") as f:
+                for name in sorted(dir(args)):
+                    if name.startswith('__'):
+                        continue
+                    val = getattr(args, name)
+                    logging.info(f"  {name}: {val}")
+                    f.write(f"{name}: {val}\n")
 
     if args.distributed:
         ddp_args = {}
@@ -144,7 +164,12 @@ def main(args):
             ddp_args['static_graph'] = True
         if hasattr(args, "find_unused_parameters"):
             ddp_args['find_unused_parameters'] = args.find_unused_parameters
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[device], **ddp_args)
+
+        for model_idx in range(len(models)):
+            models[model_idx] = torch.nn.parallel.DistributedDataParallel(models[model_idx], device_ids=[device], **ddp_args)
+
+        if args.distill:
+            dist_model = torch.nn.parallel.DistributedDataParallel(dist_model, device_ids=[device], **ddp_args)
 
     # create optimizer and scaler
     optimizer = None
@@ -153,32 +178,50 @@ def main(args):
         exclude = lambda n, p: p.ndim < 2 or "bn" in n or "ln" in n or "bias" in n or 'logit_scale' in n or 'norm' in n or 'layer_norm' in n
         include = lambda n, p: not exclude(n, p)
 
-        named_parameters = list(model.named_parameters())
+        optimizers, scalers = [], []
+        for model in models:
+            named_parameters = list(model.named_parameters())
+            
+            if hasattr(args, "trainable"):
+                for n, p in named_parameters:
+                    if n.startswith('module.'):
+                        n = n[len('module.'):]
+                    for trainable_param in args.trainable:
+                        if n.startswith(trainable_param):
+                            break
+                    else:
+                        logging.info(f"freeze {n}")
+                        p.requires_grad = False
+            
+            gain_or_bias_params = [p for n, p in named_parameters if exclude(n, p) and p.requires_grad]
+            rest_params = [p for n, p in named_parameters if include(n, p) and p.requires_grad]
 
-        gain_or_bias_params = [p for n, p in named_parameters if exclude(n, p) and p.requires_grad]
-        rest_params = [p for n, p in named_parameters if include(n, p) and p.requires_grad]
-        
-        optimizer = optim.AdamW(
-            [
-                {"params": gain_or_bias_params, "weight_decay": 0.},
-                {"params": rest_params, "weight_decay": args.wd},
-            ],
-            lr=args.lr,
-            betas=(args.beta1, args.beta2),
-            eps=args.eps,
-        )
-        scaler = GradScaler() if args.precision == "amp" else None
+            optimizer = optim.AdamW(
+                [
+                    {"params": gain_or_bias_params, "weight_decay": 0.},
+                    {"params": rest_params, "weight_decay": args.wd},
+                ],
+                lr=args.lr,
+                betas=(args.beta1, args.beta2),
+                eps=args.eps,
+            )
+            scaler = GradScaler() if args.precision == "amp" else None
+
+            optimizers.append(optimizer)
+            scalers.append(scaler)
 
     # optionally resume from a checkpoint
     step, positions = 0, None
     
     if args.resume is not None:
-        if os.path.isfile(args.resume):
-            model_to_load = unwrap_model(model)
-            step, positions = load_checkpoint(args.resume, model_to_load, optimizer=optimizer, scaler=scaler)
-            logging.info(f"=> resuming checkpoint '{args.resume}' (step {step})")
-        else:
-            logging.info("=> no checkpoint found at '{}'".format(args.resume))
+        for model_idx in range(len(models)):
+            model = models[model_idx]
+            if os.path.isfile(f"{args.resume}.{model_idx}"):
+                model_to_load = unwrap_model(model)
+                step, positions = load_checkpoint(f"{args.resume}.{model_idx}", model_to_load, optimizer=optimizers[model_idx], scaler=scalers[model_idx])
+                logging.info(f"=> resuming checkpoint '{args.resume}' (step {step})")
+            else:
+                logging.info("=> no checkpoint found at '{}'".format(f"{args.resume}.{model_idx}"))
     
     # initialize datasets
     data = get_data(args, (preprocess_train, preprocess_val), positions)
@@ -188,8 +231,10 @@ def main(args):
         logging.info('Compiling model...')
         os.environ["TORCHINDUCTOR_COMPILE_THREADS"] = "1"
         try:
-            model = torch.compile(model)
-            torch._dynamo.config.optimize_ddp=False
+            for model_idx in range(len(models)):
+                models[model_idx] = torch.compile(models[model_idx])
+            
+            torch._dynamo.config.optimize_ddp = False
         except Exception:
             logging.warn("please use PyTorch 2.0")
 
@@ -197,7 +242,7 @@ def main(args):
     scheduler = None
     if 'train' in data and optimizer is not None:
         total_steps = data["train"].dataloader.num_batches * args.epochs
-        scheduler = cosine_lr(optimizer, args.lr, args.warmup, total_steps)
+        scheduler = cosine_lr(optimizers[0], args.lr, args.warmup, total_steps)
 
     # determine if this worker should save logs and checkpoints. only do so if it is rank == 0
     args.save_logs = args.logs and args.logs.lower() != 'none' and is_master(args)
@@ -206,8 +251,31 @@ def main(args):
         assert tensorboard is not None, "Please install tensorboard."
         writer = tensorboard.SummaryWriter(args.tensorboard_path)
 
-    engine_cls = train.train_one_epoch_ex
-    engine_cls(args, model, data, step, total_steps, optimizer, scaler, scheduler, writer)
+    if hasattr(args, "engine"):
+        engine = args.engine
+
+        import importlib
+        for model_code in os.listdir(f"src/training"):
+            if model_code.startswith("train"):
+                module = importlib.import_module("src.training." + model_code[:-len(".py")])
+                if hasattr(module, engine):
+                    engine_cls = getattr(module, engine)
+                    break
+        else:
+            raise ValueError(f"{engine} not found.")
+    else:
+        engine_cls = train.train_one_epoch_ex
+
+    if args.distill:
+        model_tuple = (models, dist_model)
+    else:
+        model_tuple = models
+    
+    engine_cls(
+        args, 
+        model_tuple,
+        data, (preprocess_train, preprocess_val), step, total_steps, optimizers, scalers, scheduler, writer
+    )
 
 
 if __name__ == "__main__":

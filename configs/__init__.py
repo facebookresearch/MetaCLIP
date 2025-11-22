@@ -4,8 +4,6 @@ import inspect
 from collections import OrderedDict
 from dataclasses import dataclass
 
-from src.training.params import get_default_params
-
 
 @dataclass
 class Config:
@@ -26,10 +24,10 @@ class Config:
     workers = 8
     batch_size = 64
     epochs = 32
-    lr = None
-    beta1 = None
-    beta2 = None
-    eps = None
+    lr = 5.0e-4
+    beta1 = 0.9
+    beta2 = 0.98
+    eps = 1.0e-6
     wd = 0.2
     warmup = 2000  # 10000
     min_ratio = 0.
@@ -64,17 +62,13 @@ class Config:
         args.name = self.__class__.__name__
         args.output_dir = os.path.join(args.logs, args.name)
 
-        for name, val in get_default_params(args.model).items():
-            if getattr(args, name) is None:
-                setattr(args, name, val)
-
 
 def search_config(config_name):
     import importlib
     all_configs = {}
-    for code in os.listdir("config"):
+    for code in os.listdir("configs"):
         if code.endswith(".py"):
-            module = importlib.import_module(f"config.{code[:-3]}")
+            module = importlib.import_module(f"configs.{code[:-3]}")
             for _config_name in dir(module):
                 if _config_name in ["Config"] or _config_name.startswith("__") or _config_name.startswith("run_config"):
                     continue

@@ -33,8 +33,8 @@ additional_punctuation = {
     ]
 }
 
+# customize your LID lang set to metadata/wiki lang set.
 lid_to_wiki = {
-
 }
 
 
@@ -51,7 +51,7 @@ no_space_languages = {
 }
 
 
-def LID_langcode_to_metadata_langcode(lang_id):
+def lid_langcode_to_metadata_langcode(lang_id):
     """
     convert lang. code from LID (language identification) into lang. code of metadata.
     
@@ -121,7 +121,7 @@ def spacing(text):
     return spaced_text
 
 
-def get_spaced_metadata_ml(metadata):
+def get_spaced_metadata(metadata):
     spaced_metadata = []
     for idx, entry in enumerate(metadata):
         spaced_entry = entry
@@ -133,16 +133,15 @@ def get_spaced_metadata_ml(metadata):
     return spaced_metadata
 
 
-def substr_match(lang_id, txt, automaton_dir, automaton_ml, matching_fn="iter"):
+def substr_match(lang_id, txt, automaton_dir, automatons, matching_fn="iter"):
     if lang_id not in automaton_ml:
         print("init automaton", lang_id)
         with open(f'{automaton_dir}/{lang_id}.pkl', 'rb') as f:
-            automaton = pickle.load(f)
-        automaton_ml[lang_id] = automaton
+            automatons[lang_id] = pickle.load(f)
 
     spaced_txt = spacing(txt)
     matched_entry_ids = set()
-    fn = getattr(automaton_ml[lang_id], matching_fn)
+    fn = getattr(automatons[lang_id], matching_fn)
     for _, (entry_id, _) in fn(spaced_txt):
         matched_entry_ids.add(entry_id)
     matched_entry_ids_list = list(matched_entry_ids)

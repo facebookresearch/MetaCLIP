@@ -41,6 +41,22 @@ _RN50x64 = dict(
     openai="https://openaipublic.azureedge.net/clip/models/be1cfb55d75a9666199fb2206c106743da0f6468c9d327f3e0d0a543a9919d9c/RN50x64.pt",
 )
 
+_VITS16_worldwide = dict(
+    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_s16_224px_worldwide.pt", "951f60fcba8aa57ddc993ba995653d0a3320c3b129a6824ab1a76d3a3eb1a438"),
+)
+
+_VITS16_mT5_worldwide = dict(
+    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_s16_224px_mt5_worldwide.pt", "c0c269758b98fe754be491f3cc70d753e0d1f0cf070fe4e9d042da4378feefd9"),
+)
+
+_VITM16_worldwide = dict(
+    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_m16_224px_worldwide.pt", "2112c62563f8de00544a7578350c6255dcad87f6bcd3305b13c7ecb30a104dbf"),
+)
+
+_VITM16_mT5_worldwide = dict(
+    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_m16_224px_mt5_worldwide.pt", "976d6cbfe35529528abede17f6b7a2e8120b5fd5f9ada6e362e2f80e919f556f"),
+)
+
 _VITB32 = dict(
     openai="https://openaipublic.azureedge.net/clip/models/40d365715913c9da98579312b702a82c18be219cc2a73407c4526f58eba950af/ViT-B-32.pt",
     laion2b_e16="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_b_32-laion2b_e16-af8dbd0c.pth",
@@ -59,6 +75,14 @@ _VITB32_quickgelu = dict(
     metaclip2_5b=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b32_fullcc2.5b.pt", "885b7ec11fe07a9826e2e6812d70e5011918e32fe9b12136b49d5dded92b4386"),
 )
 
+_VITB32_worldwide = dict(
+    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b32_224px_worldwide.pt", "d8e10eb67b4300b3509c63d56337efd68cf385e9fd872da889c359c045fd629c"),
+)
+
+_VITB32_mT5_worldwide = dict(
+    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b32_224px_mt5_worldwide.pt", "8795b43872bcc5babe2feabd90bfbb53bd4470a39bd44c79b84f9be758fc3a1d"),
+)
+
 _VITB16 = dict(
     openai="https://openaipublic.azureedge.net/clip/models/5806e77cd80f8b59890b7e101eabd078d9fb84e6937f9e85e4ecb61988df416f/ViT-B-16.pt",
     laion400m_e31="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_b_16-laion400m_e31-00efa78f.pt",
@@ -73,6 +97,10 @@ _VITB16_quickgelu = dict(
     metaclip2_5b=("https://dl.fbaipublicfiles.com/MMPT/metaclip/b16_fullcc2.5b.pt", "512ea0fb9f2cf88d027e96e4674247a1a91a96af18abc2e2fcdb8008c551e04b"),
 )
 
+_VITB16_worldwide = dict(
+    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b16_224px_worldwide.pt", "f9a1f207ac79f78fe99dd252ded562031b587595b19a8b8ca36b89d36c6eb347"),
+)
+
 _VITB16_PLUS_240 = dict(
     laion400m_e31="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_b_16_plus_240-laion400m_e31-8fb26589.pt",
     laion400m_e32="https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_b_16_plus_240-laion400m_e32-699c4b84.pt",
@@ -82,6 +110,10 @@ _VITL14 = dict(
     openai="https://openaipublic.azureedge.net/clip/models/b8cca3fd41ae0c99ba7e8951adf17d267cdb84cd88be6f7c2e0eca1737a03836/ViT-L-14.pt",
     laion400m_e31='https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_l_14-laion400m_e31-69988bb6.pt',
     laion400m_e32='https://github.com/mlfoundations/mini_clip/releases/download/v0.2-weights/vit_l_14-laion400m_e32-3d133497.pt',
+)
+
+_VITL14_worldwide = dict(
+    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_l14_224px_worldwide.pt", "3ffe7d5099e088b5c27061fb1908b70326fb1647aa4dd804da02b4caf8894882"),
 )
 
 _VITL14_quickgelu = dict(
@@ -137,13 +169,21 @@ _PRETRAINED = {
     "RN50x4": _RN50x4,
     "RN50x16": _RN50x16,
     "RN50x64": _RN50x64,
+    "ViT-S-16-worldwide": _VITS16_worldwide,
+    "ViT-S-16-mT5-worldwide": _VITS16_mT5_worldwide,    
+    "ViT-M-16-worldwide": _VITM16_worldwide,    
+    "ViT-M-16-mT5-worldwide": _VITM16_mT5_worldwide,
     "ViT-B-32": _VITB32,
     "ViT-B-32-quickgelu": _VITB32_quickgelu,
+    "ViT-B-32-worldwide": _VITB32_worldwide,
+    "ViT-B-32-mT5-worldwide": _VITB32_mT5_worldwide,
     "ViT-B-16": _VITB16,
     "ViT-B-16-quickgelu": _VITB16_quickgelu,
+    "ViT-B-16-worldwide": _VITB16_worldwide,
     "ViT-B-16-plus-240": _VITB16_PLUS_240,
     "ViT-L-14": _VITL14,
     "ViT-L-14-quickgelu": _VITL14_quickgelu,
+    "ViT-L-14-worldwide": _VITL14_worldwide,
     "ViT-L-14-336": _VITL14_336,
     "ViT-H-14-quickgelu": _VITH14_quickgelu,
     "ViT-H-14": _VITH14,

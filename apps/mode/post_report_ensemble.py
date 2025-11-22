@@ -1,7 +1,6 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates
 
 import sys
-sys.path.append("src")
 sys.path.append("./")
 import os
 

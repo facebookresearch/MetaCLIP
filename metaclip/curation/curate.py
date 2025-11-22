@@ -19,8 +19,8 @@ import sys
 sys.path.append("./")
 
 from metaclip.curation.substr_matching import (
-    LID_langcode_to_metadata_langcode,
-    get_spaced_metadata_ml,
+    lid_langcode_to_metadata_langcode,
+    get_spaced_metadata,
     initialize_automaton,
     spacing,
     substr_match
@@ -122,7 +122,7 @@ def count_per_shard(start, end):
                 for rec in uuid_to_text[uuid]:
                     _, txt, lang = rec
                     txt = txt.strip()
-                    lang_id = LID_langcode_to_metadata_langcode(lang_id)
+                    lang_id = lid_langcode_to_metadata_langcode(lang_id)
 
                     matched_entry_ids_list = substr_match(lang_id, txt, automaton_dir, automaton_ml, matching_fn="iter")
                     if len(matched_entry_ids_list) == 0:
@@ -141,7 +141,7 @@ def count_per_shard(start, end):
         for uuid in text_index:
             for txt, lang, matched_entry_ids_list in text_index[uuid]:
                 # TODO: refactor this into a function.
-                lang_id = LID_langcode_to_metadata_langcode(lang)
+                lang_id = lid_langcode_to_metadata_langcode(lang)
 
                 if lang_id not in entry_counts_ml:
                     with open(f'{automaton_dir}/{lang_id}.pkl', 'rb') as f:
@@ -204,7 +204,7 @@ def curate(start, end):
 
             txt, lang_id, matched_entry_ids_list = random.choice(txt_tuples)
 
-            lang_id = LID_langcode_to_metadata_langcode(lang_id)
+            lang_id = lid_langcode_to_metadata_langcode(lang_id)
 
             if lang_id not in entry_probs_per_lang:
                 entry_probs_per_lang[lang_id] = np.load(f"{index_json_dir}/per_lang_t/{self.args.t}_{lang_id}.npy", mmap_mode="r")
@@ -234,7 +234,7 @@ if __name__ == '__main__':
 
         shards_per_thread = 2000
         job_plans = [
-            ("data", (0, 1600000)),
+            ("data", (0, 400000)),
         ]
 
         if sys.argv == "curate":

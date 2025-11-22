@@ -12,8 +12,8 @@ import torch.nn.functional as F
 
 from collections import defaultdict
 
-from src.mini_clip.loss import ClipLoss
-from src.mini_clip.transform import get_mean_std
+from src.open_clip.loss import ClipLoss
+from src.open_clip.transform import get_mean_std
 from src.training.distributed import is_master, world_info_from_env
 from src.training.zero_shot import zero_shot_eval
 from src.training.checkpoint import save_checkpoint, agg_positions, collect_positions, unwrap_model
@@ -63,7 +63,7 @@ def to_device(batch, device):
 
 
 def build_loss(args):
-    from src.mini_clip import loss as loss_module
+    from src.open_clip import loss as loss_module
     loss_name = args.loss_name if hasattr(args, "loss_name") else "ClipLoss"
     loss_cls = getattr(loss_module, loss_name)
 
@@ -82,8 +82,8 @@ def backward(args, total_loss, scaler, optimizer, model):
         if scaler is not None:
             scaler.scale(total_loss).backward()
             # if args.world_size == 1:
-            #    from src.training.detect import detect_unused_parameters
-            #    detect_unused_parameters(model)
+            # from src.training.detect import detect_unused_parameters
+            # detect_unused_parameters(model)
             if args.norm_gradient_clip is not None:
                 scaler.unscale_(optimizer)
                 torch.nn.utils.clip_grad_norm_(model.parameters(), args.norm_gradient_clip, norm_type=2.0)
@@ -91,9 +91,9 @@ def backward(args, total_loss, scaler, optimizer, model):
             scaler.update()
         else:
             total_loss.backward()
-            # if args.world_size == 1:
-            #    from src.training.detect import detect_unused_parameters
-            #    detect_unused_parameters(model)
+            # args.world_size == 1:
+            # from src.training.detect import detect_unused_parameters
+            # detect_unused_parameters(model)
             # detect_nan(model, optimizer)
             if args.norm_gradient_clip is not None:
                 torch.nn.utils.clip_grad_norm_(model.parameters(), args.norm_gradient_clip, norm_type=2.0)
@@ -109,11 +109,15 @@ def backward(args, total_loss, scaler, optimizer, model):
         sys.exit(1)  # protect the checkpoint for debugging.
 
 
-def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, scaler, scheduler, tb_writer=None):
+def train_one_epoch_ex(args, model, data, preprocess_fns, start_step, total_steps, optimizers, scalers, scheduler, tb_writer=None):
     device = torch.device(args.device)
     autocast = get_autocast(args.precision)
+    if args.distill:
+        models, dist_model = model
+        dist_model.eval()
 
-    model.train()
+    for model in models:
+        model.train()
 
     loss = build_loss(args)
 
@@ -131,23 +135,41 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
         batch = next(batch_iter)
         scheduler(step)
 
-        if len(batch) == 2:
-            (images, texts), worker_ids, shard_ids = batch, None, None
-        else:
-            images, texts, worker_ids, shard_ids = batch
+        images, texts, distill_texts, worker_ids, shard_ids = batch
 
         images, texts = to_device((images, texts), device)
-        
+
+        if hasattr(args, "teacher_res"):
+            distill_images = F.interpolate(images, size=(args.teacher_res, args.teacher_res), mode='bicubic')
+        else:
+            distill_images = images
+
+        distill_texts = distill_texts.to(device=device, non_blocking=True)
+
         positions = agg_positions(positions, worker_ids, shard_ids)
 
         data_time_m.update(time.time() - end)
-        optimizer.zero_grad()
 
-        with autocast():
-            image_features, text_features, logit_scale = model(images, texts)
-            total_loss = loss(image_features, text_features, logit_scale)
+        if args.distill:  # avoid peak mem; do optimization in each.
+            with autocast():
+                with torch.no_grad():
+                    dist_image_features, dist_text_features, dist_logit_scale = dist_model(distill_images, distill_texts)
 
-        backward(args, total_loss, scaler, optimizer, model)
+        for model_idx, (model, optimizer, scaler) in enumerate(zip(models, optimizers, scalers)):
+            optimizer.zero_grad()
+            with autocast():
+                image_features, text_features, logit_scale = model(images, texts)
+                if args.distill:
+                    if hasattr(args, "distill_logit_scale"):
+                        contrastive_loss, distill_loss = loss(image_features, text_features, logit_scale, dist_image_features, dist_text_features, dist_logit_scale)
+                    else:
+                        contrastive_loss, distill_loss = loss(image_features, text_features, logit_scale, dist_image_features, dist_text_features, 200.)
+                        
+                    total_loss = contrastive_loss + distill_loss
+                else:
+                    total_loss = loss(image_features, text_features, logit_scale)
+
+            backward(args, total_loss, scaler, optimizer, model)
 
         batch_time_m.update(time.time() - end)
         end = time.time()
@@ -155,15 +177,20 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
         batch_count = step % num_batches_per_epoch + 1
         epoch = (step + 1) // num_batches_per_epoch
         
+        # if is_master(args) and (batch_count % 50 == 0 or batch_count == num_batches_per_epoch):
         if is_master(args) and (step + 1) % 50 == 0:
             batch_size = len(images)
+            # num_samples = batch_count * batch_size * args.world_size
             num_samples = (step + 1) * batch_size * args.world_size
+            # samples_per_epoch = dataloader.num_samples
             total_num_samples = (total_steps + 1) * batch_size * args.world_size
+            # percent_complete = 100.0 * batch_count / num_batches_per_epoch
             percent_complete = 100.0 * (step + 1) / total_steps
 
             # NOTE loss is coarsely sampled, just master node and per log update
             loss_m.update(total_loss.item(), batch_size)
             logit_scale_scalar = logit_scale.item()
+            # f"Train Step: {step + 1} (Epoch: {epoch} {batch_count} {num_batches_per_epoch} [{num_samples:>{sample_digits}}/{samples_per_epoch}({percent_complete:.0f}%)]) "
             logging.info(
                 f"Step: {step + 1}/{total_steps} [{num_samples}/{total_num_samples} ({percent_complete:.0f}%)] "
                 f"Loss: {loss_m.val:#.5g} ({loss_m.avg:#.4g}) "
@@ -194,24 +221,27 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
         if hasattr(args, "save_steps") and (step + 1) % args.save_steps == 0:
             positions_dict = collect_positions(args, positions)
             if args.save_logs:
-                save_checkpoint(f"{args.checkpoint_path}/epoch_latest.pt", model, optimizer, scaler, step + 1, positions_dict=positions_dict)
+                for model_idx, (model, optimizer, scaler) in enumerate(zip(models, optimizers, scalers)):
+                    save_checkpoint(f"{args.checkpoint_path}/epoch_latest.pt.{model_idx}", model, optimizer, scaler, step + 1, positions_dict=positions_dict)
     
         # TODO: copied from main.py, wrap as a function call.
         if hasattr(args, "eval_steps") and ((step + 1) % args.eval_steps == 0 or batch_count == num_batches_per_epoch):
-            if any(v in data for v in ('val', 'imagenet-val', 'imagenet-v2')):
-                evaluate_ex(args, model, data, step + 1, epoch, tb_writer)  # completed_epoch -> epoch, writer -> tb_writer
+            for model_idx, (model, optimizer, scaler) in enumerate(zip(models, optimizers, scalers)):
+                if any(v in data for v in ('val', 'imagenet-val', 'imagenet-v2')):
+                    evaluate_ex(args, model, data, step + 1, epoch, tb_writer)  # completed_epoch -> epoch, writer -> tb_writer
 
-            positions_dict = collect_positions(args, positions)
-            if args.save_logs:
-                ckpt_id = "latest" if batch_count != num_batches_per_epoch else f"{epoch}"
-                save_checkpoint(f"{args.checkpoint_path}/epoch_{ckpt_id}.pt", model, optimizer, scaler, step + 1, positions_dict=positions_dict)
+                positions_dict = collect_positions(args, positions)
+                if args.save_logs:
+                    ckpt_id = "latest" if batch_count != num_batches_per_epoch else f"{epoch}"
+                    save_checkpoint(f"{args.checkpoint_path}/epoch_{ckpt_id}.pt.{model_idx}", model, optimizer, scaler, step + 1, positions_dict=positions_dict)
             
-            model.train()  # evaluate won't turn model back to train.
+                model.train()  # evaluate won't turn model back to train.
             
     # end for
     positions_dict = collect_positions(args, positions)
     if is_master(args):
-        save_checkpoint(f"{args.checkpoint_path}/epoch_latest.pt", model, optimizer, scaler, step + 1, positions_dict=positions_dict)
+        for model_idx, (model, optimizer, scaler) in enumerate(zip(models, optimizers, scalers)):
+            save_checkpoint(f"{args.checkpoint_path}/epoch_latest.pt.{model_idx}", model, optimizer, scaler, step + 1, positions_dict=positions_dict)
 
 
 def evaluate_ex(args, model, data, step, epoch, tb_writer=None):

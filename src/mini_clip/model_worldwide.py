@@ -22,8 +22,7 @@ class WorldWideCLIP(CLIP):
         return x
 
 
-class mT5CLIP(CLIP):
-    # TODO: def. eos token in model config and merge models.
+class mT5WorldWideCLIP(CLIP):
     def encode_text(self, text):
         x = self.token_embedding(text)  # [batch_size, n_ctx, d_model]
 
