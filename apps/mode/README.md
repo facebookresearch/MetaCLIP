@@ -63,12 +63,9 @@ Specifically, please refer the following command
 git clone https://github.com/kernelmachine/balanced-kmeans.git
 cd balanced-kmeans
 pip3 install -e .
-```
-Next, please move the dataset file from this folder to src/training.
-```bash
-mv move2train/* ../src/training/
-rm -r move2train
-```
+
+(huxu: warning the following is refactored to `apps/mode` and not well-tested)
+
 
 Finally, please move the config-related files from this folder to the root
 ```bash
