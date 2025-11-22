@@ -140,7 +140,7 @@ python metaclip/curation/curate.py count_per_shard
 1. Reads text data from `data/pkg_json/{shard_id}.json`
 2. Filters valid samples using `data/valid_uuids/{shard_id}.json`
 3. Detects language using Language ID
-4. Maps detected language to metadata using `LID_langcode_to_metadata_langcode()`
+4. Maps detected language to metadata using `lid_langcode_to_metadata_langcode()`
 5. Performs substring matching using appropriate automaton
 6. Counts matches per metadata entry per language
 
