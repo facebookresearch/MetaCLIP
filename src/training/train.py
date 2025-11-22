@@ -119,7 +119,6 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
 
     dataloader = data['train'].dataloader
     num_batches_per_epoch = dataloader.num_batches
-    # sample_digits = math.ceil(math.log(dataloader.num_samples + 1, 10))
 
     loss_m = AverageMeter()
     batch_time_m = AverageMeter()
@@ -156,20 +155,15 @@ def train_one_epoch_ex(args, model, data, start_step, total_steps, optimizer, sc
         batch_count = step % num_batches_per_epoch + 1
         epoch = (step + 1) // num_batches_per_epoch
         
-        # if is_master(args) and (batch_count % 50 == 0 or batch_count == num_batches_per_epoch):
         if is_master(args) and (step + 1) % 50 == 0:
             batch_size = len(images)
-            # num_samples = batch_count * batch_size * args.world_size
             num_samples = (step + 1) * batch_size * args.world_size
-            # samples_per_epoch = dataloader.num_samples
             total_num_samples = (total_steps + 1) * batch_size * args.world_size
-            # percent_complete = 100.0 * batch_count / num_batches_per_epoch
             percent_complete = 100.0 * (step + 1) / total_steps
 
             # NOTE loss is coarsely sampled, just master node and per log update
             loss_m.update(total_loss.item(), batch_size)
             logit_scale_scalar = logit_scale.item()
-            # f"Train Step: {step + 1} (Epoch: {epoch} {batch_count} {num_batches_per_epoch} [{num_samples:>{sample_digits}}/{samples_per_epoch}({percent_complete:.0f}%)]) "
             logging.info(
                 f"Step: {step + 1}/{total_steps} [{num_samples}/{total_num_samples} ({percent_complete:.0f}%)] "
                 f"Loss: {loss_m.val:#.5g} ({loss_m.avg:#.4g}) "

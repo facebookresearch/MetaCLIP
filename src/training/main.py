@@ -119,11 +119,6 @@ def main(args):
         gpu_trans=args.gpu_trans if hasattr(args, "gpu_trans") else False,
     )
 
-    if hasattr(args, "cap_model"):
-        from src.training.train_altogether import create_captioner
-        clip_model, model = create_captioner(args, model, device)
-        composed_model = clip_model, model
-
     random_seed(args.seed, args.rank)
 
     if args.grad_checkpointing:
@@ -159,18 +154,7 @@ def main(args):
         include = lambda n, p: not exclude(n, p)
 
         named_parameters = list(model.named_parameters())
-        
-        if hasattr(args, "trainable"):
-            for n, p in named_parameters:
-                if n.startswith('module.'):
-                    n = n[len('module.'):]
-                for trainable_param in args.trainable:
-                    if n.startswith(trainable_param):
-                        break
-                else:
-                    logging.info(f"freeze {n}")
-                    p.requires_grad = False
-        
+
         gain_or_bias_params = [p for n, p in named_parameters if exclude(n, p) and p.requires_grad]
         rest_params = [p for n, p in named_parameters if include(n, p) and p.requires_grad]
         
@@ -213,11 +197,6 @@ def main(args):
     scheduler = None
     if 'train' in data and optimizer is not None:
         total_steps = data["train"].dataloader.num_batches * args.epochs
-        if "endsft" in data:
-            endsft_steps = data["endsft"].dataloader.num_batches * args.endsft_epochs
-            logging.info(f"appending {endsft_steps} endsft steps")
-            total_steps += endsft_steps
-
         scheduler = cosine_lr(optimizer, args.lr, args.warmup, total_steps)
 
     # determine if this worker should save logs and checkpoints. only do so if it is rank == 0
@@ -227,26 +206,8 @@ def main(args):
         assert tensorboard is not None, "Please install tensorboard."
         writer = tensorboard.SummaryWriter(args.tensorboard_path)
 
-    if hasattr(args, "engine"):
-        engine = args.engine
-
-        import importlib
-        for model_code in os.listdir(f"src/training"):
-            if model_code.startswith("train"):
-                module = importlib.import_module("src.training." + model_code[:-len(".py")])
-                if hasattr(module, engine):
-                    engine_cls = getattr(module, engine)
-                    break
-        else:
-            raise ValueError(f"{engine} not found.")
-    else:
-        engine_cls = train.train_one_epoch_ex
-
-    engine_cls(
-        args, 
-        (clip_model, model) if hasattr(args, "cap_model") else model,
-        data, step, total_steps, optimizer, scaler, scheduler, writer
-    )
+    engine_cls = train.train_one_epoch_ex
+    engine_cls(args, model, data, step, total_steps, optimizer, scaler, scheduler, writer)
 
 
 if __name__ == "__main__":
