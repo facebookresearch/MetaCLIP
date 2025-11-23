@@ -106,13 +106,18 @@ Meta CLIP 2 Distilled
 |    `model_name`     | `pretrained` | Tokenizer | Data Card | # of Seen Pairs | Res. | CVQA-LOCAL ZS Acc. |
 |:--------------------|:-------------|:----------|:---------:|:---------:|:---------:|:---------:|
 | `ViT-S-16-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_s16_224px_worldwide.pt) | `facebook/xlm-v-base`| Online Curation | 29B | 224 | 46.9 |
+| `ViT-S-16-384-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_s16_384px_worldwide.pt) | `facebook/xlm-v-base`| Online Curation | 29B | 384 | 47.4 |
 | `ViT-S-16-mT5-worldwide@mT5WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_s16_224px_mt5_worldwide.pt) | `google/siglip-so400m-patch16-256-i18n` | Online Curation | 29B | 224 | 42.8 |
 | `ViT-M-16-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_m16_224px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 224 | 49.3 |
+| `ViT-M-16-384-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_m16_384px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 384 | 50.7 |
 | `ViT-M-16-mT5-worldwide@mT5WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_m16_224px_mt5_worldwide.pt) | `google/siglip-so400m-patch16-256-i18n` | Online Curation | 29B | 224 | 48.7 |
 | `ViT-B-32-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b32_224px_worldwide.pt) | `facebook/xlm-v-base`| Online Curation | 29B | 224 | 49.1 |
+| `ViT-B-32-384-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b32_224px_worldwide.pt) | `facebook/xlm-v-base`| Online Curation | 29B | 384 | 50.0 |
 | `ViT-B-32-mT5-worldwide@mT5WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b32_224px_mt5_worldwide.pt) | `google/siglip-so400m-patch16-256-i18n` | Online Curation | 29B | 224 | 48.4 |
 | `ViT-B-16-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b16_224px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 224 | 50.9 |
+| `ViT-B-16-384-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b16_384px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 384 | 51.5 |
 | `ViT-L-14-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_l14_224px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 224 | 56.5 |
+| `ViT-L-14-378-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_l14_378px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 378 | 56.8 |
 
 
 Meta CLIP 1

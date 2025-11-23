@@ -45,12 +45,20 @@ _VITS16_worldwide = dict(
     metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_s16_224px_worldwide.pt", "951f60fcba8aa57ddc993ba995653d0a3320c3b129a6824ab1a76d3a3eb1a438"),
 )
 
+_VITS16_384_worldwide = dict(
+    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_s16_384px_worldwide.pt", "834f3ebc39c2356136387c697c50c864ba4da24bf4fb453068e2b900dddc5d91"),
+)
+
 _VITS16_mT5_worldwide = dict(
     metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_s16_224px_mt5_worldwide.pt", "c0c269758b98fe754be491f3cc70d753e0d1f0cf070fe4e9d042da4378feefd9"),
 )
 
 _VITM16_worldwide = dict(
     metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_m16_224px_worldwide.pt", "2112c62563f8de00544a7578350c6255dcad87f6bcd3305b13c7ecb30a104dbf"),
+)
+
+_VITM16_384_worldwide = dict(
+    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_m16_384px_worldwide.pt", "6699bc5265dd14abdb2e61cb4d089205c4b927e7bf8b77d493c9faf18d9236c2"),
 )
 
 _VITM16_mT5_worldwide = dict(
@@ -79,6 +87,10 @@ _VITB32_worldwide = dict(
     metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b32_224px_worldwide.pt", "d8e10eb67b4300b3509c63d56337efd68cf385e9fd872da889c359c045fd629c"),
 )
 
+_VITB32_384_worldwide = dict(
+    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b32_378px_worldwide.pt", "5056f3e0cd4409d01d44887753ed296e4d1b3a358547ce6435e1d1886b8ba5ea"),
+)
+
 _VITB32_mT5_worldwide = dict(
     metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b32_224px_mt5_worldwide.pt", "8795b43872bcc5babe2feabd90bfbb53bd4470a39bd44c79b84f9be758fc3a1d"),
 )
@@ -98,7 +110,11 @@ _VITB16_quickgelu = dict(
 )
 
 _VITB16_worldwide = dict(
-    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b16_224px_worldwide.pt", "f9a1f207ac79f78fe99dd252ded562031b587595b19a8b8ca36b89d36c6eb347"),
+    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b16_224px_worldwide.pt", "61c68cbd496b92669297bec5d37e5a4a9efbd05df79e9224b21dc43666b8dc8a"),
+)
+
+_VITB16_384_worldwide = dict(
+    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b16_384px_worldwide.pt", "f9a1f207ac79f78fe99dd252ded562031b587595b19a8b8ca36b89d36c6eb347"),
 )
 
 _VITB16_PLUS_240 = dict(
@@ -114,6 +130,10 @@ _VITL14 = dict(
 
 _VITL14_worldwide = dict(
     metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_l14_224px_worldwide.pt", "3ffe7d5099e088b5c27061fb1908b70326fb1647aa4dd804da02b4caf8894882"),
+)
+
+_VITL14_378_worldwide = dict(
+    metaclip2_worldwide=("https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_l14_378px_worldwide.pt", "48faec919adbd1bbc21da360bc3c543c75fe8393fb86b581e743a56b633727b4"),
 )
 
 _VITL14_quickgelu = dict(
@@ -170,20 +190,25 @@ _PRETRAINED = {
     "RN50x16": _RN50x16,
     "RN50x64": _RN50x64,
     "ViT-S-16-worldwide": _VITS16_worldwide,
+    "ViT-S-16-384-worldwide": _VITS16_384_worldwide,
     "ViT-S-16-mT5-worldwide": _VITS16_mT5_worldwide,    
     "ViT-M-16-worldwide": _VITM16_worldwide,    
+    "ViT-M-16-384-worldwide": _VITM16_384_worldwide,
     "ViT-M-16-mT5-worldwide": _VITM16_mT5_worldwide,
     "ViT-B-32": _VITB32,
     "ViT-B-32-quickgelu": _VITB32_quickgelu,
     "ViT-B-32-worldwide": _VITB32_worldwide,
+    "ViT-B-32-384-worldwide": _VITB32_384_worldwide,
     "ViT-B-32-mT5-worldwide": _VITB32_mT5_worldwide,
     "ViT-B-16": _VITB16,
     "ViT-B-16-quickgelu": _VITB16_quickgelu,
     "ViT-B-16-worldwide": _VITB16_worldwide,
+    "ViT-B-16-384-worldwide": _VITB16_384_worldwide,
     "ViT-B-16-plus-240": _VITB16_PLUS_240,
     "ViT-L-14": _VITL14,
     "ViT-L-14-quickgelu": _VITL14_quickgelu,
     "ViT-L-14-worldwide": _VITL14_worldwide,
+    "ViT-L-14-378-worldwide": _VITL14_378_worldwide,
     "ViT-L-14-336": _VITL14_336,
     "ViT-H-14-quickgelu": _VITH14_quickgelu,
     "ViT-H-14": _VITH14,

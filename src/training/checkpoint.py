@@ -22,7 +22,7 @@ def unwrap_state_dict(sd):
 
 
 def load_checkpoint(checkpoint_path, model, map_location='cpu', resize_pos_embed=False, strict=True, optimizer=None, scaler=None):
-    checkpoint = torch.load(checkpoint_path, map_location=map_location)
+    checkpoint = torch.load(checkpoint_path, map_location=map_location, weights_only=False) # PyTorch 2.6 fix.
     step, positions = -1, None
 
     if isinstance(checkpoint, dict):

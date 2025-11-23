@@ -15,7 +15,7 @@ from PIL import Image
 def parse_results(results, result_json):
     with open(result_json) as f:
         cvqa_result = json.load(f)
-        print(eval_fn, cvqa_result)
+        print('CVQA:', cvqa_result)
         results['cvqa_en'] = cvqa_result['EN']
         results['cvqa_local'] = cvqa_result['LOCAL']
 
