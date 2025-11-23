@@ -5,9 +5,10 @@ import json
 from pathlib import Path
 from dataclasses import dataclass
 
-
+# metaclip2_s16: a name for the baseline.
 baselines = [
     ("metaclip2_s16", 'ViT-S-16-worldwide@WorldWideCLIP', 'metaclip2_worldwide', "facebook/xlm-v-base"),
+
 ]
 
 
@@ -74,9 +75,9 @@ if __name__ == '__main__':
 
     import sys
     if True:
-        if len(sys.argv) == 2:  # python clipeval/eval_all.py 0  # 0 means first task
+        if len(sys.argv) == 2:  # python clipeval/eval_all.py 0  # 0 means first eval task
             eval_all(int(sys.argv[1]) )
-        for bench_id in range(len(eval_modules)):
+        for bench_id in range(len(baselines)):
             eval_all(bench_id)
     else:
         offsets = list(range(len(baselines)))
