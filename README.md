@@ -117,7 +117,6 @@ Meta CLIP 2 Distilled
 | `ViT-B-16-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b16_224px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 224 | 50.9 |
 | `ViT-B-16-384-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_b16_384px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 384 | 51.5 |
 | `ViT-L-14-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_l14_224px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 224 | 56.5 |
-| `ViT-L-14-378-worldwide@WorldWideCLIP` | [`metaclip2_worldwide`](https://dl.fbaipublicfiles.com/MMPT/metaclip/metaclip2_l14_378px_worldwide.pt) | `facebook/xlm-v-base` | Online Curation | 29B | 378 | 56.8 |
 
 
 Meta CLIP 1
