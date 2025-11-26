@@ -16,6 +16,12 @@ eval_modules = [
     ("slip", "clipeval.slip.eval_slip"),
     ("xm3600", "clipeval.xm3600.eval_xm3600"),
     ("cvqa", "clipeval.cvqa.eval_cvqa"),
+    ("zero_shot_classification_dollar_street", "clipeval.zero_shot_classification.eval_dollar_street"),
+    ("zero_shot_classification_GeoDE", "clipeval.zero_shot_classification.eval_GeoDE"),
+    ("zero_shot_classification_GLDv2", "clipeval.zero_shot_classification.eval_GLDv2"),
+    ("few_shot_geo_localization_dollar_street", "clipeval.few_shot_geo_localization.eval_dollar_street"),
+    ("few_shot_geo_localization_GeoDE", "clipeval.few_shot_geo_localization.eval_GeoDE"),
+    ("few_shot_geo_localization_xm3600", "clipeval.few_shot_geo_localization.eval_xm3600"),
 ]
 
 
